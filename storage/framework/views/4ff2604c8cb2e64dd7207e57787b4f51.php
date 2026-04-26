@@ -28,8 +28,8 @@
         </div>
     </section>
 
-    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div class="flex flex-col gap-4 border-b border-slate-200 p-6 dark:border-slate-800 lg:flex-row lg:items-center lg:justify-between">
+    <section class="overflow-visible rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="relative z-10 flex flex-col gap-4 border-b border-slate-200 p-6 dark:border-slate-800 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white">Daftar Riwayat Booking</h3>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Semua data di halaman ini hanya memuat transaksi milik properti Anda.</p>

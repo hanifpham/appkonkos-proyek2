@@ -1,14 +1,14 @@
-@section('mitra-title', 'Pengajuan Refund')
-@section('mitra-subtitle', 'Kelola dan tinjau permintaan pengembalian dana dari pengguna secara efisien.')
+<?php $__env->startSection('mitra-title', 'Pengajuan Refund'); ?>
+<?php $__env->startSection('mitra-subtitle', 'Kelola dan tinjau permintaan pengembalian dana dari pengguna secara efisien.'); ?>
 
-@php
+<?php
     $filterStatusOptions = [
         '' => 'Semua Status',
         'pending' => 'Perlu Ditinjau',
         'approved' => 'Disetujui',
         'rejected' => 'Ditolak',
     ];
-@endphp
+?>
 
 <div class="flex-1 p-8 pb-12 space-y-8 overflow-y-auto">
     <section class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -17,7 +17,7 @@
                 <p class="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">Total Pengajuan</p>
                 <span class="material-symbols-outlined text-[#113C7A] dark:text-blue-400 text-3xl">assignment_returned</span>
             </div>
-            <h3 class="text-3xl font-bold text-slate-900 dark:text-white">{{ number_format($totalPengajuanBulanIni, 0, ',', '.') }}</h3>
+            <h3 class="text-3xl font-bold text-slate-900 dark:text-white"><?php echo e(number_format($totalPengajuanBulanIni, 0, ',', '.')); ?></h3>
             <p class="text-[10px] text-gray-400 mt-2 font-medium uppercase tracking-tighter">Bulan Ini</p>
         </div>
 
@@ -26,7 +26,7 @@
                 <p class="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">Perlu Ditinjau</p>
                 <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-3xl">pending_actions</span>
             </div>
-            <h3 class="text-3xl font-bold text-amber-600 dark:text-amber-400">{{ number_format($perluDitinjau, 0, ',', '.') }}</h3>
+            <h3 class="text-3xl font-bold text-amber-600 dark:text-amber-400"><?php echo e(number_format($perluDitinjau, 0, ',', '.')); ?></h3>
             <p class="text-[10px] text-gray-400 mt-2 font-medium uppercase tracking-tighter">Antrean Refund</p>
         </div>
 
@@ -35,7 +35,7 @@
                 <p class="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">Disetujui</p>
                 <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-3xl">check_circle</span>
             </div>
-            <h3 class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{{ number_format($disetujui, 0, ',', '.') }}</h3>
+            <h3 class="text-3xl font-bold text-emerald-600 dark:text-emerald-400"><?php echo e(number_format($disetujui, 0, ',', '.')); ?></h3>
             <p class="text-[10px] text-gray-400 mt-2 font-medium uppercase tracking-tighter">Proses Selesai</p>
         </div>
 
@@ -44,7 +44,7 @@
                 <p class="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">Ditolak</p>
                 <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-3xl">cancel</span>
             </div>
-            <h3 class="text-3xl font-bold text-red-600 dark:text-red-400">{{ number_format($ditolak, 0, ',', '.') }}</h3>
+            <h3 class="text-3xl font-bold text-red-600 dark:text-red-400"><?php echo e(number_format($ditolak, 0, ',', '.')); ?></h3>
             <p class="text-[10px] text-gray-400 mt-2 font-medium uppercase tracking-tighter">Tidak Memenuhi Syarat</p>
         </div>
     </section>
@@ -85,19 +85,19 @@
                         <button type="button" @click="open = ! open" @click.outside="open = false" class="flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300">
                             <span class="flex min-w-0 items-center gap-2">
                                 <span class="material-symbols-outlined shrink-0 text-[18px]">filter_list</span>
-                                <span class="truncate">{{ $filterStatusOptions[$filterStatus] ?? 'Semua Status' }}</span>
+                                <span class="truncate"><?php echo e($filterStatusOptions[$filterStatus] ?? 'Semua Status'); ?></span>
                             </span>
                             <span class="material-symbols-outlined shrink-0 text-[18px] text-slate-400 dark:text-slate-500">expand_more</span>
                         </button>
                         <div x-cloak x-show="open" x-transition.origin.top.right class="absolute right-0 top-[calc(100%+8px)] z-20 w-full min-w-[220px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 shadow-xl dark:border-slate-700 dark:bg-slate-800">
-                            @foreach ($filterStatusOptions as $value => $label)
-                                <button type="button" wire:click="$set('filterStatus', '{{ $value }}')" @click="open = false" @class(['flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm transition','bg-blue-50 font-semibold text-[#0F4C81] dark:bg-blue-500/10 dark:text-blue-300' => $filterStatus === $value,'text-slate-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700/70' => $filterStatus !== $value])>
-                                    <span>{{ $label }}</span>
-                                    @if ($filterStatus === $value)
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $filterStatusOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <button type="button" wire:click="$set('filterStatus', '<?php echo e($value); ?>')" @click="open = false" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm transition','bg-blue-50 font-semibold text-[#0F4C81] dark:bg-blue-500/10 dark:text-blue-300' => $filterStatus === $value,'text-slate-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700/70' => $filterStatus !== $value]); ?>">
+                                    <span><?php echo e($label); ?></span>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($filterStatus === $value): ?>
                                         <span class="material-symbols-outlined text-[18px]">check</span>
-                                    @endif
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </button>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
 
@@ -118,77 +118,80 @@
                 </thead>
 
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                    @forelse($listRefund as $refund)
-                        <tr wire:key="refund-row-{{ $refund->id }}" class="transition hover:bg-blue-50/30 dark:hover:bg-slate-800/50">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $listRefund; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $refund): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <tr wire:key="refund-row-<?php echo e($refund->id); ?>" class="transition hover:bg-blue-50/30 dark:hover:bg-slate-800/50">
                             <td class="px-8 py-5">
                                 <div class="flex flex-col">
-                                    <span class="font-bold text-gray-800 dark:text-gray-200 text-base">{{ $this->getRefundDisplayId($refund) }}</span>
+                                    <span class="font-bold text-gray-800 dark:text-gray-200 text-base"><?php echo e($this->getRefundDisplayId($refund)); ?></span>
                                     <span class="text-[10px] text-gray-400 font-medium uppercase tracking-tighter">
-                                        TRX: {{ $this->getTransactionDisplayId($refund) }} | {{ $refund->created_at?->format('d M Y') ?? '-' }}
+                                        TRX: <?php echo e($this->getTransactionDisplayId($refund)); ?> | <?php echo e($refund->created_at?->format('d M Y') ?? '-'); ?>
+
                                     </span>
                                 </div>
                             </td>
 
                             <td class="px-6 py-5">
                                 <div class="flex flex-col">
-                                    <span class="text-gray-800 dark:text-gray-200 font-semibold">{{ $this->getUserName($refund) }}</span>
+                                    <span class="text-gray-800 dark:text-gray-200 font-semibold"><?php echo e($this->getUserName($refund)); ?></span>
                                     <span class="text-xs text-gray-500">Pencari Kos</span>
                                 </div>
                             </td>
 
                             <td class="px-6 py-5">
-                                <span class="font-bold text-slate-900 dark:text-white">Rp {{ number_format((int) $refund->nominal_refund, 0, ',', '.') }}</span>
+                                <span class="font-bold text-slate-900 dark:text-white">Rp <?php echo e(number_format((int) $refund->nominal_refund, 0, ',', '.')); ?></span>
                             </td>
 
                             <td class="px-6 py-5">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold {{ $this->getStatusBadgeClasses((string) $refund->status_refund) }} uppercase tracking-tight">
-                                    <span class="w-1.5 h-1.5 rounded-full {{ $this->getStatusDotClasses((string) $refund->status_refund) }}"></span>
-                                    {{ $this->getStatusLabel((string) $refund->status_refund) }}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold <?php echo e($this->getStatusBadgeClasses((string) $refund->status_refund)); ?> uppercase tracking-tight">
+                                    <span class="w-1.5 h-1.5 rounded-full <?php echo e($this->getStatusDotClasses((string) $refund->status_refund)); ?>"></span>
+                                    <?php echo e($this->getStatusLabel((string) $refund->status_refund)); ?>
+
                                 </span>
                             </td>
 
                             <td class="px-8 py-5">
                                 <div class="flex items-center justify-center gap-2">
-                                    @if($refund->status_refund === 'pending')
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($refund->status_refund === 'pending'): ?>
                                         <button
                                             type="button"
-                                            wire:click="tinjauRefund({{ $refund->id }})"
+                                            wire:click="tinjauRefund(<?php echo e($refund->id); ?>)"
                                             wire:loading.attr="disabled"
                                             class="bg-[#113C7A] hover:bg-[#0d2f60] text-white px-5 py-2.5 rounded-lg text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-2 ring-offset-2 focus:ring-2 focus:ring-[#113C7A]"
                                         >
                                             <span class="material-symbols-outlined text-[18px]">rate_review</span>
                                             Tinjau Pengajuan
                                         </button>
-                                    @else
+                                    <?php else: ?>
                                         <button
                                             type="button"
-                                            wire:click="tinjauPengajuan({{ $refund->id }})"
+                                            wire:click="tinjauPengajuan(<?php echo e($refund->id); ?>)"
                                             wire:loading.attr="disabled"
                                             class="border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2.5 rounded-lg text-xs font-bold transition-all"
                                         >
                                             Detail
                                         </button>
-                                    @endif
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                             </td>
                         </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="5" class="px-8 py-12 text-center text-sm text-gray-500 dark:text-gray-400">
                                 Belum ada pengajuan refund yang sesuai dengan pencarian atau filter.
                             </td>
                         </tr>
-                    @endforelse
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </tbody>
             </table>
         </div>
 
         <div class="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50/30 dark:bg-slate-800/20">
-            {{ $listRefund->links() }}
+            <?php echo e($listRefund->links()); ?>
+
         </div>
     </section>
 
-    @if($showModalDetail && $detailRefund)
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($showModalDetail && $detailRefund): ?>
         <div class="fixed inset-0 z-[999] bg-black/75 transition-opacity" wire:click="tutupDetail"></div>
 
         <div class="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6 pointer-events-none">
@@ -207,52 +210,55 @@
                     <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                         <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-slate-800/50">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">ID Refund</span>
-                            <p class="mt-1 text-sm font-bold text-gray-900 dark:text-white">{{ $this->getRefundDisplayId($detailRefund) }}</p>
-                            <p class="text-xs text-gray-500">TRX: {{ $this->getTransactionDisplayId($detailRefund) }}</p>
+                            <p class="mt-1 text-sm font-bold text-gray-900 dark:text-white"><?php echo e($this->getRefundDisplayId($detailRefund)); ?></p>
+                            <p class="text-xs text-gray-500">TRX: <?php echo e($this->getTransactionDisplayId($detailRefund)); ?></p>
                         </div>
 
                         <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-slate-800/50">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Status</span>
                             <div class="mt-2">
-                                <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold {{ $this->getStatusBadgeClasses((string) $detailRefund->status_refund) }} uppercase tracking-tight">
-                                    <span class="h-1.5 w-1.5 rounded-full {{ $this->getStatusDotClasses((string) $detailRefund->status_refund) }}"></span>
-                                    {{ $this->getStatusLabel((string) $detailRefund->status_refund) }}
+                                <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold <?php echo e($this->getStatusBadgeClasses((string) $detailRefund->status_refund)); ?> uppercase tracking-tight">
+                                    <span class="h-1.5 w-1.5 rounded-full <?php echo e($this->getStatusDotClasses((string) $detailRefund->status_refund)); ?>"></span>
+                                    <?php echo e($this->getStatusLabel((string) $detailRefund->status_refund)); ?>
+
                                 </span>
                             </div>
                         </div>
 
                         <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-slate-800/50">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Pengguna</span>
-                            <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">{{ $this->getUserName($detailRefund) }}</p>
-                            <p class="text-xs text-gray-500">{{ $detailRefund->booking?->pencariKos?->user?->email ?? '-' }}</p>
+                            <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white"><?php echo e($this->getUserName($detailRefund)); ?></p>
+                            <p class="text-xs text-gray-500"><?php echo e($detailRefund->booking?->pencariKos?->user?->email ?? '-'); ?></p>
                         </div>
 
                         <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-slate-800/50">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Nominal Refund</span>
-                            <p class="mt-1 text-lg font-black text-[#113C7A] dark:text-blue-400">Rp {{ number_format((int) $detailRefund->nominal_refund, 0, ',', '.') }}</p>
-                            <p class="text-xs text-gray-500">Diajukan {{ $detailRefund->created_at?->format('d M Y H:i') ?? '-' }}</p>
+                            <p class="mt-1 text-lg font-black text-[#113C7A] dark:text-blue-400">Rp <?php echo e(number_format((int) $detailRefund->nominal_refund, 0, ',', '.')); ?></p>
+                            <p class="text-xs text-gray-500">Diajukan <?php echo e($detailRefund->created_at?->format('d M Y H:i') ?? '-'); ?></p>
                         </div>
                     </div>
 
                     <div class="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-700 dark:bg-slate-900">
                         <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Alasan Refund</span>
-                        <p class="mt-2 whitespace-pre-line text-sm leading-6 text-gray-700 dark:text-gray-300">{{ $detailRefund->alasan_refund ?: '-' }}</p>
+                        <p class="mt-2 whitespace-pre-line text-sm leading-6 text-gray-700 dark:text-gray-300"><?php echo e($detailRefund->alasan_refund ?: '-'); ?></p>
                     </div>
 
                     <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                         <div class="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-700 dark:bg-slate-900">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Booking</span>
-                            <p class="mt-1 break-all text-sm font-semibold text-gray-900 dark:text-white">{{ $detailRefund->booking_id }}</p>
-                            <p class="text-xs text-gray-500">Status: {{ $detailRefund->booking?->status_booking ?? '-' }}</p>
+                            <p class="mt-1 break-all text-sm font-semibold text-gray-900 dark:text-white"><?php echo e($detailRefund->booking_id); ?></p>
+                            <p class="text-xs text-gray-500">Status: <?php echo e($detailRefund->booking?->status_booking ?? '-'); ?></p>
                         </div>
 
                         <div class="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-700 dark:bg-slate-900">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Pembayaran</span>
-                            <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">{{ $this->getTransactionDisplayId($detailRefund) }}</p>
+                            <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white"><?php echo e($this->getTransactionDisplayId($detailRefund)); ?></p>
                             <p class="text-xs text-gray-500">
-                                {{ strtoupper((string) ($detailRefund->pembayaran?->metode_bayar ?? '-')) }}
+                                <?php echo e(strtoupper((string) ($detailRefund->pembayaran?->metode_bayar ?? '-'))); ?>
+
                                 |
-                                Rp {{ number_format((int) ($detailRefund->pembayaran?->nominal_bayar ?? 0), 0, ',', '.') }}
+                                Rp <?php echo e(number_format((int) ($detailRefund->pembayaran?->nominal_bayar ?? 0), 0, ',', '.')); ?>
+
                             </p>
                         </div>
                     </div>
@@ -263,10 +269,10 @@
                         Tutup
                     </button>
 
-                    @if($detailRefund->status_refund === 'pending')
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($detailRefund->status_refund === 'pending'): ?>
                         <button
                             type="button"
-                            wire:click="tolakRefund({{ $detailRefund->id }})"
+                            wire:click="tolakRefund(<?php echo e($detailRefund->id); ?>)"
                             wire:loading.attr="disabled"
                             class="rounded-lg bg-red-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                         >
@@ -275,19 +281,19 @@
 
                         <button
                             type="button"
-                            wire:click="tinjauRefund({{ $detailRefund->id }})"
+                            wire:click="tinjauRefund(<?php echo e($detailRefund->id); ?>)"
                             wire:loading.attr="disabled"
                             class="rounded-lg bg-[#113C7A] px-5 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#0d2f60] disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             Tinjau Refund Parsial
                         </button>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
             </div>
         </div>
-    @endif
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-    @if($showModalRefund && $selectedRefund)
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($showModalRefund && $selectedRefund): ?>
         <div class="fixed inset-0 z-[999] bg-black/75 transition-opacity" wire:click="tutupModalRefund"></div>
 
         <div class="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6 pointer-events-none">
@@ -299,7 +305,7 @@
                             Tinjauan Refund Parsial
                         </h3>
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            Skema pengembalian {{ rtrim(rtrim(number_format(100 - $potonganRefundPersen, 2, ',', '.'), '0'), ',') }}% dengan potongan pembatalan {{ rtrim(rtrim(number_format($potonganRefundPersen, 2, ',', '.'), '0'), ',') }}%.
+                            Skema pengembalian <?php echo e(rtrim(rtrim(number_format(100 - $potonganRefundPersen, 2, ',', '.'), '0'), ',')); ?>% dengan potongan pembatalan <?php echo e(rtrim(rtrim(number_format($potonganRefundPersen, 2, ',', '.'), '0'), ',')); ?>%.
                         </p>
                     </div>
 
@@ -312,14 +318,14 @@
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-slate-800/40">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Refund</span>
-                            <p class="mt-1 text-sm font-bold text-gray-900 dark:text-white">{{ $this->getRefundDisplayId($selectedRefund) }}</p>
-                            <p class="text-xs text-gray-500">{{ $this->getUserName($selectedRefund) }}</p>
+                            <p class="mt-1 text-sm font-bold text-gray-900 dark:text-white"><?php echo e($this->getRefundDisplayId($selectedRefund)); ?></p>
+                            <p class="text-xs text-gray-500"><?php echo e($this->getUserName($selectedRefund)); ?></p>
                         </div>
 
                         <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-slate-800/40">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Order Midtrans</span>
-                            <p class="mt-1 text-sm font-bold text-gray-900 dark:text-white">{{ $selectedRefund->pembayaran?->midtrans_order_id ?? '-' }}</p>
-                            <p class="text-xs text-gray-500">{{ strtoupper((string) ($selectedRefund->pembayaran?->metode_bayar ?? '-')) }}</p>
+                            <p class="mt-1 text-sm font-bold text-gray-900 dark:text-white"><?php echo e($selectedRefund->pembayaran?->midtrans_order_id ?? '-'); ?></p>
+                            <p class="text-xs text-gray-500"><?php echo e(strtoupper((string) ($selectedRefund->pembayaran?->metode_bayar ?? '-'))); ?></p>
                         </div>
                     </div>
 
@@ -328,20 +334,23 @@
                             <div class="flex items-center justify-between gap-4">
                                 <span class="text-gray-500 dark:text-gray-400">Total Transaksi</span>
                                 <span class="font-bold text-gray-900 dark:text-white">
-                                    Rp {{ number_format((int) ($selectedRefund->pembayaran?->nominal_bayar ?? $selectedRefund->booking?->total_biaya ?? 0), 0, ',', '.') }}
+                                    Rp <?php echo e(number_format((int) ($selectedRefund->pembayaran?->nominal_bayar ?? $selectedRefund->booking?->total_biaya ?? 0), 0, ',', '.')); ?>
+
                                 </span>
                             </div>
                             <div class="flex items-center justify-between gap-4">
-                                <span class="text-gray-500 dark:text-gray-400">Potongan Pembatalan ({{ rtrim(rtrim(number_format($potonganRefundPersen, 2, ',', '.'), '0'), ',') }}%)</span>
+                                <span class="text-gray-500 dark:text-gray-400">Potongan Pembatalan (<?php echo e(rtrim(rtrim(number_format($potonganRefundPersen, 2, ',', '.'), '0'), ',')); ?>%)</span>
                                 <span class="font-bold text-red-600 dark:text-red-400">
-                                    - Rp {{ number_format($totalPotongan, 0, ',', '.') }}
+                                    - Rp <?php echo e(number_format($totalPotongan, 0, ',', '.')); ?>
+
                                 </span>
                             </div>
                             <div class="h-px bg-gray-100 dark:bg-gray-700"></div>
                             <div class="flex items-center justify-between gap-4 text-base">
-                                <span class="font-semibold text-gray-900 dark:text-white">Dana Dikembalikan ({{ rtrim(rtrim(number_format(100 - $potonganRefundPersen, 2, ',', '.'), '0'), ',') }}%)</span>
+                                <span class="font-semibold text-gray-900 dark:text-white">Dana Dikembalikan (<?php echo e(rtrim(rtrim(number_format(100 - $potonganRefundPersen, 2, ',', '.'), '0'), ',')); ?>%)</span>
                                 <span class="text-xl font-black text-[#113C7A] dark:text-blue-400">
-                                    Rp {{ number_format($totalKembali, 0, ',', '.') }}
+                                    Rp <?php echo e(number_format($totalKembali, 0, ',', '.')); ?>
+
                                 </span>
                             </div>
                         </div>
@@ -372,5 +381,6 @@
                 </div>
             </div>
         </div>
-    @endif
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 </div>
+<?php /**PATH C:\xampp\htdocs\appkonkos_2\resources\views/livewire/superadmin/pengajuan-refund.blade.php ENDPATH**/ ?>

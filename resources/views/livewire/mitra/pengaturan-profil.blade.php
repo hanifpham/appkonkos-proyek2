@@ -72,6 +72,12 @@
 @endpush
 
 <div class="flex-1 p-6 pb-12 md:p-8">
+    @php
+        $selectedBankLabel = $nama_bank !== '' && array_key_exists($nama_bank, $bankOptions)
+            ? $bankOptions[$nama_bank]
+            : 'Pilih Bank';
+    @endphp
+
     <div class="mb-8 border-b border-gray-200 dark:border-gray-700">
         <nav aria-label="Tabs" class="-mb-px flex space-x-8">
             <button
@@ -264,24 +270,70 @@
                 </div>
             </div>
 
-            <div class="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm dark:border-gray-700 dark:bg-slate-900">
+            <div class="overflow-visible rounded-xl border border-gray-100 bg-white shadow-sm dark:border-gray-700 dark:bg-slate-900">
                 <div class="border-b border-gray-100 p-6 dark:border-gray-700">
                     <h3 class="text-base font-bold text-gray-800 dark:text-white">Informasi Rekening Bank</h3>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Rekening tujuan untuk pencairan dana pendapatan kos.</p>
                 </div>
-                <div class="p-6">
+                <div class="relative z-10 p-6">
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Nama Bank</label>
-                            <select
-                                wire:model="nama_bank"
-                                class="w-full rounded-lg border-gray-200 bg-gray-50 px-4 py-2.5 text-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-gray-700 dark:bg-slate-800"
-                            >
-                                <option value="">Pilih Bank</option>
-                                @foreach ($bankOptions as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
+                            <div x-data="{ open: false }" class="relative">
+                                <button
+                                    type="button"
+                                    @click="open = ! open"
+                                    @click.outside="open = false"
+                                    class="flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300"
+                                >
+                                    <span class="flex min-w-0 items-center gap-2">
+                                        <span class="material-symbols-outlined shrink-0 text-[18px]">account_balance</span>
+                                        <span class="truncate">{{ $selectedBankLabel }}</span>
+                                    </span>
+                                    <span class="material-symbols-outlined shrink-0 text-[18px] text-slate-400 dark:text-slate-500">expand_more</span>
+                                </button>
+
+                                <div
+                                    x-cloak
+                                    x-show="open"
+                                    x-transition.origin.top.right
+                                    class="absolute left-0 right-0 top-[calc(100%+8px)] z-30 max-h-72 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1 shadow-xl dark:border-slate-700 dark:bg-slate-800"
+                                >
+                                    <button
+                                        type="button"
+                                        wire:click="$set('nama_bank', '')"
+                                        @click="open = false"
+                                        @class([
+                                            'flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm transition',
+                                            'bg-blue-50 font-semibold text-[#0F4C81] dark:bg-blue-500/10 dark:text-blue-300' => $nama_bank === '',
+                                            'text-slate-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700/70' => $nama_bank !== '',
+                                        ])
+                                    >
+                                        <span>Pilih Bank</span>
+                                        @if ($nama_bank === '')
+                                            <span class="material-symbols-outlined text-[18px]">check</span>
+                                        @endif
+                                    </button>
+
+                                    @foreach ($bankOptions as $value => $label)
+                                        <button
+                                            type="button"
+                                            wire:click="$set('nama_bank', '{{ $value }}')"
+                                            @click="open = false"
+                                            @class([
+                                                'flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm transition',
+                                                'bg-blue-50 font-semibold text-[#0F4C81] dark:bg-blue-500/10 dark:text-blue-300' => $nama_bank === $value,
+                                                'text-slate-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700/70' => $nama_bank !== $value,
+                                            ])
+                                        >
+                                            <span>{{ $label }}</span>
+                                            @if ($nama_bank === $value)
+                                                <span class="material-symbols-outlined text-[18px]">check</span>
+                                            @endif
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
                             @error('nama_bank')
                                 <p class="text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror

@@ -61,13 +61,21 @@
                     x-cloak
                     x-show="open"
                     x-transition.origin.top.right
-                    class="absolute right-0 z-20 mt-3 w-56 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-slate-900"
+                    class="absolute right-0 z-20 mt-3 w-[220px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 shadow-xl dark:border-slate-700 dark:bg-slate-800"
                 >
-                    <a href="{{ route('mitra.properti.tambah-kosan') }}" class="block px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-sky-50 hover:text-sky-700 dark:text-gray-200 dark:hover:bg-slate-800">
+                    <a
+                        href="{{ route('mitra.properti.tambah-kosan') }}"
+                        class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-[#0F4C81] dark:text-slate-200 dark:hover:bg-slate-700/70 dark:hover:text-white"
+                    >
                         Tambah Kos
+                        <span class="material-symbols-outlined text-[18px] text-slate-400 dark:text-slate-500">arrow_forward</span>
                     </a>
-                    <a href="{{ route('mitra.properti.tambah-kontrakan') }}" class="block px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-sky-50 hover:text-sky-700 dark:text-gray-200 dark:hover:bg-slate-800">
+                    <a
+                        href="{{ route('mitra.properti.tambah-kontrakan') }}"
+                        class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-[#0F4C81] dark:text-slate-200 dark:hover:bg-slate-700/70 dark:hover:text-white"
+                    >
                         Tambah Kontrakan
+                        <span class="material-symbols-outlined text-[18px] text-slate-400 dark:text-slate-500">arrow_forward</span>
                     </a>
                 </div>
             </div>

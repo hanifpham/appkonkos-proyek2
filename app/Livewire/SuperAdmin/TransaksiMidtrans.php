@@ -88,6 +88,14 @@ class TransaksiMidtrans extends Component
         );
     }
 
+    public function exportReport(): BinaryFileResponse
+    {
+        return Excel::download(
+            new TransactionsExport($this->filterStatus, $this->filterMetode),
+            'transaksi-midtrans-'.now()->format('Ymd-His').'.csv',
+        );
+    }
+
     public function syncMidtrans(string $orderId, MidtransService $midtransService): void
     {
         $this->configureMidtrans();

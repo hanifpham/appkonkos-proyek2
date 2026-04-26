@@ -12,6 +12,7 @@
 @php
     $fullAverageStars = (int) floor($rataRataRating);
     $hasHalfAverageStar = ($rataRataRating - $fullAverageStars) >= 0.5;
+    $activeFilterLabel = in_array($filter, $filterOptions, true) ? $filter : 'Terbaru';
 @endphp
 
 <div class="flex-1 space-y-8 p-6 md:p-8">
@@ -73,23 +74,56 @@
         <h3 class="text-xl font-bold text-slate-800 dark:text-white">Semua Ulasan</h3>
         <div class="flex w-full gap-3 sm:w-auto">
             <div class="relative flex-1 sm:w-64">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-gray-400">search</span>
+                <span class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-slate-400 dark:text-slate-500">
+                    <span class="material-symbols-outlined text-[18px]">search</span>
+                </span>
                 <input
                     type="text"
                     wire:model.live.debounce.300ms="search"
-                    class="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-slate-700 outline-none transition-all focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-gray-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+                    class="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
                     placeholder="Cari ulasan atau properti..."
                 >
             </div>
 
-            <select
-                wire:model.live="filter"
-                class="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-gray-600 focus:ring-[#0F4C81] dark:border-gray-700 dark:bg-slate-900 dark:text-gray-300 dark:focus:ring-blue-400"
-            >
-                @foreach ($filterOptions as $option)
-                    <option value="{{ $option }}">{{ $option }}</option>
-                @endforeach
-            </select>
+            <div x-data="{ open: false }" class="relative sm:w-auto">
+                <button
+                    type="button"
+                    @click="open = ! open"
+                    @click.outside="open = false"
+                    class="flex h-11 min-w-[190px] items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300"
+                >
+                    <span class="flex min-w-0 items-center gap-2">
+                        <span class="material-symbols-outlined shrink-0 text-[18px]">filter_list</span>
+                        <span class="truncate">{{ $activeFilterLabel }}</span>
+                    </span>
+                    <span class="material-symbols-outlined shrink-0 text-[18px] text-slate-400 dark:text-slate-500">expand_more</span>
+                </button>
+
+                <div
+                    x-cloak
+                    x-show="open"
+                    x-transition.origin.top.right
+                    class="absolute right-0 z-20 mt-2 w-[220px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 shadow-xl dark:border-slate-700 dark:bg-slate-800"
+                >
+                    @foreach ($filterOptions as $option)
+                        <button
+                            type="button"
+                            wire:click="$set('filter', '{{ $option }}')"
+                            @click="open = false"
+                            @class([
+                                'flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm transition',
+                                'bg-blue-50 font-semibold text-[#0F4C81] dark:bg-blue-500/10 dark:text-blue-300' => $filter === $option,
+                                'text-slate-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700/70' => $filter !== $option,
+                            ])
+                        >
+                            <span>{{ $option }}</span>
+                            @if ($filter === $option)
+                                <span class="material-symbols-outlined text-[18px]">check</span>
+                            @endif
+                        </button>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </div>
 

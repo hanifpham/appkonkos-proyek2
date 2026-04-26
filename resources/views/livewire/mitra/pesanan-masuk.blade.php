@@ -28,8 +28,8 @@
         </div>
     </section>
 
-    <section class="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-[0_14px_30px_rgba(2,6,23,0.32)]">
-        <div class="flex flex-col justify-between gap-4 border-b border-gray-100 p-6 dark:border-slate-800 sm:flex-row sm:items-center">
+    <section class="overflow-visible rounded-xl border border-gray-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-[0_14px_30px_rgba(2,6,23,0.32)]">
+        <div class="relative z-10 flex flex-col justify-between gap-4 border-b border-gray-100 p-6 dark:border-slate-800 sm:flex-row sm:items-center">
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#0F4C81] dark:text-blue-400">receipt_long</span>
                 <h3 class="text-lg font-bold text-gray-800 dark:text-slate-100">Daftar Pesanan Masuk</h3>

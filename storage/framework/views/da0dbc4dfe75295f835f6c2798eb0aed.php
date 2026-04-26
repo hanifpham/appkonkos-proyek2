@@ -122,7 +122,19 @@
                                                     <?php echo e($property['category_label']); ?>
 
                                                 </span>
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($property['moderation_badge_label']): ?>
+                                                    <span class="<?php echo e($property['moderation_badge_classes']); ?> inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
+                                                        <?php echo e($property['moderation_badge_label']); ?>
+
+                                                    </span>
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </div>
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($property['show_rejection_alert']): ?>
+                                                <p class="mb-3 text-sm font-bold text-red-600 dark:text-red-300">
+                                                    Alasan Penolakan: <?php echo e($property['rejection_reason']); ?>
+
+                                                </p>
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             <div class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
                                                 <span class="material-symbols-outlined text-[18px] text-[#0F4C81] dark:text-blue-400">location_on</span>
                                                 <?php echo e($property['location_label']); ?>
@@ -144,21 +156,6 @@
                                             </button>
                                         </div>
                                     </div>
-
-                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($property['show_rejection_alert']): ?>
-                                        <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-300">
-                                            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                                                <p class="leading-6">
-                                                    <span class="font-bold"><?php echo e($property['rejection_title']); ?>:</span>
-                                                    <?php echo e($property['rejection_reason']); ?>
-
-                                                </p>
-                                                <a href="<?php echo e($property['edit_url']); ?>" class="inline-flex items-center justify-center rounded-xl border border-red-200 bg-white px-4 py-2 text-xs font-bold text-red-600 transition hover:border-red-300 hover:bg-red-100 dark:border-red-800 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-red-950/30">
-                                                    Edit Properti
-                                                </a>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                     <div class="mb-6 grid gap-4 md:grid-cols-3">
                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $property['stats']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $stat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -189,7 +186,8 @@
                                     </div>
 
                                     <a href="<?php echo e($property['manage_url']); ?>" class="inline-flex items-center gap-2 rounded-xl bg-[#0F4C81] px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:bg-[#0c3d68]">
-                                        Kelola Unit
+                                        <?php echo e($property['show_rejection_alert'] ? 'Edit & Ajukan Ulang' : 'Kelola Unit'); ?>
+
                                         <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                                     </a>
                                 </div>

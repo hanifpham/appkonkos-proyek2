@@ -4,9 +4,10 @@ use App\Http\Controllers\Pencari\PembayaranController;
 use App\Livewire\Mitra\Dashboard as MitraDashboard;
 use App\Livewire\Mitra\Keuangan;
 use App\Livewire\Mitra\KelolaKamarKos;
-use App\Livewire\Mitra\PesananMasuk;
+use App\Livewire\Mitra\Notifikasi as MitraNotifikasi;
 use App\Livewire\Mitra\PengaturanProfil;
 use App\Livewire\Mitra\PropertiSaya;
+use App\Livewire\Mitra\RiwayatBooking;
 use App\Livewire\Mitra\TambahKontrakan;
 use App\Livewire\Mitra\TambahKosan;
 use App\Livewire\Mitra\UlasanPenyewa;
@@ -44,8 +45,9 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:penca
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:pemilik'])->group(function (): void {
     Route::get('/mitra/dashboard', MitraDashboard::class)->name('mitra.dashboard');
+    Route::get('/mitra/notifikasi', MitraNotifikasi::class)->name('mitra.notifikasi');
     Route::get('/mitra/properti', PropertiSaya::class)->name('mitra.properti');
-    Route::get('/mitra/pesanan', PesananMasuk::class)->name('mitra.pesanan');
+    Route::get('/mitra/pesanan', RiwayatBooking::class)->name('mitra.pesanan');
     Route::get('/mitra/keuangan', Keuangan::class)->name('mitra.keuangan');
     Route::get('/mitra/ulasan', UlasanPenyewa::class)->name('mitra.ulasan');
     Route::get('/mitra/pengaturan-profil', PengaturanProfil::class)->name('mitra.pengaturan-profil');

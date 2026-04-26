@@ -35,7 +35,7 @@
                 <h3 class="text-lg font-bold text-gray-800 dark:text-slate-100">Daftar Pesanan Masuk</h3>
             </div>
 
-            <div class="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+            <div class="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center lg:justify-end">
                 <div class="relative min-w-[280px]">
                     <span class="pointer-events-none absolute inset-y-0 left-4 flex items-center justify-center text-slate-400 dark:text-slate-500">
                         <span class="material-symbols-outlined leading-none">search</span>
@@ -53,17 +53,20 @@
                         type="button"
                         @click="open = ! open"
                         @click.outside="open = false"
-                        class="flex h-10 items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm font-medium text-gray-600 transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300"
+                        class="flex h-11 min-w-[190px] items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300"
                     >
-                        <span class="material-symbols-outlined text-[18px]">filter_list</span>
-                        {{ $this->getActiveFilterLabel() }}
+                        <span class="flex min-w-0 items-center gap-2">
+                            <span class="material-symbols-outlined shrink-0 text-[18px]">filter_list</span>
+                            <span class="truncate">{{ $this->getActiveFilterLabel() }}</span>
+                        </span>
+                        <span class="material-symbols-outlined shrink-0 text-[18px] text-slate-400 dark:text-slate-500">expand_more</span>
                     </button>
 
                     <div
                         x-cloak
                         x-show="open"
                         x-transition.origin.top.right
-                        class="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-800"
+                        class="absolute right-0 z-20 mt-2 w-[220px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 shadow-xl dark:border-slate-700 dark:bg-slate-800"
                     >
                         @foreach ($filterOptions as $value => $label)
                             <button
@@ -71,9 +74,9 @@
                                 wire:click="$set('statusFilter', '{{ $value }}')"
                                 @click="open = false"
                                 @class([
-                                    'flex w-full items-center justify-between px-4 py-3 text-left text-sm transition',
-                                    'bg-blue-50 text-[#0F4C81] dark:bg-blue-500/10 dark:text-blue-300' => $statusFilter === $value,
-                                    'text-slate-600 hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white' => $statusFilter !== $value,
+                                    'flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm transition',
+                                    'bg-blue-50 font-semibold text-[#0F4C81] dark:bg-blue-500/10 dark:text-blue-300' => $statusFilter === $value,
+                                    'text-slate-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700/70 dark:hover:text-white' => $statusFilter !== $value,
                                 ])
                             >
                                 <span>{{ $label }}</span>

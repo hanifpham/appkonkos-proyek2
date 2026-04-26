@@ -7,6 +7,7 @@ namespace App\Livewire\Mitra;
 use App\Models\Pembayaran;
 use App\Models\PemilikProperti;
 use App\Models\PencairanDana;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,34 +19,43 @@ use Livewire\Component;
 
 class Keuangan extends Component
 {
-    public int|string|null $jumlah_penarikan = null;
+    public int|string|null $nominalPencairan = null;
 
-    public string $rekening_tujuan = '';
+    public string $namaBank = '';
 
-    public ?PencairanDana $penarikanAktif = null;
+    public string $nomorRekening = '';
+
+    public string $atasNama = '';
 
     public string $searchRiwayat = '';
 
     public string $filterRiwayatStatus = 'all';
 
+    public ?PencairanDana $pencairanAktif = null;
+
+    public float $komisiPlatformPersen = 0.0;
+
+    public int $totalPendapatanBersih = 0;
+
+    public int $totalDanaDitarik = 0;
+
+    public int $saldoTersedia = 0;
+
+    public int $dalamProses = 0;
+
     public function mount(): void
     {
+        $this->hydrateFormFromOwner();
         $this->refreshState();
     }
 
     #[Layout('layouts.mitra.utama')]
     public function render(): View
     {
-        $pemilikProperti = $this->pemilikProperti()->loadMissing('user');
-
         $this->refreshState();
 
         return view('livewire.mitra.keuangan', [
-            'saldoTersedia' => $this->saldoTersedia($pemilikProperti->id),
-            'dalamProses' => $this->dalamProses($pemilikProperti->id),
-            'totalBerhasil' => $this->totalBerhasil($pemilikProperti->id),
-            'riwayatPenarikan' => $this->riwayatPenarikan($pemilikProperti),
-            'rekeningOptions' => $this->rekeningOptions($pemilikProperti),
+            'riwayatPenarikan' => $this->riwayatPenarikan(),
             'riwayatStatusOptions' => $this->riwayatStatusOptions(),
         ]);
     }
@@ -53,186 +63,108 @@ class Keuangan extends Component
     /**
      * @throws ValidationException
      */
-    public function ajukanPenarikan(): void
+    public function konfirmasiPencairan(): void
     {
         $this->refreshState();
 
-        if ($this->penarikanAktif !== null) {
+        if ($this->pencairanAktif !== null) {
             $this->dispatch(
                 'appkonkos-toast',
                 icon: 'warning',
                 title: 'Pengajuan masih aktif',
-                text: 'Selesaikan pengajuan penarikan sebelumnya sebelum membuat yang baru.'
+                text: 'Selesaikan pengajuan pencairan sebelumnya sebelum membuat pengajuan baru.'
             );
 
             return;
         }
 
+        $this->validatePencairanRequest();
+
+        $this->dispatch(
+            'swal:confirm-approve',
+            title: 'Konfirmasi Pengajuan Pencairan',
+            text: 'Apakah data rekening sudah benar? Proses ini akan ditinjau oleh Super Admin.',
+            confirm_button_text: 'Ya, Ajukan Sekarang',
+            confirm_button_color: '#0F4C81',
+            method_name: 'mintaPencairan',
+            method_args: [],
+        );
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function mintaPencairan(): void
+    {
+        $this->refreshState();
+
+        if ($this->pencairanAktif !== null) {
+            $this->dispatch(
+                'appkonkos-toast',
+                icon: 'warning',
+                title: 'Pengajuan masih aktif',
+                text: 'Selesaikan pengajuan pencairan sebelumnya sebelum membuat pengajuan baru.'
+            );
+
+            return;
+        }
+
+        $this->validatePencairanRequest();
+
         $pemilikProperti = $this->pemilikProperti()->loadMissing('user');
-        $saldoTersedia = $this->saldoTersedia($pemilikProperti->id);
 
-        try {
-            $this->validate([
-                'jumlah_penarikan' => ['required', 'integer', 'min:50000', 'max:'.$saldoTersedia],
-                'rekening_tujuan' => ['required', 'string'],
-            ], $this->messages(), $this->validationAttributes());
-        } catch (ValidationException $exception) {
-            $this->dispatchValidationErrorToast($exception);
-
-            throw $exception;
-        }
-
-        $validOptions = array_keys($this->rekeningOptions($pemilikProperti));
-
-        if (! in_array($this->rekening_tujuan, $validOptions, true)) {
-            $exception = ValidationException::withMessages([
-                'rekening_tujuan' => 'Rekening tujuan tidak valid atau belum tersedia.',
-            ]);
-
-            $this->dispatchValidationErrorToast($exception);
-
-            throw $exception;
-        }
+        $pemilikProperti->update([
+            'nama_bank' => $this->namaBank,
+            'nomor_rekening' => $this->nomorRekening,
+            'nama_pemilik_rekening' => $this->atasNama,
+        ]);
 
         PencairanDana::query()->create([
             'pemilik_properti_id' => $pemilikProperti->id,
-            'nominal' => (int) $this->jumlah_penarikan,
+            'nominal' => (int) $this->nominalPencairan,
+            'nama_bank_tujuan' => $this->namaBank,
+            'nomor_rekening_tujuan' => $this->nomorRekening,
+            'atas_nama_tujuan' => $this->atasNama,
             'status' => 'pending',
             'catatan_admin' => null,
         ]);
 
-        $this->resetForm();
+        $this->nominalPencairan = null;
         $this->refreshState();
 
         $this->dispatch(
             'appkonkos-toast',
             icon: 'success',
             title: 'Pengajuan terkirim',
-            text: 'Permintaan penarikan dana berhasil diajukan dan sedang menunggu verifikasi.'
+            text: 'Permintaan pencairan dana berhasil diajukan dan sedang menunggu peninjauan Super Admin.'
         );
     }
 
     public function resetForm(): void
     {
-        $this->jumlah_penarikan = null;
-        $this->rekening_tujuan = '';
-    }
-
-    public function saldoTersedia(?int $pemilikId = null): int
-    {
-        $pemilikId ??= $this->pemilikProperti()->id;
-
-        $pendapatanLunas = Pembayaran::query()
-            ->where('status_bayar', 'lunas')
-            ->whereHas('booking', fn (Builder $query): Builder => $this->applyOwnedBookingConstraint($query, $pemilikId))
-            ->sum('nominal_bayar');
-
-        $totalTertahanAtauTercairkan = PencairanDana::query()
-            ->where('pemilik_properti_id', $pemilikId)
-            ->whereIn('status', ['pending', 'disetujui', 'sukses'])
-            ->sum('nominal');
-
-        return max(0, (int) $pendapatanLunas - (int) $totalTertahanAtauTercairkan);
-    }
-
-    public function dalamProses(?int $pemilikId = null): int
-    {
-        $pemilikId ??= $this->pemilikProperti()->id;
-
-        return (int) PencairanDana::query()
-            ->where('pemilik_properti_id', $pemilikId)
-            ->where('status', 'pending')
-            ->sum('nominal');
-    }
-
-    public function totalBerhasil(?int $pemilikId = null): int
-    {
-        $pemilikId ??= $this->pemilikProperti()->id;
-
-        return (int) PencairanDana::query()
-            ->where('pemilik_properti_id', $pemilikId)
-            ->where('status', 'sukses')
-            ->sum('nominal');
-    }
-
-    public function getProgressWidth(): int
-    {
-        return match ($this->penarikanAktif?->status) {
-            'pending' => 33,
-            'disetujui' => 66,
-            default => 0,
-        };
-    }
-
-    public function getStepCircleClass(string $step): string
-    {
-        return match ($this->getStepState($step)) {
-            'active' => 'step-active',
-            'completed' => 'step-completed',
-            default => 'step-inactive',
-        };
-    }
-
-    public function getStepTitleClass(string $step): string
-    {
-        return match ($this->getStepState($step)) {
-            'active' => 'text-[#0F4C81] dark:text-blue-400',
-            'completed' => 'text-emerald-600 dark:text-emerald-300',
-            default => 'text-gray-400 dark:text-gray-600',
-        };
-    }
-
-    public function getStepSubtitleClass(string $step): string
-    {
-        return match ($this->getStepState($step)) {
-            'active', 'completed' => 'text-gray-500 dark:text-gray-400',
-            default => 'text-gray-400/50 dark:text-gray-600/50',
-        };
+        $this->nominalPencairan = null;
+        $this->hydrateFormFromOwner();
     }
 
     public function getStatusBadgeClasses(string $status): string
     {
         return match ($status) {
-            'pending' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800',
-            'disetujui' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800',
-            'sukses' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800',
-            'ditolak' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800',
-            default => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700',
+            'pending', 'menunggu' => 'bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-900/40',
+            'disetujui' => 'bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-900/40',
+            'sukses' => 'bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-900/40',
+            'ditolak' => 'bg-rose-100 text-rose-700 border border-rose-200 dark:bg-rose-950/30 dark:text-rose-300 dark:border-rose-900/40',
+            default => 'bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
         };
     }
 
     public function getStatusLabel(string $status): string
     {
         return match ($status) {
-            'pending' => 'Menunggu Persetujuan',
-            'disetujui' => 'Diproses Midtrans',
-            'sukses' => 'Selesai',
+            'pending', 'menunggu' => 'Menunggu',
+            'disetujui' => 'Disetujui',
+            'sukses' => 'Sukses',
             'ditolak' => 'Ditolak',
             default => ucfirst($status),
-        };
-    }
-
-    public function getStatusProgressCount(string $status): int
-    {
-        return match ($status) {
-            'pending' => 2,
-            'disetujui' => 3,
-            'sukses' => 4,
-            'ditolak' => 1,
-            default => 0,
-        };
-    }
-
-    public function getStatusProgressDotClass(string $status, int $dotNumber): string
-    {
-        if ($dotNumber > $this->getStatusProgressCount($status)) {
-            return 'bg-gray-300 dark:bg-gray-600';
-        }
-
-        return match ($status) {
-            'ditolak' => 'bg-red-500',
-            'sukses' => 'bg-emerald-500',
-            default => 'bg-[#0F4C81] dark:bg-blue-400',
         };
     }
 
@@ -243,35 +175,48 @@ class Keuangan extends Component
 
     public function getWithdrawalBankName(PencairanDana $riwayat): string
     {
-        return $riwayat->pemilikProperti?->nama_bank ?? 'Bank';
+        return $riwayat->nama_bank_tujuan
+            ?: ($riwayat->pemilikProperti?->nama_bank ?? 'Bank');
     }
 
     public function getWithdrawalBankMeta(PencairanDana $riwayat): string
     {
-        $rekening = $riwayat->pemilikProperti?->nomor_rekening;
-        $ownerName = $riwayat->pemilikProperti?->nama_pemilik_rekening
-            ?? $riwayat->pemilikProperti?->user?->name;
+        $rekening = $riwayat->nomor_rekening_tujuan
+            ?: ($riwayat->pemilikProperti?->nomor_rekening ?? '');
+        $atasNama = $riwayat->atas_nama_tujuan
+            ?: ($riwayat->pemilikProperti?->nama_pemilik_rekening ?: $riwayat->pemilikProperti?->user?->name);
 
-        if ($rekening === null || $rekening === '') {
+        if ($rekening === '') {
             return '-';
         }
 
         $masked = $this->maskAccountNumber($rekening);
 
-        return $ownerName !== null && $ownerName !== ''
-            ? $masked.' a.n '.$ownerName
+        return $atasNama !== null && $atasNama !== ''
+            ? $masked.' a.n '.$atasNama
             : $masked;
     }
 
     public function getRiwayatFilterLabel(): string
     {
-        return $this->riwayatStatusOptions()[$this->filterRiwayatStatus] ?? 'Semua';
+        return $this->riwayatStatusOptions()[$this->filterRiwayatStatus] ?? 'Semua Status';
+    }
+
+    public function formatRupiah(int $amount): string
+    {
+        return 'Rp '.number_format($amount, 0, ',', '.');
     }
 
     protected function refreshState(): void
     {
-        $this->penarikanAktif = $this->pemilikProperti()
-            ->pencairanDana()
+        $pemilikId = $this->pemilikProperti()->id;
+
+        $this->komisiPlatformPersen = $this->resolveKomisiPlatformPersen();
+        $this->totalPendapatanBersih = $this->hitungPendapatanBersih($pemilikId);
+        $this->totalDanaDitarik = $this->hitungTotalDanaDitarik();
+        $this->saldoTersedia = max(0, $this->totalPendapatanBersih - $this->totalDanaDitarik);
+        $this->dalamProses = $this->hitungDalamProses();
+        $this->pencairanAktif = $this->ownedWithdrawalsQuery()
             ->whereIn('status', ['pending', 'disetujui'])
             ->latest()
             ->first();
@@ -290,19 +235,72 @@ class Keuangan extends Component
         return $pemilikProperti;
     }
 
+    protected function ownedWithdrawalsQuery(): Builder
+    {
+        return PencairanDana::query()
+            ->whereHas('pemilikProperti', function (Builder $query): void {
+                $query->where('user_id', auth()->id());
+            });
+    }
+
+    protected function hitungPendapatanBersih(int $pemilikId): int
+    {
+        $totalSettlement = (int) Pembayaran::query()
+            ->whereIn('status_bayar', Pembayaran::successStatuses())
+            ->whereHas('booking', fn (Builder $query): Builder => $this->applyOwnedBookingConstraint($query, $pemilikId))
+            ->sum('nominal_bayar');
+
+        $nilaiKomisi = (int) round($totalSettlement * ($this->komisiPlatformPersen / 100));
+
+        return max(0, $totalSettlement - $nilaiKomisi);
+    }
+
+    protected function hitungTotalDanaDitarik(): int
+    {
+        return (int) $this->ownedWithdrawalsQuery()
+            ->where('status', 'sukses')
+            ->sum('nominal');
+    }
+
+    protected function hitungDalamProses(): int
+    {
+        return (int) $this->ownedWithdrawalsQuery()
+            ->whereIn('status', ['pending', 'disetujui'])
+            ->sum('nominal');
+    }
+
+    protected function resolveKomisiPlatformPersen(): float
+    {
+        $value = Setting::query()
+            ->where('key', Setting::KEY_PLATFORM_COMMISSION)
+            ->value('value');
+
+        if ($value === null || trim((string) $value) === '' || ! is_numeric($value)) {
+            return 0.0;
+        }
+
+        return (float) $value;
+    }
+
     /**
      * @return EloquentCollection<int, PencairanDana>
      */
-    protected function riwayatPenarikan(PemilikProperti $pemilikProperti): EloquentCollection
+    protected function riwayatPenarikan(): EloquentCollection
     {
-        $query = $pemilikProperti->pencairanDana()
+        $query = $this->ownedWithdrawalsQuery()
             ->with('pemilikProperti.user')
             ->latest();
 
         $search = trim($this->searchRiwayat);
 
         if ($search !== '') {
-            $query->where('id', 'like', '%'.$search.'%');
+            $query->where(function (Builder $builder) use ($search): void {
+                $builder
+                    ->where('id', 'like', '%'.$search.'%')
+                    ->orWhere('nama_bank_tujuan', 'like', '%'.$search.'%')
+                    ->orWhere('nomor_rekening_tujuan', 'like', '%'.$search.'%')
+                    ->orWhere('atas_nama_tujuan', 'like', '%'.$search.'%');
+            });
         }
 
         if ($this->filterRiwayatStatus !== 'all') {
@@ -315,34 +313,55 @@ class Keuangan extends Component
     /**
      * @return array<string, string>
      */
-    protected function rekeningOptions(PemilikProperti $pemilikProperti): array
-    {
-        $pemilikProperti->loadMissing('user');
-
-        $namaBank = trim((string) $pemilikProperti->nama_bank);
-        $nomorRekening = trim((string) $pemilikProperti->nomor_rekening);
-        $namaPemilikRekening = trim((string) ($pemilikProperti->nama_pemilik_rekening ?: $pemilikProperti->user?->name));
-
-        if ($namaBank === '' || $nomorRekening === '') {
-            return [];
-        }
-
-        $label = $namaBank.' - '.$nomorRekening.' ('.$namaPemilikRekening.')';
-
-        return [$label => $label];
-    }
-
-    /**
-     * @return array<string, string>
-     */
     protected function riwayatStatusOptions(): array
     {
         return [
-            'all' => 'Semua',
+            'all' => 'Semua Status',
             'pending' => 'Pending',
             'disetujui' => 'Disetujui',
             'sukses' => 'Sukses',
             'ditolak' => 'Ditolak',
+        ];
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    protected function validatePencairanRequest(): void
+    {
+        if ($this->saldoTersedia <= 0) {
+            $exception = ValidationException::withMessages([
+                'nominalPencairan' => 'Saldo tersedia belum mencukupi untuk pencairan dana.',
+            ]);
+
+            $this->dispatchValidationErrorToast($exception);
+
+            throw $exception;
+        }
+
+        try {
+            $this->validate(
+                $this->rules(),
+                $this->messages(),
+                $this->validationAttributes()
+            );
+        } catch (ValidationException $exception) {
+            $this->dispatchValidationErrorToast($exception);
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function rules(): array
+    {
+        return [
+            'namaBank' => ['required', 'string', 'max:100'],
+            'nomorRekening' => ['required', 'string', 'max:50'],
+            'atasNama' => ['required', 'string', 'max:100'],
+            'nominalPencairan' => ['required', 'integer', 'min:50000', 'max:'.$this->saldoTersedia],
         ];
     }
 
@@ -352,8 +371,10 @@ class Keuangan extends Component
     protected function validationAttributes(): array
     {
         return [
-            'jumlah_penarikan' => 'jumlah penarikan',
-            'rekening_tujuan' => 'rekening tujuan',
+            'namaBank' => 'nama bank',
+            'nomorRekening' => 'nomor rekening',
+            'atasNama' => 'atas nama',
+            'nominalPencairan' => 'nominal pencairan',
         ];
     }
 
@@ -363,40 +384,14 @@ class Keuangan extends Component
     protected function messages(): array
     {
         return [
-            'jumlah_penarikan.required' => 'Jumlah penarikan wajib diisi.',
-            'jumlah_penarikan.integer' => 'Jumlah penarikan harus berupa angka bulat.',
-            'jumlah_penarikan.min' => 'Jumlah penarikan minimal Rp 50.000.',
-            'jumlah_penarikan.max' => 'Jumlah penarikan tidak boleh melebihi saldo tersedia.',
-            'rekening_tujuan.required' => 'Rekening tujuan wajib dipilih.',
+            'namaBank.required' => 'Nama bank wajib diisi.',
+            'nomorRekening.required' => 'Nomor rekening wajib diisi.',
+            'atasNama.required' => 'Atas nama rekening wajib diisi.',
+            'nominalPencairan.required' => 'Nominal pencairan wajib diisi.',
+            'nominalPencairan.integer' => 'Nominal pencairan harus berupa angka bulat.',
+            'nominalPencairan.min' => 'Nominal pencairan minimal Rp 50.000.',
+            'nominalPencairan.max' => 'Nominal pencairan tidak boleh melebihi saldo tersedia.',
         ];
-    }
-
-    protected function getStepState(string $step): string
-    {
-        $currentStep = match ($this->penarikanAktif?->status) {
-            'pending' => 2,
-            'disetujui' => 3,
-            default => 1,
-        };
-
-        $stepOrder = [
-            'input' => 1,
-            'approval' => 2,
-            'midtrans' => 3,
-            'done' => 4,
-        ];
-
-        $position = $stepOrder[$step] ?? 1;
-
-        if ($position < $currentStep) {
-            return 'completed';
-        }
-
-        if ($position === $currentStep) {
-            return 'active';
-        }
-
-        return 'inactive';
     }
 
     protected function applyOwnedBookingConstraint(Builder $query, int $pemilikId): Builder
@@ -410,6 +405,15 @@ class Keuangan extends Component
                     $kosanQuery->where('pemilik_properti_id', $pemilikId);
                 });
         });
+    }
+
+    protected function hydrateFormFromOwner(): void
+    {
+        $pemilik = $this->pemilikProperti()->loadMissing('user');
+
+        $this->namaBank = (string) ($pemilik->nama_bank ?? '');
+        $this->nomorRekening = (string) ($pemilik->nomor_rekening ?? '');
+        $this->atasNama = (string) ($pemilik->nama_pemilik_rekening ?: $pemilik->user?->name ?? '');
     }
 
     protected function maskAccountNumber(string $accountNumber): string

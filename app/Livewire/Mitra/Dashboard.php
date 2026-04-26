@@ -10,8 +10,10 @@ use App\Models\Kamar;
 use App\Models\Kosan;
 use App\Models\Pembayaran;
 use App\Models\PemilikProperti;
+use App\Models\Setting;
 use App\Models\TipeKamar;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -21,6 +23,14 @@ use Livewire\Component;
 
 class Dashboard extends Component
 {
+    public int $pendapatanBersih = 0;
+
+    public float $komisiPlatformPersen = 0.0;
+
+    public int $totalPropertiAktif = 0;
+
+    public int $bookingAktif = 0;
+
     public int $saldo = 0;
 
     public int $totalProperti = 0;
@@ -276,22 +286,61 @@ class Dashboard extends Component
 
     protected function refreshDashboard(): void
     {
-        $pemilikId = $this->pemilikProperti()->id;
+        $mitra = Auth::user()?->pemilikProperti;
+
+        if ($mitra === null) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $pemilikId = $mitra->id;
+
+        $this->komisiPlatformPersen = $this->resolveKomisiPlatformPersen();
+
+        $totalPendapatanKotor = (int) Pembayaran::query()
+            ->whereIn('status_bayar', Pembayaran::successStatuses())
+            ->whereHas('booking', fn (Builder $query): Builder => $this->applyOwnedBookingConstraint($query, $pemilikId))
+            ->sum('nominal_bayar');
+
+        $nilaiKomisi = (int) round($totalPendapatanKotor * ($this->komisiPlatformPersen / 100));
+        $this->pendapatanBersih = max(0, $totalPendapatanKotor - $nilaiKomisi);
 
         $this->saldo = (int) Pembayaran::query()
-            ->where('status_bayar', 'lunas')
+            ->whereIn('status_bayar', Pembayaran::successStatuses())
             ->whereHas('booking', fn (Builder $query): Builder => $this->applyOwnedBookingConstraint($query, $pemilikId))
             ->sum('nominal_bayar');
 
         $jumlahKosan = Kosan::query()
             ->where('pemilik_properti_id', $pemilikId)
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereNull('status')
+                    ->orWhereNotIn('status', ['ditolak', 'suspend']);
+            })
             ->count();
 
         $jumlahKontrakan = Kontrakan::query()
             ->where('pemilik_properti_id', $pemilikId)
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereNull('status')
+                    ->orWhereNotIn('status', ['ditolak', 'suspend']);
+            })
             ->count();
 
-        $this->totalProperti = $jumlahKosan + $jumlahKontrakan;
+        $this->totalPropertiAktif = $jumlahKosan + $jumlahKontrakan;
+        $this->totalProperti = $this->totalPropertiAktif;
+
+        $awalBulan = CarbonImmutable::now()->startOfMonth();
+        $akhirBulan = $awalBulan->endOfMonth();
+
+        $this->bookingAktif = Booking::query()
+            ->where(fn (Builder $query): Builder => $this->applyOwnedBookingConstraint($query, $pemilikId))
+            ->whereHas('pembayaran', function (Builder $query) use ($awalBulan, $akhirBulan): void {
+                $query
+                    ->whereIn('status_bayar', Pembayaran::successStatuses())
+                    ->whereBetween('waktu_bayar', [$awalBulan, $akhirBulan]);
+            })
+            ->count();
 
         $this->totalKamar = Kamar::query()
             ->whereHas('tipeKamar.kosan', function (Builder $query) use ($pemilikId): void {
@@ -385,6 +434,19 @@ class Dashboard extends Component
             ->take(4)
             ->values()
             ->all();
+    }
+
+    protected function resolveKomisiPlatformPersen(): float
+    {
+        $value = Setting::query()
+            ->where('key', Setting::KEY_PLATFORM_COMMISSION)
+            ->value('value');
+
+        if ($value === null || trim((string) $value) === '' || ! is_numeric($value)) {
+            return 0.0;
+        }
+
+        return (float) $value;
     }
 
     protected function pemilikProperti(): PemilikProperti

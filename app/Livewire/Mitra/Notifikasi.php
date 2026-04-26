@@ -2,14 +2,27 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Common;
+namespace App\Livewire\Mitra;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Notifications\DatabaseNotification;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\WithPagination;
 
-class NotificationBell extends Component
+class Notifikasi extends Component
 {
+    use WithPagination;
+
+    protected string $paginationTheme = 'tailwind';
+
+    public string $tab = 'all';
+
+    public function updatingTab(): void
+    {
+        $this->resetPage();
+    }
+
     public function markAsRead(string $id): void
     {
         $notification = auth()->user()?->unreadNotifications()->find($id);
@@ -23,6 +36,27 @@ class NotificationBell extends Component
     {
         auth()->user()?->unreadNotifications()->update([
             'read_at' => now(),
+        ]);
+    }
+
+    #[Layout('layouts.mitra.utama')]
+    public function render(): View
+    {
+        $user = auth()->user();
+        $notificationsQuery = $user?->notifications()?->latest();
+
+        if ($notificationsQuery === null) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if ($this->tab === 'unread') {
+            $notificationsQuery->whereNull('read_at');
+        }
+
+        return view('livewire.mitra.notifikasi', [
+            'notifications' => $notificationsQuery->paginate(10),
+            'unreadCount' => $user->unreadNotifications()->count(),
+            'totalCount' => $user->notifications()->count(),
         ]);
     }
 
@@ -88,31 +122,5 @@ class NotificationBell extends Component
     public function getNotificationTime(DatabaseNotification $notification): string
     {
         return $notification->created_at?->locale('id')->diffForHumans() ?? '-';
-    }
-
-    public function getNotificationListUrl(): ?string
-    {
-        $user = auth()->user();
-
-        if ($user?->role === 'pemilik') {
-            return route('mitra.notifikasi');
-        }
-
-        return null;
-    }
-
-    public function render(): View
-    {
-        $user = auth()->user();
-        $unreadCount = $user?->unreadNotifications()->count() ?? 0;
-        $notifications = $user?->unreadNotifications()->latest()->limit(5)->get() ?? collect();
-
-        return view('livewire.common.notification-bell', [
-            'unreadCount' => $unreadCount,
-            'notifications' => $notifications,
-            'subtitle' => $unreadCount > 0
-                ? $unreadCount.' pemberitahuan belum dibaca'
-                : 'Tidak ada notifikasi baru',
-        ]);
     }
 }

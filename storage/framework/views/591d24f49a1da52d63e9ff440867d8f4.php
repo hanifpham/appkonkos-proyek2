@@ -108,6 +108,19 @@
                 </div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
+
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->getNotificationListUrl() !== null): ?>
+            <div class="border-t border-slate-200 px-4 py-3 dark:border-slate-700">
+                <a
+                    href="<?php echo e($this->getNotificationListUrl()); ?>"
+                    @click="open = false"
+                    class="inline-flex items-center gap-2 text-xs font-semibold text-[#0F4C81] transition hover:underline dark:text-blue-400"
+                >
+                    Lihat semua notifikasi
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </a>
+            </div>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </div>
 </div>
 <?php /**PATH C:\xampp\htdocs\appkonkos_2\resources\views/livewire/common/notification-bell.blade.php ENDPATH**/ ?>

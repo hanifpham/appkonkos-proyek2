@@ -118,6 +118,8 @@ class PropertiSaya extends Component
                     ? 'bg-emerald-500 text-white'
                     : 'bg-rose-500 text-white',
                 'moderation_status' => (string) ($item->status ?? ''),
+                'moderation_badge_label' => $this->getModerationBadgeLabel($item->status),
+                'moderation_badge_classes' => $this->getModerationBadgeClasses($item->status),
                 'show_rejection_alert' => in_array($item->status, ['ditolak', 'suspend'], true),
                 'rejection_title' => $item->status === 'suspend' ? 'Ditangguhkan' : 'Ditolak',
                 'rejection_reason' => $item->alasan_penolakan ?: 'Melanggar syarat dan ketentuan platform.',
@@ -188,6 +190,8 @@ class PropertiSaya extends Component
                     ? 'bg-emerald-500 text-white'
                     : 'bg-rose-500 text-white',
                 'moderation_status' => (string) ($item->status ?? ''),
+                'moderation_badge_label' => $this->getModerationBadgeLabel($item->status),
+                'moderation_badge_classes' => $this->getModerationBadgeClasses($item->status),
                 'show_rejection_alert' => in_array($item->status, ['ditolak', 'suspend'], true),
                 'rejection_title' => $item->status === 'suspend' ? 'Ditangguhkan' : 'Ditolak',
                 'rejection_reason' => $item->alasan_penolakan ?: 'Melanggar syarat dan ketentuan platform.',
@@ -297,6 +301,23 @@ class PropertiSaya extends Component
             'putri' => 'bg-pink-100 text-pink-700 border border-pink-200 dark:bg-pink-950/30 dark:text-pink-300 dark:border-pink-900/40',
             'campur' => 'bg-purple-100 text-purple-700 border border-purple-200 dark:bg-purple-950/30 dark:text-purple-300 dark:border-purple-900/40',
             default => 'bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
+        };
+    }
+
+    protected function getModerationBadgeLabel(?string $status): ?string
+    {
+        return match ($status) {
+            'ditolak' => 'Ditolak',
+            'suspend' => 'Suspend',
+            default => null,
+        };
+    }
+
+    protected function getModerationBadgeClasses(?string $status): string
+    {
+        return match ($status) {
+            'ditolak', 'suspend' => 'bg-red-100 text-red-700 border border-red-200 dark:bg-red-950/30 dark:text-red-300 dark:border-red-900/40',
+            default => 'hidden',
         };
     }
 }

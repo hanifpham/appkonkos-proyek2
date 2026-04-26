@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Notifications\BookingSettlementNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,6 +42,45 @@ class Pembayaran extends Model
         'fraud_status',
         'payload_midtrans',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(function (Pembayaran $payment): void {
+            if (! $payment->isSuccessful()) {
+                return;
+            }
+
+            if (! $payment->wasRecentlyCreated && ! $payment->wasChanged('status_bayar')) {
+                return;
+            }
+
+            $originalStatus = strtolower(trim((string) $payment->getOriginal('status_bayar')));
+
+            if (
+                ! $payment->wasRecentlyCreated
+                && in_array($originalStatus, self::SUCCESS_STATUSES, true)
+            ) {
+                return;
+            }
+
+            $booking = $payment->loadMissing([
+                'booking.pencariKos.user',
+                'booking.kamar.tipeKamar.kosan.pemilikProperti.user',
+                'booking.kontrakan.pemilikProperti.user',
+            ])->booking;
+
+            if ($booking === null) {
+                return;
+            }
+
+            $owner = $booking->kamar?->tipeKamar?->kosan?->pemilikProperti?->user
+                ?? $booking->kontrakan?->pemilikProperti?->user;
+
+            if ($owner !== null) {
+                $owner->notify(new BookingSettlementNotification($booking->loadMissing('pembayaran')));
+            }
+        });
+    }
 
     /**
      * @return array<string, string>

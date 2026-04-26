@@ -103,5 +103,18 @@
                 </div>
             @endforelse
         </div>
+
+        @if ($this->getNotificationListUrl() !== null)
+            <div class="border-t border-slate-200 px-4 py-3 dark:border-slate-700">
+                <a
+                    href="{{ $this->getNotificationListUrl() }}"
+                    @click="open = false"
+                    class="inline-flex items-center gap-2 text-xs font-semibold text-[#0F4C81] transition hover:underline dark:text-blue-400"
+                >
+                    Lihat semua notifikasi
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </a>
+            </div>
+        @endif
     </div>
 </div>

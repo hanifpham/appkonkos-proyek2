@@ -22,6 +22,9 @@ class PencairanDana extends Model
     protected $fillable = [
         'pemilik_properti_id',
         'nominal',
+        'nama_bank_tujuan',
+        'nomor_rekening_tujuan',
+        'atas_nama_tujuan',
         'status',
         'catatan_admin',
     ];

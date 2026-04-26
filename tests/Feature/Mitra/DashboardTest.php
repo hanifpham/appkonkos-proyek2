@@ -12,6 +12,7 @@ use App\Models\Kosan;
 use App\Models\Pembayaran;
 use App\Models\PencariKos;
 use App\Models\PemilikProperti;
+use App\Models\Setting;
 use App\Models\TipeKamar;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,6 +25,11 @@ class DashboardTest extends TestCase
 
     public function test_dashboard_displays_dynamic_stats_and_lists(): void
     {
+        Setting::query()->updateOrCreate(
+            ['key' => Setting::KEY_PLATFORM_COMMISSION],
+            ['value' => '5']
+        );
+
         [$user, $kosan, $kontrakan, $bookingKosan, $bookingKontrakan] = $this->seedDashboardData();
 
         $this->actingAs($user);
@@ -37,10 +43,11 @@ class DashboardTest extends TestCase
             ->assertSee($user->email);
 
         Livewire::test(Dashboard::class)
-            ->assertSee('Rp 900.000')
+            ->assertSee('Rp 855.000')
             ->assertSee('2 Properti')
-            ->assertSee('2 Kamar')
+            ->assertSee('1 Booking')
             ->assertSee('2 Pesanan')
+            ->assertSee('Telah dipotong komisi platform aplikasi sebesar 5%')
             ->assertSee('Kos Sakura')
             ->assertSee('Kontrakan Lily')
             ->assertSee('Siti Rahma')
@@ -69,6 +76,11 @@ class DashboardTest extends TestCase
 
     public function test_property_filter_uses_current_property_data(): void
     {
+        Setting::query()->updateOrCreate(
+            ['key' => Setting::KEY_PLATFORM_COMMISSION],
+            ['value' => '5']
+        );
+
         [$user, $kosan, $kontrakan] = $this->seedDashboardData();
 
         $this->actingAs($user);

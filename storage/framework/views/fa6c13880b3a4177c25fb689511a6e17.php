@@ -62,6 +62,7 @@
 
             $user = auth()->user();
             $pemilikId = $user?->pemilikProperti?->id;
+            $unreadNotificationCount = $user?->unreadNotifications()->count() ?? 0;
 
             if ($user?->role === 'pemilik' && $pemilikId !== null) {
                 $pendingBadgeCount = Booking::query()
@@ -157,7 +158,14 @@
                         'badge' => null,
                     ],
                     [
-                        'label' => 'Pesanan Masuk',
+                        'label' => 'Notifikasi',
+                        'icon' => 'notifications',
+                        'url' => route('mitra.notifikasi'),
+                        'active' => request()->routeIs('mitra.notifikasi*'),
+                        'badge' => $unreadNotificationCount > 0 ? $unreadNotificationCount : null,
+                    ],
+                    [
+                        'label' => 'Riwayat Booking',
                         'icon' => 'inbox',
                         'url' => route('mitra.pesanan'),
                         'active' => request()->routeIs('mitra.pesanan*'),

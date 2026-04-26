@@ -93,9 +93,10 @@ class PropertiSayaTest extends TestCase
             ->assertSee('Kontrakan Flamboyan')
             ->assertSee('Kos Putri')
             ->assertSee('Kontrakan')
-            ->assertSee('Ditolak:')
+            ->assertSee('Ditolak')
+            ->assertSee('Alasan Penolakan:')
             ->assertSee('Deskripsi properti belum lengkap.')
-            ->assertSee('Edit Properti')
+            ->assertSee('Edit & Ajukan Ulang')
             ->assertSee('Rp 650.000 - Rp 900.000')
             ->assertSee('/ bulan')
             ->assertSee('2 Unit')
@@ -146,6 +147,36 @@ class PropertiSayaTest extends TestCase
         $this->assertCount(1, $kosan->getMedia('foto_properti'));
 
         $component->assertRedirect(route('mitra.properti.kelola-kamar', ['kosan_id' => $kosan->id]));
+    }
+
+    public function test_jenis_kos_is_required_only_for_kosan_form(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create([
+            'role' => 'pemilik',
+            'email' => 'mitra-kosan-validasi@example.com',
+        ]);
+
+        PemilikProperti::create([
+            'user_id' => $user->id,
+            'nama_bank' => 'Bank Test',
+            'no_rekening' => '654654654',
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test(TambahKosan::class)
+            ->set('nama_properti', 'Kos Validasi')
+            ->set('jenis_kos', '')
+            ->set('alamat_lengkap', 'Jl. Validasi No. 8')
+            ->set('latitude', '-6.33000000')
+            ->set('longitude', '106.82000000')
+            ->set('peraturan_kos', 'Aturan validasi')
+            ->set('foto_properti', UploadedFile::fake()->image('kos-validasi.png'))
+            ->call('simpan')
+            ->assertHasErrors(['jenis_kos' => 'required'])
+            ->assertSee('Kategori Kos wajib dipilih untuk properti kosan.');
     }
 
     public function test_pemilik_can_create_kontrakan_from_tambah_kontrakan_component(): void

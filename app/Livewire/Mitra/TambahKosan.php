@@ -94,6 +94,8 @@ class TambahKosan extends Component
     {
         return [
             'required' => 'Kolom :attribute wajib diisi.',
+            'jenis_kos.required' => 'Kategori Kos wajib dipilih untuk properti kosan.',
+            'jenis_kos.in' => 'Kategori Kos yang dipilih tidak valid.',
             'string' => 'Kolom :attribute harus berupa teks.',
             'numeric' => 'Kolom :attribute harus berupa angka.',
             'image' => 'Kolom :attribute harus berupa file gambar.',

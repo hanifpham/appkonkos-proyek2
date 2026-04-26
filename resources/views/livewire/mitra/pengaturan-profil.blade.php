@@ -189,6 +189,12 @@
             <div class="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-slate-900">
                 <h5 class="mb-4 text-sm font-bold text-gray-800 dark:text-white">Bantuan Cepat</h5>
                 <div class="space-y-4">
+                    @php
+                        $noWaCS = '6289513085150';
+                        $namaMitra = auth()->user()->name;
+                        $pesan = urlencode("Halo CS APPKONKOS, saya {$namaMitra} selaku Mitra Pemilik Kos. Saya butuh bantuan terkait: ");
+                        $waLink = "https://wa.me/{$noWaCS}?text={$pesan}";
+                    @endphp
                     <div class="flex items-start gap-3">
                         <span class="material-symbols-outlined mt-0.5 text-blue-500">help</span>
                         <div>
@@ -196,9 +202,14 @@
                             <p class="text-xs text-gray-500">Kunjungi pusat bantuan atau hubungi CS kami.</p>
                         </div>
                     </div>
-                    <button type="button" class="w-full rounded-lg bg-blue-50 py-2 text-center text-sm font-medium text-[#0F4C81] transition-colors hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/40">
+                    <a
+                        href="{{ $waLink }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="block w-full rounded-lg bg-blue-50 py-2 text-center text-sm font-medium text-[#0F4C81] transition-colors hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/40"
+                    >
                         Hubungi CS
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

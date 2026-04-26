@@ -1,0 +1,36 @@
+<x-guest-layout>
+    <x-autentikasi.kartu-autentikasi>
+        <x-slot name="logo">
+            <x-autentikasi.logo-kartu />
+        </x-slot>
+
+        <x-formulir.error-validasi class="mb-4" />
+
+        <form method="POST" action="{{ route('password.update') }}">
+            @csrf
+
+            <input type="hidden" name="token" value="{{ $request->route('token') }}">
+
+            <div class="block">
+                <x-formulir.label for="email" value="{{ __('Email') }}" />
+                <x-formulir.input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
+            </div>
+
+            <div class="mt-4">
+                <x-formulir.label for="password" value="{{ __('Password') }}" />
+                <x-formulir.input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
+            </div>
+
+            <div class="mt-4">
+                <x-formulir.label for="password_confirmation" value="{{ __('Confirm Password') }}" />
+                <x-formulir.input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
+            </div>
+
+            <div class="flex items-center justify-end mt-4">
+                <x-formulir.tombol>
+                    {{ __('Reset Password') }}
+                </x-formulir.tombol>
+            </div>
+        </form>
+    </x-autentikasi.kartu-autentikasi>
+</x-guest-layout>

@@ -1,0 +1,193 @@
+@section('mitra-title', 'Daftar Properti Saya')
+@section('mitra-subtitle', 'Total '.$totalProperti.' properti terdaftar saat ini')
+
+<div class="px-4 py-8 sm:px-6 xl:px-8">
+    <div class="mx-auto w-full max-w-6xl space-y-8 pb-16">
+        @if (session()->has('success'))
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div class="flex flex-wrap items-center gap-3">
+                <button
+                    type="button"
+                    wire:click="setFilter('semua')"
+                    @class([
+                        'rounded-full border px-6 py-2 text-sm font-semibold transition-all',
+                        'border-[#0F4C81] bg-[#0F4C81] text-white shadow-md' => $filterTab === 'semua',
+                        'border-gray-200 bg-white text-gray-600 hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-gray-700 dark:bg-slate-900 dark:text-gray-300' => $filterTab !== 'semua',
+                    ])
+                >
+                    Semua
+                </button>
+                <button
+                    type="button"
+                    wire:click="setFilter('kosan')"
+                    @class([
+                        'rounded-full border px-6 py-2 text-sm font-semibold transition-all',
+                        'border-[#0F4C81] bg-[#0F4C81] text-white shadow-md' => $filterTab === 'kosan',
+                        'border-gray-200 bg-white text-gray-600 hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-gray-700 dark:bg-slate-900 dark:text-gray-300' => $filterTab !== 'kosan',
+                    ])
+                >
+                    Kos
+                </button>
+                <button
+                    type="button"
+                    wire:click="setFilter('kontrakan')"
+                    @class([
+                        'rounded-full border px-6 py-2 text-sm font-semibold transition-all',
+                        'border-[#0F4C81] bg-[#0F4C81] text-white shadow-md' => $filterTab === 'kontrakan',
+                        'border-gray-200 bg-white text-gray-600 hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-gray-700 dark:bg-slate-900 dark:text-gray-300' => $filterTab !== 'kontrakan',
+                    ])
+                >
+                    Kontrakan
+                </button>
+            </div>
+
+            <div x-data="{ open: false }" class="relative">
+                <button
+                    type="button"
+                    @click="open = ! open"
+                    @click.outside="open = false"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0F4C81] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#0F4C81]/20 transition-all hover:bg-[#0c3d68]"
+                >
+                    <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                    Tambah Properti
+                </button>
+
+                <div
+                    x-cloak
+                    x-show="open"
+                    x-transition.origin.top.right
+                    class="absolute right-0 z-20 mt-3 w-56 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-slate-900"
+                >
+                    <a href="{{ route('mitra.properti.tambah-kosan') }}" class="block px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-sky-50 hover:text-sky-700 dark:text-gray-200 dark:hover:bg-slate-800">
+                        Tambah Kos
+                    </a>
+                    <a href="{{ route('mitra.properti.tambah-kontrakan') }}" class="block px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-sky-50 hover:text-sky-700 dark:text-gray-200 dark:hover:bg-slate-800">
+                        Tambah Kontrakan
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @if ($propertyCards->isEmpty())
+            <div class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center shadow-sm dark:border-gray-700 dark:bg-slate-900">
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Belum ada properti yang cocok dengan filter ini</h3>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Tambahkan properti baru untuk mulai mengelola listing Anda.</p>
+            </div>
+        @else
+            <div class="space-y-6">
+                @foreach ($propertyCards as $property)
+                    <article wire:key="{{ $property['type'] }}-{{ $property['id'] }}" class="group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-xl dark:border-gray-800 dark:bg-slate-900">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="relative h-[240px] w-full shrink-0 overflow-hidden md:w-[380px]">
+                                @if ($property['image_url'] !== '')
+                                    <img alt="{{ $property['name'] }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $property['image_url'] }}">
+                                @else
+                                    <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-sm font-semibold text-slate-500 dark:from-slate-800 dark:to-slate-700 dark:text-slate-300">
+                                        APPKONKOS
+                                    </div>
+                                @endif
+
+                                <div class="absolute left-4 top-4 flex gap-2">
+                                    <span class="rounded-lg bg-[#0F4C81]/90 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-md">
+                                        {{ $property['label'] }}
+                                    </span>
+                                    <span class="{{ $property['category_badge_classes'] }} rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest backdrop-blur-md">
+                                        {{ $property['category_label'] }}
+                                    </span>
+                                    <span class="{{ $property['status_badge_classes'] }} rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest">
+                                        {{ $property['status_label'] }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-1 flex-col justify-between p-6">
+                                <div>
+                                    <div class="mb-4 flex items-start justify-between gap-4">
+                                        <div>
+                                            <h3 class="mb-1 text-2xl font-bold text-slate-800 transition-colors group-hover:text-[#0F4C81] dark:text-white dark:group-hover:text-blue-400">
+                                                {{ $property['name'] }}
+                                            </h3>
+                                            <div class="mb-2 flex flex-wrap items-center gap-2">
+                                                <span class="{{ $property['category_badge_classes'] }} inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
+                                                    {{ $property['category_label'] }}
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+                                                <span class="material-symbols-outlined text-[18px] text-[#0F4C81] dark:text-blue-400">location_on</span>
+                                                {{ $property['location_label'] }}
+                                            </div>
+                                        </div>
+
+                                        <div class="flex gap-2">
+                                            <a href="{{ $property['edit_url'] }}" class="rounded-xl border border-gray-100 p-2.5 text-gray-400 transition-all hover:bg-blue-50 hover:text-[#0F4C81] dark:border-gray-700 dark:hover:bg-slate-800">
+                                                <span class="material-symbols-outlined">edit</span>
+                                            </a>
+                                            <button
+                                                type="button"
+                                                wire:click="{{ $property['delete_action'] }}({{ $property['id'] }})"
+                                                wire:confirm="{{ $property['delete_confirm'] }}"
+                                                class="rounded-xl border border-gray-100 p-2.5 text-gray-400 transition-all hover:bg-red-50 hover:text-red-500 dark:border-gray-700 dark:hover:bg-slate-800"
+                                            >
+                                                <span class="material-symbols-outlined">delete</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    @if ($property['show_rejection_alert'])
+                                        <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-300">
+                                            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                                <p class="leading-6">
+                                                    <span class="font-bold">{{ $property['rejection_title'] }}:</span>
+                                                    {{ $property['rejection_reason'] }}
+                                                </p>
+                                                <a href="{{ $property['edit_url'] }}" class="inline-flex items-center justify-center rounded-xl border border-red-200 bg-white px-4 py-2 text-xs font-bold text-red-600 transition hover:border-red-300 hover:bg-red-100 dark:border-red-800 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-red-950/30">
+                                                    Edit Properti
+                                                </a>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <div class="mb-6 grid gap-4 md:grid-cols-3">
+                                        @foreach ($property['stats'] as $stat)
+                                            <div class="{{ $stat['wrapper_classes'] }} rounded-2xl p-4">
+                                                <p class="{{ $stat['label_classes'] }} mb-1 text-[10px] font-bold uppercase tracking-widest">
+                                                    {{ $stat['label'] }}
+                                                </p>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="material-symbols-outlined {{ $stat['icon_classes'] }} text-sm">{{ $stat['icon'] }}</span>
+                                                    <p class="{{ $stat['value_classes'] }} text-lg font-bold">
+                                                        {{ $stat['value'] }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-800">
+                                    <div class="flex flex-col">
+                                        <p class="text-[10px] font-semibold uppercase text-gray-400">Harga Mulai</p>
+                                        <div class="flex items-baseline gap-1">
+                                            <span class="text-2xl font-bold text-[#0F4C81] dark:text-blue-400">{{ $property['price_label'] }}</span>
+                                            <span class="text-xs text-gray-400">{{ $property['price_suffix'] }}</span>
+                                        </div>
+                                    </div>
+
+                                    <a href="{{ $property['manage_url'] }}" class="inline-flex items-center gap-2 rounded-xl bg-[#0F4C81] px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:bg-[#0c3d68]">
+                                        Kelola Unit
+                                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        @endif
+    </div>
+</div>

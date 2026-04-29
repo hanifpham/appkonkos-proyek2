@@ -4,10 +4,10 @@
         
         <div class="flex items-end justify-between">
             <div>
-                <h2 class="text-2xl font-bold text-slate-900 sm:text-3xl">Rekomendasi Kos Pilihan</h2>
-                <p class="mt-1 text-sm text-slate-500">Kos terbaik yang kami kurasi khusus untuk kamu</p>
+                <h2 class="text-2xl font-bold text-[#090a0b] sm:text-3xl">Rekomendasi Kos Pilihan</h2>
+                <p class="mt-1 text-sm text-[#6b7280]">Kos terbaik yang kami kurasi khusus untuk kamu</p>
             </div>
-            <a href="<?php echo e(route('cari', ['tipe' => 'Kos'])); ?>" class="hidden items-center gap-1 text-sm font-semibold text-[#0EA5E9] transition hover:text-[#3B82F6] sm:inline-flex" id="kos-lihat-semua">
+            <a href="<?php echo e(route('cari', ['tipe' => 'Kos'])); ?>" class="hidden items-center gap-1 text-sm font-semibold text-[#1967d2] transition hover:text-[#0f4fb5] sm:inline-flex" id="kos-lihat-semua">
                 Lihat Semua
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </a>
@@ -40,7 +40,7 @@
                     </div>
                     <div class="p-4">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-wide text-[#0EA5E9]">
+                            <span class="text-xs font-bold uppercase tracking-wide text-[#1967d2]">
                                 <?php echo e($kos->jenis_kos ? 'Kos ' . ucfirst($kos->jenis_kos) : 'Kos'); ?>
 
                             </span>
@@ -85,7 +85,7 @@
 
         
         <div class="mt-6 text-center sm:hidden">
-            <a href="<?php echo e(route('cari', ['tipe' => 'Kos'])); ?>" class="inline-flex items-center gap-1 text-sm font-semibold text-[#0EA5E9]">
+            <a href="<?php echo e(route('cari', ['tipe' => 'Kos'])); ?>" class="inline-flex items-center gap-1 text-sm font-semibold text-[#1967d2]">
                 Lihat Semua <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </a>
         </div>

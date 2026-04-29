@@ -13,7 +13,7 @@
                         <input type="hidden" name="tipe" x-model="selected">
                         <button type="button" @click="open = !open" class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
                             <div class="flex items-center gap-2">
-                                <svg class="h-4 w-4 text-[#0EA5E9]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                <svg class="h-4 w-4 text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                 <span x-text="selected"></span>
                             </div>
                             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -30,7 +30,7 @@
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
-                        <input type="text" name="lokasi" value="{{ $request->query('lokasi') }}" placeholder="Cari lokasi atau nama properti..." class="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-700 transition focus:border-[#0EA5E9] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0EA5E9]">
+                        <input type="text" name="lokasi" value="{{ $request->query('lokasi') }}" placeholder="Cari lokasi atau nama properti..." class="w-full rounded-xl border border-[#e5e7eb] bg-slate-50 py-3 pl-11 pr-4 text-sm text-[#090a0b] transition focus:border-[#1967d2] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#1967d2]">
                     </div>
 
                     {{-- Dropdown Harga --}}
@@ -38,7 +38,7 @@
                         <input type="hidden" name="harga" x-model="selected">
                         <button type="button" @click="open = !open" class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
                             <div class="flex items-center gap-2">
-                                <svg class="h-4 w-4 text-[#0EA5E9]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <svg class="h-4 w-4 text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <span x-text="selected"></span>
                             </div>
                             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -53,7 +53,7 @@
                     </div>
 
                     {{-- Tombol Cari --}}
-                    <button type="submit" class="rounded-xl bg-[#0EA5E9] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#3B82F6]">
+                    <button type="submit" class="rounded-xl bg-[#1967d2] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0f4fb5]">
                         Cari
                     </button>
                 </form>
@@ -89,7 +89,7 @@
                         </div>
                         <div class="p-4">
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold uppercase tracking-wide {{ $properti->tipe_properti === 'kos' ? 'text-[#0EA5E9]' : 'text-teal-600' }}">
+                                <span class="text-xs font-bold uppercase tracking-wide {{ $properti->tipe_properti === 'kos' ? 'text-[#1967d2]' : 'text-[#32baff]' }}">
                                     {{ $properti->tipe_properti === 'kos' ? ($properti->jenis_kos ? 'Kos ' . ucfirst($properti->jenis_kos) : 'Kos') : 'Kontrakan' }}
                                 </span>
                                 @if($properti->rating_tampil)

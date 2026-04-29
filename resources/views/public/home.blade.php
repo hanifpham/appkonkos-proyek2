@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="APPKONKOS — Platform pencari kos dan kontrakan terpercaya di Indonesia. Temukan hunian nyaman dengan harga terjangkau.">
 
-    <title>APPKONKOS — Temukan Hunian Nyaman, Transaksi Aman</title>
+    <title>Appkonkos | Temukan Hunian Nyaman, Transaksi Aman</title>
 
     <link rel="icon" type="image/png" href="{{ asset('images/appkonkos.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/appkonkos.png') }}">
@@ -17,31 +18,33 @@
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="min-h-screen bg-white font-[Inter] text-slate-900 antialiased">
 
-{{-- ==================== 1. NAVBAR ==================== --}}
-@include('public.partials.navbar')
+<body class="min-h-screen bg-[#ffffff] font-[Inter] text-[#090a0b] antialiased">
 
-{{-- ==================== 2. HERO SECTION ==================== --}}
-@include('public.partials.hero')
+    {{-- ==================== 1. NAVBAR ==================== --}}
+    @include('public.partials.navbar')
 
-{{-- ==================== 3. PROMO CAROUSEL ==================== --}}
-@include('public.partials.promo')
+    {{-- ==================== 2. HERO SECTION ==================== --}}
+    @include('public.partials.hero')
 
-{{-- ==================== 4. REKOMENDASI KOS ==================== --}}
-@include('public.partials.kos')
+    {{-- ==================== 3. PROMO CAROUSEL ==================== --}}
+    @include('public.partials.promo')
 
-{{-- ==================== 5. REKOMENDASI KONTRAKAN ==================== --}}
-@include('public.partials.kontrakan')
+    {{-- ==================== 4. REKOMENDASI KOS ==================== --}}
+    @include('public.partials.kos')
 
-{{-- ==================== 6. AREA POPULER ==================== --}}
-@include('public.partials.area')
+    {{-- ==================== 5. REKOMENDASI KONTRAKAN ==================== --}}
+    @include('public.partials.kontrakan')
 
-{{-- ==================== 7. SEKITAR KAMPUS ==================== --}}
-@include('public.partials.kampus')
+    {{-- ==================== 6. AREA POPULER ==================== --}}
+    @include('public.partials.area')
 
-{{-- ==================== 8. FOOTER ==================== --}}
-@include('public.partials.footer')
+    {{-- ==================== 7. SEKITAR KAMPUS ==================== --}}
+    @include('public.partials.kampus')
+
+    {{-- ==================== 8. FOOTER ==================== --}}
+    @include('public.partials.footer')
 
 </body>
+
 </html>

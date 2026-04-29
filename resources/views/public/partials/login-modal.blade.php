@@ -30,8 +30,8 @@
         <section @click.outside="loginModalOpen = false" class="w-full max-w-[580px] rounded-[34px] bg-white/40 backdrop-blur-2xl border border-white/60 px-7 py-8 shadow-[0_34px_80px_rgba(15,23,42,0.2)] sm:px-10 sm:py-10">
             <div class="flex items-start justify-between gap-4">
                 <div>
-                    <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-[#2169d7]">Masuk ke Appkonkos</p>
-                    <h2 class="mt-7 text-[28px] font-extrabold leading-tight text-slate-900 sm:text-[34px]">
+                    <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-[#1967d2]">Masuk ke Appkonkos</p>
+                    <h2 class="mt-7 text-[28px] font-extrabold leading-tight text-[#090a0b] sm:text-[34px]">
                         Pilih jenis akun untuk melanjutkan
                     </h2>
                 </div>
@@ -49,17 +49,17 @@
             <div class="mt-9 space-y-5">
                 <a
                     href="{{ route('auth.portal-login', 'pencari') }}"
-                    class="group flex items-center gap-5 rounded-[26px] border border-white/50 bg-white/60 px-6 py-7 transition hover:border-[#2169d7]/35 hover:bg-white/90"
+                    class="group flex items-center gap-5 rounded-[26px] border border-white/50 bg-white/60 px-6 py-7 transition hover:border-[#1967d2]/35 hover:bg-white/90"
                 >
-                    <div class="flex h-[66px] w-[66px] shrink-0 items-center justify-center rounded-[20px] bg-[#e7f0ff] text-[#2169d7]">
+                    <div class="flex h-[66px] w-[66px] shrink-0 items-center justify-center rounded-[20px] bg-[#e7f0ff] text-[#1967d2]">
                         <svg class="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                         </svg>
                     </div>
 
                     <div class="min-w-0 flex-1">
-                        <h3 class="text-[20px] font-extrabold leading-tight text-slate-900 sm:text-[21px]">Pencari Kos &amp; Kontrakan</h3>
-                        <p class="mt-3 text-[15px] leading-7 text-slate-600 sm:text-[16px]">
+                        <h3 class="text-[20px] font-extrabold leading-tight text-[#090a0b] sm:text-[21px]">Pencari Kos &amp; Kontrakan</h3>
+                        <p class="mt-3 text-[15px] leading-7 text-[#6b7280] sm:text-[16px]">
                             Masuk untuk menemukan kos &amp; kontrakan
                         </p>
                     </div>
@@ -76,8 +76,8 @@
                     </div>
 
                     <div class="min-w-0 flex-1">
-                        <h3 class="text-[20px] font-extrabold leading-tight text-slate-900 sm:text-[21px]">Admin Kos &amp; Kontrakan</h3>
-                        <p class="mt-3 text-[15px] leading-7 text-slate-600 sm:text-[16px]">
+                        <h3 class="text-[20px] font-extrabold leading-tight text-[#090a0b] sm:text-[21px]">Admin Kos &amp; Kontrakan</h3>
+                        <p class="mt-3 text-[15px] leading-7 text-[#6b7280] sm:text-[16px]">
                             Kelola listing kosan &amp; kontrakan
                         </p>
                     </div>

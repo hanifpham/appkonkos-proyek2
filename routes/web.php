@@ -23,10 +23,13 @@ use App\Livewire\SuperAdmin\TransaksiMidtrans as SuperAdminTransaksiMidtrans;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'public.home')->name('home');
+Route::get('/', App\Http\Controllers\BerandaController::class)->name('home');
+Route::get('/cari', [App\Http\Controllers\CariController::class, 'index'])->name('cari');
 
 Route::middleware('guest')->group(function (): void {
-    Route::view('/pilih-role', 'auth.pilih-role')->name('auth.pilih-role');
+    Route::get('/pilih-role', function () {
+        return redirect()->to('/#login');
+    })->name('auth.pilih-role');
 
     Route::get('/portal-login/{role}', function (string $role): RedirectResponse {
         abort_unless(in_array($role, ['pencari', 'pemilik', 'superadmin'], true), 404);

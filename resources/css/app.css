@@ -5,3 +5,58 @@
 [x-cloak] {
     display: none;
 }
+
+/* Hide scrollbar for promo carousel */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Hero gradient text */
+.gradient-text {
+    background: linear-gradient(135deg, #0EA5E9 0%, #3B82F6 50%, #8B5CF6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Carousel zoom animation for active slide */
+@keyframes carouselZoomIn {
+    from { transform: scale(0.92); opacity: 0.7; }
+    to   { transform: scale(1);    opacity: 1; }
+}
+@keyframes carouselZoomOut {
+    from { transform: scale(1);    opacity: 1; }
+    to   { transform: scale(0.92); opacity: 0; }
+}
+.carousel-slide-active {
+    animation: carouselZoomIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+.carousel-slide-exit {
+    animation: carouselZoomOut 0.4s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+/* Floating animation for hero search box */
+@keyframes floatUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.animate-float-up {
+    animation: floatUp 0.8s ease-out forwards;
+}
+
+/* Subtle pulse glow for CTA buttons */
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(14,165,233,.4); }
+    50%      { box-shadow: 0 0 0 8px rgba(14,165,233,0); }
+}
+.animate-pulse-glow {
+    animation: pulseGlow 2.5s ease-in-out infinite;
+}

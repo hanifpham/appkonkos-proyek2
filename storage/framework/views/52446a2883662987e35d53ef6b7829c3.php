@@ -152,10 +152,10 @@
                 </section>
             </main>
 
-            <div class="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-[2px]"></div>
+            <div class="fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-md"></div>
 
-            <div class="fixed inset-0 z-50 flex items-start justify-center px-4 py-12 sm:items-center sm:px-6">
-                <section class="w-full max-w-[580px] rounded-[34px] bg-white px-7 py-8 shadow-[0_34px_80px_rgba(15,23,42,0.3)] sm:px-10 sm:py-10">
+            <div class="fixed inset-0 z-50 flex items-center justify-center px-4 py-12 sm:p-6">
+                <section class="w-full max-w-[580px] rounded-[34px] bg-white/40 backdrop-blur-2xl border border-white/60 px-7 py-8 shadow-[0_34px_80px_rgba(15,23,42,0.2)] sm:px-10 sm:py-10">
                     <div class="flex items-start justify-between gap-4">
                         <div>
                             <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-[#2169d7]">Masuk ke Appkonkos</p>
@@ -166,7 +166,7 @@
 
                         <a
                             href="<?php echo e(url('/')); ?>"
-                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-900 transition hover:bg-slate-200"
+                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/50 text-slate-900 transition hover:bg-white/80"
                             aria-label="Tutup"
                         >
                             <span class="material-symbols-outlined text-[20px]">close</span>
@@ -176,7 +176,7 @@
                     <div class="mt-9 space-y-5">
                         <a
                             href="<?php echo e(route('auth.portal-login', 'pencari')); ?>"
-                            class="group flex items-center gap-5 rounded-[26px] border border-slate-200 bg-white px-6 py-7 transition hover:border-[#2169d7]/35 hover:bg-slate-50"
+                            class="group flex items-center gap-5 rounded-[26px] border border-white/50 bg-white/60 px-6 py-7 transition hover:border-[#2169d7]/35 hover:bg-white/90"
                         >
                             <div class="flex h-[66px] w-[66px] shrink-0 items-center justify-center rounded-[20px] bg-[#e7f0ff] text-[#2169d7]">
                                 <span class="material-symbols-outlined text-[34px]">person_search</span>
@@ -192,7 +192,7 @@
 
                         <a
                             href="<?php echo e(route('auth.portal-login', 'pemilik')); ?>"
-                            class="group flex items-center gap-5 rounded-[26px] border border-slate-200 bg-white px-6 py-7 transition hover:border-[#f59e0b]/35 hover:bg-slate-50"
+                            class="group flex items-center gap-5 rounded-[26px] border border-white/50 bg-white/60 px-6 py-7 transition hover:border-[#f59e0b]/35 hover:bg-white/90"
                         >
                             <div class="flex h-[66px] w-[66px] shrink-0 items-center justify-center rounded-[20px] bg-[#fff3df] text-[#ff8a00]">
                                 <span class="material-symbols-outlined text-[34px]">apartment</span>

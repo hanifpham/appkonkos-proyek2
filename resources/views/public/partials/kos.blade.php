@@ -23,7 +23,7 @@
             {{-- Grid Cards --}}
             <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach($kosanList->take(4) as $kos)
-                <article class="group overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg" id="kos-card-{{ $kos->id }}">
+                <a href="{{ route('properti.detail', ['tipe' => 'kosan', 'id' => $kos->id]) }}" class="group overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg block" id="kos-card-{{ $kos->id }}">
                     <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
                         @if($kos->foto)
                             <img src="{{ $kos->foto }}" alt="{{ $kos->nama }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
@@ -77,7 +77,7 @@
                             @endif
                         </div>
                     </div>
-                </article>
+                </a>
                 @endforeach
             </div>
         @endif

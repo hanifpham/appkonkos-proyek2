@@ -90,7 +90,7 @@ class Kontrakan extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('foto_properti')->singleFile();
+        $this->addMediaCollection('foto_properti');
     }
 
     public function registerMediaConversions(?Media $media = null): void

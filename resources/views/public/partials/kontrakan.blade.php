@@ -23,7 +23,7 @@
             {{-- Grid Cards --}}
             <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach($kontrakanList->take(4) as $kontrakan)
-                <article class="group overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg" id="kontrakan-card-{{ $kontrakan->id }}">
+                <a href="{{ route('properti.detail', ['tipe' => 'kontrakan', 'id' => $kontrakan->id]) }}" class="group overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg block" id="kontrakan-card-{{ $kontrakan->id }}">
                     <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
                         @if($kontrakan->foto)
                             <img src="{{ $kontrakan->foto }}" alt="{{ $kontrakan->nama }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
@@ -60,7 +60,7 @@
                             <p class="text-lg font-bold text-slate-800">Rp {{ number_format($kontrakan->harga_tahun, 0, ',', '.') }} <span class="text-sm font-normal text-slate-500">/ tahun</span></p>
                         </div>
                     </div>
-                </article>
+                </a>
                 @endforeach
             </div>
         @endif

@@ -36,9 +36,9 @@ class TambahKontrakan extends Component
 
     public string $sisa_kamar = '1';
 
-    public $foto_properti = null;
+    public $foto_properti = [];
 
-    public ?string $existingPhotoUrl = null;
+    public array $existingPhotoUrls = [];
 
     public function mount(): void
     {
@@ -55,8 +55,8 @@ class TambahKontrakan extends Component
     protected function rules(): array
     {
         $fotoRules = $this->editId === null
-            ? ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048']
-            : ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'];
+            ? ['required', 'array', 'min:1', 'max:5']
+            : ['nullable', 'array', 'max:5'];
 
         return [
             'nama_properti' => ['required', 'string', 'max:255'],
@@ -68,6 +68,7 @@ class TambahKontrakan extends Component
             'peraturan_kontrakan' => ['required', 'string', 'max:5000'],
             'sisa_kamar' => ['required', 'integer', 'min:0'],
             'foto_properti' => $fotoRules,
+            'foto_properti.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 
@@ -99,7 +100,10 @@ class TambahKontrakan extends Component
             'string' => 'Kolom :attribute harus berupa teks.',
             'numeric' => 'Kolom :attribute harus berupa angka.',
             'integer' => 'Kolom :attribute harus berupa angka bulat.',
-            'image' => 'Kolom :attribute harus berupa file gambar.',
+            'image' => 'File harus berupa gambar.',
+            'array' => 'Kolom :attribute harus berupa kumpulan file.',
+            'min.array' => 'Minimal harus mengunggah :min foto.',
+            'max.array' => 'Maksimal hanya boleh mengunggah :max foto.',
             'mimes' => 'Format :attribute harus berupa: :values.',
             'max.string' => 'Teks :attribute maksimal :max karakter.',
             'max.file' => 'Ukuran :attribute maksimal :max kilobytes.',
@@ -134,15 +138,21 @@ class TambahKontrakan extends Component
             $kontrakan = $this->ownedKontrakan($this->editId);
             $kontrakan->update(array_merge($payload, $this->getResubmissionPayload($kontrakan->status)));
 
-            if ($this->foto_properti !== null) {
+            if (!empty($this->foto_properti)) {
                 $kontrakan->clearMediaCollection('foto_properti');
-                $kontrakan->addMedia($this->foto_properti)->toMediaCollection('foto_properti');
+                foreach ($this->foto_properti as $foto) {
+                    $kontrakan->addMedia($foto)->toMediaCollection('foto_properti');
+                }
             }
 
             session()->flash('success', 'Data kontrakan berhasil diperbarui.');
         } else {
             $kontrakan = Kontrakan::create($payload);
-            $kontrakan->addMedia($this->foto_properti)->toMediaCollection('foto_properti');
+            if (!empty($this->foto_properti)) {
+                foreach ($this->foto_properti as $foto) {
+                    $kontrakan->addMedia($foto)->toMediaCollection('foto_properti');
+                }
+            }
 
             session()->flash('success', 'Kontrakan baru berhasil ditambahkan.');
         }
@@ -169,7 +179,7 @@ class TambahKontrakan extends Component
         $this->fasilitas = $kontrakan->fasilitas;
         $this->peraturan_kontrakan = $kontrakan->peraturan_kontrakan;
         $this->sisa_kamar = (string) $kontrakan->sisa_kamar;
-        $this->existingPhotoUrl = $kontrakan->getMediaDisplayUrl('foto_properti');
+        $this->existingPhotoUrls = $kontrakan->getMediaDisplayUrls('foto_properti');
     }
 
     protected function pemilikProperti(): PemilikProperti

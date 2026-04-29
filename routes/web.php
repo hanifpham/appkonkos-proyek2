@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', App\Http\Controllers\BerandaController::class)->name('home');
 Route::get('/cari', [App\Http\Controllers\CariController::class, 'index'])->name('cari');
+Route::get('/properti/{tipe}/{id}', App\Livewire\Front\DetailProperti::class)->name('properti.detail');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/pilih-role', function () {

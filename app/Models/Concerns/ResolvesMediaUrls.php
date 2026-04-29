@@ -38,4 +38,34 @@ trait ResolvesMediaUrls
             ? ''
             : url('storage/'.$encodedPath);
     }
+
+    public function getMediaDisplayUrls(string $collectionName, string $preferredConversion = 'webp'): array
+    {
+        $urls = [];
+        $mediaCollection = $this->getMedia($collectionName);
+        foreach ($mediaCollection as $media) {
+            if ($media->disk !== 'public') {
+                $urls[] = $preferredConversion !== '' && $media->hasGeneratedConversion($preferredConversion)
+                    ? $media->getUrl($preferredConversion)
+                    : $media->getUrl();
+                continue;
+            }
+
+            $relativePath = $preferredConversion !== '' && $media->hasGeneratedConversion($preferredConversion)
+                ? $media->getPathRelativeToRoot($preferredConversion)
+                : $media->getPathRelativeToRoot();
+
+            PublicStorageMirror::ensureFile($relativePath);
+
+            $encodedPath = collect(explode('/', str_replace('\\', '/', ltrim($relativePath, '/'))))
+                ->filter(static fn (string $segment): bool => $segment !== '')
+                ->map(static fn (string $segment): string => rawurlencode($segment))
+                ->implode('/');
+
+            if ($encodedPath !== '') {
+                $urls[] = url('storage/'.$encodedPath);
+            }
+        }
+        return $urls;
+    }
 }

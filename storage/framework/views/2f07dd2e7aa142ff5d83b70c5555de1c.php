@@ -1,15 +1,15 @@
-@section('mitra-title', $editId ? 'Edit Kontrakan' : 'Tambah Kontrakan')
-@section('mitra-subtitle', 'Atur informasi rumah kontrakan dengan presentasi yang rapi dan mudah dipahami.')
+<?php $__env->startSection('mitra-title', $editId ? 'Edit Kontrakan' : 'Tambah Kontrakan'); ?>
+<?php $__env->startSection('mitra-subtitle', 'Atur informasi rumah kontrakan dengan presentasi yang rapi dan mudah dipahami.'); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-@endpush
+<?php $__env->stopPush(); ?>
 
 <div class="px-4 py-8 sm:px-6 xl:px-8">
     <div class="mx-auto w-full max-w-6xl space-y-6 pb-16">
@@ -22,7 +22,8 @@
 
                 <div>
                     <h3 class="text-xl font-bold text-slate-900 dark:text-white">
-                        {{ $editId ? 'Perbarui Data Kontrakan' : 'Buat Listing Kontrakan Baru' }}
+                        <?php echo e($editId ? 'Perbarui Data Kontrakan' : 'Buat Listing Kontrakan Baru'); ?>
+
                     </h3>
                     <p class="mt-1 max-w-3xl text-sm leading-6 text-slate-500 dark:text-slate-400">
                         Lengkapi informasi sewa tahunan, kapasitas unit, fasilitas, peraturan, lokasi, dan foto utama agar calon penyewa bisa menilai properti dengan cepat.
@@ -31,7 +32,7 @@
             </div>
 
             <a
-                href="{{ route('mitra.properti') }}"
+                href="<?php echo e(route('mitra.properti')); ?>"
                 class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                 Kembali ke Properti Saya
@@ -56,7 +57,14 @@
                                 wire:model.defer="nama_properti"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
                                 placeholder="Contoh: Kontrakan An-Nur">
-                            @error('nama_properti') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['nama_properti'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-2 text-sm text-rose-600"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
                         <div class="md:col-span-2">
@@ -67,7 +75,14 @@
                                 wire:model.defer="alamat_lengkap"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
                                 placeholder="Masukkan alamat lengkap kontrakan"></textarea>
-                            @error('alamat_lengkap') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['alamat_lengkap'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-2 text-sm text-rose-600"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
                         <div>
@@ -79,7 +94,14 @@
                                 wire:model.defer="harga_sewa_tahun"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
                                 placeholder="6000000">
-                            @error('harga_sewa_tahun') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['harga_sewa_tahun'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-2 text-sm text-rose-600"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
                         <div>
@@ -91,7 +113,14 @@
                                 wire:model.defer="sisa_kamar"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
                                 placeholder="1">
-                            @error('sisa_kamar') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['sisa_kamar'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-2 text-sm text-rose-600"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
                         <div>
@@ -102,7 +131,14 @@
                                 wire:model.defer="fasilitas"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
                                 placeholder="Contoh: 2 kamar tidur, dapur, carport, PAM, listrik token"></textarea>
-                            @error('fasilitas') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['fasilitas'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-2 text-sm text-rose-600"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
                         <div>
@@ -113,7 +149,14 @@
                                 wire:model.defer="peraturan_kontrakan"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
                                 placeholder="Contoh: Tidak boleh renovasi tanpa izin, wajib menjaga kebersihan area rumah."></textarea>
-                            @error('peraturan_kontrakan') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['peraturan_kontrakan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-2 text-sm text-rose-600"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
                 </section>
@@ -136,31 +179,45 @@
                                 accept=".jpg,.jpeg,.png,.webp"
                                 multiple
                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:font-semibold file:text-[#0F4C81] hover:file:bg-blue-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:file:bg-slate-800 dark:file:text-blue-300">
-                            <p class="text-xs leading-5 text-slate-500 dark:text-slate-400">Anda dapat memilih hingga 5 foto (Tahan tombol Ctrl/Shift untuk memilih banyak file). @if ($editId === null)Kolom ini wajib diisi. @endif Maksimal 2MB per foto, format JPG, JPEG, PNG, atau WEBP. Jika Anda mengunggah foto baru, foto lama akan tertimpa.</p>
-                            @error('foto_properti') <p class="text-sm text-rose-600">{{ $message }}</p> @enderror
-                            @error('foto_properti.*') <p class="text-sm text-rose-600">{{ $message }}</p> @enderror
+                            <p class="text-xs leading-5 text-slate-500 dark:text-slate-400">Anda dapat memilih hingga 5 foto (Tahan tombol Ctrl/Shift untuk memilih banyak file). <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($editId === null): ?>Kolom ini wajib diisi. <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?> Maksimal 2MB per foto, format JPG, JPEG, PNG, atau WEBP. Jika Anda mengunggah foto baru, foto lama akan tertimpa.</p>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['foto_properti'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="text-sm text-rose-600"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['foto_properti.*'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="text-sm text-rose-600"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                            @if (!empty($foto_properti))
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($foto_properti)): ?>
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                @foreach ($foto_properti as $foto)
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $foto_properti; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $foto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
-                                    <img src="{{ $foto->temporaryUrl() }}" alt="Preview foto baru" class="h-32 w-full object-cover">
+                                    <img src="<?php echo e($foto->temporaryUrl()); ?>" alt="Preview foto baru" class="h-32 w-full object-cover">
                                 </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
-                            @elseif (!empty($existingPhotoUrls))
+                            <?php elseif(!empty($existingPhotoUrls)): ?>
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                @foreach ($existingPhotoUrls as $url)
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $existingPhotoUrls; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $url): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
-                                    <img src="{{ $url }}" alt="Foto kontrakan saat ini" class="h-32 w-full object-cover">
+                                    <img src="<?php echo e($url); ?>" alt="Foto kontrakan saat ini" class="h-32 w-full object-cover">
                                 </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
-                            @else
+                            <?php else: ?>
                             <div class="flex h-32 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-sm font-medium text-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-500">
                                 Preview foto akan muncul di sini
                             </div>
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </section>
 
@@ -198,9 +255,9 @@
                         x-data
                         x-init="
                             setTimeout(() => {
-                                const defaultLat = {{ $latitude !== '' ? (float) $latitude : -6.40690782 }};
-                                const defaultLng = {{ $longitude !== '' ? (float) $longitude : 108.28776285 }};
-                                const defaultZoom = {{ $latitude !== '' && $longitude !== '' ? 16 : 14 }};
+                                const defaultLat = <?php echo e($latitude !== '' ? (float) $latitude : -6.40690782); ?>;
+                                const defaultLng = <?php echo e($longitude !== '' ? (float) $longitude : 108.28776285); ?>;
+                                const defaultZoom = <?php echo e($latitude !== '' && $longitude !== '' ? 16 : 14); ?>;
                                 const map = L.map($refs.mapKontrakan).setView([defaultLat, defaultLng], defaultZoom);
 
                                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -246,7 +303,14 @@
                                 type="text"
                                 wire:model.live="latitude"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400">
-                            @error('latitude') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['latitude'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-2 text-sm text-rose-600"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
                         <div>
@@ -256,7 +320,14 @@
                                 type="text"
                                 wire:model.live="longitude"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400">
-                            @error('longitude') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['longitude'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-2 text-sm text-rose-600"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -264,12 +335,13 @@
 
             <div class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center sm:justify-between">
                 <p class="text-sm text-slate-500 dark:text-slate-400">
-                    {{ $editId ? 'Perubahan akan langsung memperbarui data kontrakan yang sedang aktif.' : 'Setelah disimpan, kontrakan akan langsung muncul pada daftar properti Anda.' }}
+                    <?php echo e($editId ? 'Perubahan akan langsung memperbarui data kontrakan yang sedang aktif.' : 'Setelah disimpan, kontrakan akan langsung muncul pada daftar properti Anda.'); ?>
+
                 </p>
 
                 <div class="flex flex-col gap-3 sm:flex-row">
                     <a
-                        href="{{ route('mitra.properti') }}"
+                        href="<?php echo e(route('mitra.properti')); ?>"
                         class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300">
                         Batal
                     </a>
@@ -283,11 +355,11 @@
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4Z"></path>
                         </svg>
-                        <span wire:loading.remove wire:target="simpan,foto_properti">{{ $editId ? 'Perbarui Kontrakan' : 'Simpan Kontrakan' }}</span>
+                        <span wire:loading.remove wire:target="simpan,foto_properti"><?php echo e($editId ? 'Perbarui Kontrakan' : 'Simpan Kontrakan'); ?></span>
                         <span wire:loading wire:target="simpan,foto_properti">Menyimpan...</span>
                     </button>
                 </div>
             </div>
         </form>
     </div>
-</div>
+</div><?php /**PATH C:\xampp\htdocs\appkonkos_2\resources\views/livewire/mitra/properti/form-kontrakan.blade.php ENDPATH**/ ?>

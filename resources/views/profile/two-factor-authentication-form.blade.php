@@ -1,5 +1,9 @@
 <div class="space-y-5">
-    <div class="rounded-xl border px-4 py-3 text-sm dark:border-gray-700 @if ($this->enabled) border-green-100 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300 @else border-amber-100 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300 @endif">
+    <div @class([
+        'rounded-xl border px-4 py-3 text-sm dark:border-gray-700',
+        'border-green-100 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300' => $this->enabled,
+        'border-amber-100 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300' => ! $this->enabled,
+    ])>
         @if ($this->enabled)
             @if ($showingConfirmation)
                 Selesaikan aktivasi autentikasi 2 langkah dengan memasukkan kode OTP.

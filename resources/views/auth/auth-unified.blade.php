@@ -12,8 +12,43 @@
                     </div>
                     <h2 class="mb-3 text-center text-2xl font-bold text-[#090a0b]">Daftar Akun</h2>
 
-                    <form method="POST" action="{{ route('register') }}" class="space-y-3">
+                    <form method="POST" action="{{ route('register') }}" class="space-y-3" x-data="{ selectedRole: '{{ old('role', 'pencari') }}' }">
                         @csrf
+                        <input type="hidden" name="role" x-model="selectedRole">
+
+                        {{-- Role Selector --}}
+                        <div>
+                            <x-formulir.label value="{{ __('Daftar Sebagai') }}" />
+                            <div class="mt-1.5 grid grid-cols-2 gap-3">
+                                {{-- Pencari --}}
+                                <button type="button" @click="selectedRole = 'pencari'"
+                                        :class="selectedRole === 'pencari' ? 'border-[#1967d2] bg-blue-50 ring-2 ring-[#1967d2]/20' : 'border-slate-200 bg-white hover:border-slate-300'"
+                                        class="flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all duration-200">
+                                    <div :class="selectedRole === 'pencari' ? 'bg-[#1967d2] text-white' : 'bg-slate-100 text-slate-400'"
+                                         class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                                    </div>
+                                    <div>
+                                        <p :class="selectedRole === 'pencari' ? 'text-[#1967d2]' : 'text-slate-700'" class="text-sm font-bold transition-colors">Pencari Kos</p>
+                                        <p class="text-[11px] text-slate-400">Cari & sewa hunian</p>
+                                    </div>
+                                </button>
+                                {{-- Pemilik --}}
+                                <button type="button" @click="selectedRole = 'pemilik'"
+                                        :class="selectedRole === 'pemilik' ? 'border-[#ff8a00] bg-orange-50 ring-2 ring-[#ff8a00]/20' : 'border-slate-200 bg-white hover:border-slate-300'"
+                                        class="flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all duration-200">
+                                    <div :class="selectedRole === 'pemilik' ? 'bg-[#ff8a00] text-white' : 'bg-slate-100 text-slate-400'"
+                                         class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+                                    </div>
+                                    <div>
+                                        <p :class="selectedRole === 'pemilik' ? 'text-[#ff8a00]' : 'text-slate-700'" class="text-sm font-bold transition-colors">Pemilik/Mitra</p>
+                                        <p class="text-[11px] text-slate-400">Sewakan properti</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
                         
                         <div>
                             <x-formulir.label for="name" value="{{ __('Nama Lengkap') }}" />

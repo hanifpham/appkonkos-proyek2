@@ -33,7 +33,7 @@ class RoleTwoFactorLoginResponse implements TwoFactorLoginResponseContract
         return match ($role) {
             'superadmin' => route('superadmin.dashboard'),
             'pemilik' => route('mitra.dashboard'),
-            default => route('dashboard'),
+            default => '/',
         };
     }
 }

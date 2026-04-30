@@ -12,6 +12,7 @@ use App\Livewire\Mitra\TambahKontrakan;
 use App\Livewire\Mitra\TambahKosan;
 use App\Livewire\Mitra\UlasanPenyewa;
 use App\Livewire\Pencari\Dashboard as PencariDashboard;
+
 use App\Livewire\SuperAdmin\DetailModerasiProperti as SuperAdminDetailModerasiProperti;
 use App\Livewire\SuperAdmin\DashboardUtama as SuperAdminDashboard;
 use App\Livewire\SuperAdmin\ManajemenPencairan as SuperAdminManajemenPencairan;
@@ -24,6 +25,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', App\Http\Controllers\BerandaController::class)->name('home');
+Route::get('/pusat-bantuan', App\Livewire\Front\PusatBantuan::class)->name('pusat-bantuan');
 Route::get('/cari', [App\Http\Controllers\CariController::class, 'index'])->name('cari');
 Route::get('/properti/{tipe}/{id}', App\Livewire\Front\DetailProperti::class)->name('properti.detail');
 

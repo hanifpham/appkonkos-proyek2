@@ -23,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return match ($role) {
                 'superadmin' => route('superadmin.dashboard', absolute: false),
                 'pemilik' => route('mitra.dashboard', absolute: false),
-                default => route('dashboard', absolute: false),
+                default => route('home', absolute: false),
             };
         });
     })

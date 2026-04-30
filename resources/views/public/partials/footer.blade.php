@@ -50,7 +50,7 @@
             <div>
                 <h4 class="text-sm font-bold uppercase tracking-wider text-[#090a0b]">Bantuan & Kebijakan</h4>
                 <ul class="mt-4 space-y-3">
-                    <li><a href="#" class="text-sm text-[#6b7280] transition hover:text-[#1967d2]" id="footer-pusat-bantuan">Pusat Bantuan</a></li>
+                    <li><a href="{{ route('pusat-bantuan') }}" class="text-sm text-[#6b7280] transition hover:text-[#1967d2]" id="footer-pusat-bantuan">Pusat Bantuan</a></li>
                     <li><a href="#" class="text-sm text-[#6b7280] transition hover:text-[#1967d2]" id="footer-privasi">Kebijakan Privasi</a></li>
                     <li><a href="#" class="text-sm text-[#6b7280] transition hover:text-[#1967d2]" id="footer-syarat">Syarat & Ketentuan</a></li>
                     <li><a href="#" class="text-sm text-[#6b7280] transition hover:text-[#1967d2]" id="footer-faq">FAQ</a></li>

@@ -29,7 +29,7 @@
         <svg class="absolute left-32 bottom-40 w-24 text-blue-200/30 animate-float-hero-slow" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 19c2.485 0 4.5-2.015 4.5-4.5S19.985 10 17.5 10c-.17 0-.337.013-.5.038C16.402 7.086 13.916 5 11 5 7.686 5 5 7.686 5 11c0 .248.015.492.044.73C2.793 12.186 1 14.153 1 16.5 1 19.538 3.462 22 6.5 22h11z"/></svg>
 
         {{-- Gedung Kiri Bawah --}}
-        <div class="absolute bottom-0 left-0 lg:left-10 flex items-end opacity-90 hidden md:flex">
+        <div class="absolute bottom-0 left-0 lg:left-10 hidden md:flex items-end opacity-90">
             <div class="h-32 w-20 rounded-tr-xl bg-gradient-to-t from-blue-100 to-blue-50 border-r border-t border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] z-0"></div>
             <div class="h-48 w-28 rounded-t-xl bg-gradient-to-t from-blue-200 to-blue-100 border-r border-l border-t border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] -ml-4 z-10">
                 <div class="grid grid-cols-3 gap-2 p-4 pt-6">
@@ -45,7 +45,7 @@
         </div>
 
         {{-- Gedung Kanan Bawah --}}
-        <div class="absolute bottom-0 right-0 lg:right-10 flex items-end opacity-90 hidden md:flex">
+        <div class="absolute bottom-0 right-0 lg:right-10 hidden md:flex items-end opacity-90">
             <div class="h-40 w-24 rounded-tr-xl bg-gradient-to-t from-blue-100 to-white border-r border-t border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] z-0"></div>
             <div class="h-32 w-20 rounded-t-xl bg-gradient-to-t from-blue-200 to-blue-50 border-r border-l border-t border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] -ml-6 z-20">
                 <div class="grid grid-cols-2 gap-3 p-4 pt-6">

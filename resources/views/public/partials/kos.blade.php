@@ -23,7 +23,7 @@
             {{-- Grid Cards --}}
             <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach($kosanList->take(4) as $kos)
-                <a href="{{ route('properti.detail', ['tipe' => 'kosan', 'id' => $kos->id]) }}" class="group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)] block" id="kos-card-{{ $kos->id }}">
+                <a href="{{ route('properti.detail', ['tipe' => 'kosan', 'id' => $kos->id]) }}" class="group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)]" id="kos-card-{{ $kos->id }}">
                     <div class="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                         @if($kos->foto)
                             <img src="{{ $kos->foto }}" alt="{{ $kos->nama }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">

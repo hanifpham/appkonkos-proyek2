@@ -11,8 +11,6 @@
                         <img src="{{ asset('images/appkonkos.png') }}" alt="APPKONKOS" class="h-10 object-contain">
                     </div>
                     <h2 class="mb-3 text-center text-2xl font-bold text-[#090a0b]">Daftar Akun</h2>
-                    
-                    <x-formulir.error-validasi class="mb-3" />
 
                     <form method="POST" action="{{ route('register') }}" class="space-y-3">
                         @csrf
@@ -98,8 +96,6 @@
                             default => 'Masuk untuk mencari properti dan mengelola booking Anda.',
                         };
                     @endphp
-
-                    <x-formulir.error-validasi class="mb-4" />
 
                     @session('status')
                         <div class="mb-4 text-sm font-medium text-green-600">
@@ -190,4 +186,49 @@
             </div>
 
     </div>
+
+    @if ($errors->any())
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                let errorList = '';
+                @foreach ($errors->all() as $error)
+                    errorList += '<li>{{ $error }}</li>';
+                @endforeach
+
+                Swal.fire({
+                    html: `
+                        <div class="flex flex-col items-center">
+                            <div class="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 ring-8 ring-red-50">
+                                <svg class="h-10 w-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <h3 class="mb-2 text-2xl font-extrabold text-slate-800">Ups! Gagal Memproses</h3>
+                            <p class="mb-6 text-sm text-slate-500">Silakan periksa kembali informasi berikut:</p>
+                            
+                            <div class="w-full rounded-2xl bg-red-50/80 p-5 text-left border border-red-100">
+                                <ul class="list-disc pl-5 space-y-1.5 text-sm font-medium text-red-700">
+                                    ${errorList}
+                                </ul>
+                            </div>
+                        </div>
+                    `,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Baik, Saya Mengerti',
+                    buttonsStyling: false,
+                    background: '#ffffff',
+                    backdrop: `rgba(15, 23, 42, 0.6) backdrop-filter backdrop-blur-sm`,
+                    customClass: {
+                        popup: '!rounded-[2rem] shadow-2xl p-8 border border-slate-100',
+                        confirmButton: 'mt-8 w-full rounded-full bg-[#1967d2] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:bg-[#0f4fb5] hover:shadow-blue-600/40 focus:outline-none focus:ring-4 focus:ring-blue-100',
+                        htmlContainer: '!m-0 !p-0'
+                    }
+                }).then((result) => {
+                    // Redirect ke beranda (home) setelah alert ditutup atau tombol diklik
+                    window.location.href = "{{ route('home') }}";
+                });
+            });
+        </script>
+    @endif
 </x-guest-layout>

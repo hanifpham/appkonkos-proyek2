@@ -1,34 +1,89 @@
 {{-- Hero Section --}}
-<section class="relative flex min-h-[560px] items-center justify-center overflow-hidden pt-16" id="hero-section">
-    {{-- Background image --}}
-    <div class="absolute inset-0">
-        <img src="{{ asset('images/hero-bg.png') }}" alt="Interior hunian modern" class="h-full w-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-[#1967d2]/20"></div>
+<style>
+@keyframes float-hero {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+.animate-float-hero {
+    animation: float-hero 6s ease-in-out infinite;
+}
+.animate-float-hero-delayed {
+    animation: float-hero 8s ease-in-out infinite reverse;
+}
+.animate-float-hero-slow {
+    animation: float-hero 10s ease-in-out infinite;
+}
+</style>
+
+<section class="relative flex min-h-[600px] flex-col items-center justify-center overflow-visible bg-gradient-to-b from-[#f4f7fb] to-white pt-24 pb-20" id="hero-section">
+    
+    {{-- Decorative Background Elements (Awan & Gedung Vector) --}}
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+        {{-- Awan Kiri Atas --}}
+        <svg class="absolute -left-10 top-20 w-48 text-blue-200/40 animate-float-hero" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 19c2.485 0 4.5-2.015 4.5-4.5S19.985 10 17.5 10c-.17 0-.337.013-.5.038C16.402 7.086 13.916 5 11 5 7.686 5 5 7.686 5 11c0 .248.015.492.044.73C2.793 12.186 1 14.153 1 16.5 1 19.538 3.462 22 6.5 22h11z"/></svg>
+        
+        {{-- Awan Kanan --}}
+        <svg class="absolute right-10 top-32 w-32 text-blue-200/50 animate-float-hero-delayed" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 19c2.485 0 4.5-2.015 4.5-4.5S19.985 10 17.5 10c-.17 0-.337.013-.5.038C16.402 7.086 13.916 5 11 5 7.686 5 5 7.686 5 11c0 .248.015.492.044.73C2.793 12.186 1 14.153 1 16.5 1 19.538 3.462 22 6.5 22h11z"/></svg>
+
+        {{-- Awan Kiri Bawah --}}
+        <svg class="absolute left-32 bottom-40 w-24 text-blue-200/30 animate-float-hero-slow" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 19c2.485 0 4.5-2.015 4.5-4.5S19.985 10 17.5 10c-.17 0-.337.013-.5.038C16.402 7.086 13.916 5 11 5 7.686 5 5 7.686 5 11c0 .248.015.492.044.73C2.793 12.186 1 14.153 1 16.5 1 19.538 3.462 22 6.5 22h11z"/></svg>
+
+        {{-- Gedung Kiri Bawah --}}
+        <div class="absolute bottom-0 left-0 lg:left-10 flex items-end opacity-90 hidden md:flex">
+            <div class="h-32 w-20 rounded-tr-xl bg-gradient-to-t from-blue-100 to-blue-50 border-r border-t border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] z-0"></div>
+            <div class="h-48 w-28 rounded-t-xl bg-gradient-to-t from-blue-200 to-blue-100 border-r border-l border-t border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] -ml-4 z-10">
+                <div class="grid grid-cols-3 gap-2 p-4 pt-6">
+                    <div class="h-6 w-full bg-white/60 rounded-sm"></div>
+                    <div class="h-6 w-full bg-white/60 rounded-sm"></div>
+                    <div class="h-6 w-full bg-white/60 rounded-sm"></div>
+                    <div class="h-6 w-full bg-white/60 rounded-sm"></div>
+                    <div class="h-6 w-full bg-white/60 rounded-sm"></div>
+                    <div class="h-6 w-full bg-white/60 rounded-sm"></div>
+                </div>
+            </div>
+            <div class="h-24 w-16 rounded-tl-xl bg-gradient-to-t from-slate-100 to-white border-l border-t border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] -ml-4 z-20"></div>
+        </div>
+
+        {{-- Gedung Kanan Bawah --}}
+        <div class="absolute bottom-0 right-0 lg:right-10 flex items-end opacity-90 hidden md:flex">
+            <div class="h-40 w-24 rounded-tr-xl bg-gradient-to-t from-blue-100 to-white border-r border-t border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] z-0"></div>
+            <div class="h-32 w-20 rounded-t-xl bg-gradient-to-t from-blue-200 to-blue-50 border-r border-l border-t border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] -ml-6 z-20">
+                <div class="grid grid-cols-2 gap-3 p-4 pt-6">
+                    <div class="h-6 w-full bg-white/60 rounded-sm"></div>
+                    <div class="h-6 w-full bg-white/60 rounded-sm"></div>
+                    <div class="h-6 w-full bg-white/60 rounded-sm"></div>
+                    <div class="h-6 w-full bg-white/60 rounded-sm"></div>
+                </div>
+            </div>
+            <div class="h-56 w-28 rounded-tl-xl bg-gradient-to-t from-[#1967d2]/10 to-blue-100 border-l border-t border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] -ml-4 z-10">
+                <div class="grid grid-cols-3 gap-2 p-5 pt-8">
+                    <div class="h-5 w-full bg-white/50 rounded-sm"></div>
+                    <div class="h-5 w-full bg-white/50 rounded-sm"></div>
+                    <div class="h-5 w-full bg-white/50 rounded-sm"></div>
+                    <div class="h-5 w-full bg-white/50 rounded-sm"></div>
+                    <div class="h-5 w-full bg-white/50 rounded-sm"></div>
+                    <div class="h-5 w-full bg-white/50 rounded-sm"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    {{-- Particle-like floating shapes --}}
-    <div class="absolute left-10 top-32 h-20 w-20 animate-pulse rounded-full bg-[#1967d2]/20 blur-2xl"></div>
-    <div class="absolute bottom-40 right-20 h-32 w-32 animate-pulse rounded-full bg-[#1967d2]/15 blur-3xl" style="animation-delay:.5s"></div>
-
-    {{-- Hero content --}}
-    <div class="relative z-30 mx-auto w-full max-w-7xl px-4 py-20 text-center sm:px-6 lg:px-8">
-        <p class="mx-auto inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white/90 backdrop-blur-sm">
-            <svg class="h-4 w-4 text-[#1967d2]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            Platform Hunian #1 di Indonesia
-        </p>
-
-        <h1 class="mx-auto mt-6 max-w-4xl text-2xl font-extrabold leading-tight tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
+    {{-- Hero content (Tengah) --}}
+    <div class="relative z-30 mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+        {{-- Title --}}
+        <h1 class="mx-auto max-w-4xl text-3xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-4xl md:text-5xl lg:text-5xl">
             Temukan <span class="text-[#1967d2]">Hunian Nyaman</span>,
             <br class="hidden sm:block">
             Transaksi <span class="text-[#1967d2]">Aman & Mudah</span>
         </h1>
 
-        <p class="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">
+        {{-- Subtitle --}}
+        <p class="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg md:text-xl">
             Cari kos dan kontrakan terbaik di seluruh Indonesia dengan mudah, cepat, dan terpercaya.
         </p>
 
         {{-- Search & Filter Box --}}
-        <div class="animate-float-up relative mx-auto mt-10 max-w-4xl">
+        <div class="relative mx-auto mt-10 max-w-4xl">
             <form action="{{ route('cari') }}" method="GET" class="rounded-full bg-white p-2 shadow-[0_20px_50px_rgba(15,79,181,0.12)] md:p-2.5">
                 <div class="flex flex-col gap-2 md:flex-row md:items-center">
 
@@ -40,7 +95,7 @@
                             <span x-text="selected" class="flex-1 whitespace-nowrap text-left"></span>
                             <svg class="h-3.5 w-3.5 flex-shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
-                        <div x-show="open" x-cloak x-transition class="absolute left-0 top-full z-20 mt-2 w-full overflow-hidden rounded-xl border border-gray-100 bg-white py-1 shadow-lg">
+                        <div x-show="open" x-cloak x-transition class="absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-gray-100 bg-white py-1 shadow-lg">
                             <button type="button" @click="selected = 'Semua Tipe'; open = false" class="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                                 Semua Tipe
@@ -78,23 +133,24 @@
                             <span x-text="selected" class="flex-1 whitespace-nowrap text-left"></span>
                             <svg class="h-3.5 w-3.5 flex-shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
-                        <div x-show="open" x-cloak x-transition class="absolute left-0 top-full z-20 mt-2 w-full overflow-hidden rounded-xl border border-gray-100 bg-white py-1 shadow-lg">
+                        <div x-show="open" x-cloak x-transition class="absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-gray-100 bg-white py-1 shadow-lg">
+                            <button type="button" @click="selected = 'Semua Harga'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Semua Harga</button>
                             <button type="button" @click="selected = '< Rp 1 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">&lt; Rp 1 Juta</button>
-                            <button type="button" @click="selected = 'Rp 1 - 2 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 1 - 2 Juta</button>
-                            <button type="button" @click="selected = 'Rp 2 - 3 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 2 - 3 Juta</button>
-                            <button type="button" @click="selected = '> Rp 3 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">&gt; Rp 3 Juta</button>
+                            <button type="button" @click="selected = 'Rp 1 - 3 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 1 - 3 Juta</button>
+                            <button type="button" @click="selected = 'Rp 3 - 5 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 3 - 5 Juta</button>
+                            <button type="button" @click="selected = 'Rp 5 - 10 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 5 - 10 Juta</button>
+                            <button type="button" @click="selected = 'Rp 10 - 20 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 10 - 20 Juta</button>
+                            <button type="button" @click="selected = '> Rp 20 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">&gt; Rp 20 Juta</button>
                         </div>
                     </div>
 
                     {{-- Tombol Cari --}}
-                    <button type="submit" class="animate-pulse-glow flex items-center justify-center gap-2 rounded-full bg-[#1967d2] px-7 py-3 text-sm font-semibold text-white transition-all hover:bg-[#0f4fb5] hover:shadow-lg md:py-3.5" id="hero-btn-cari">
+                    <button type="submit" class="flex items-center justify-center gap-2 rounded-full bg-[#1967d2] px-7 py-3 text-sm font-semibold text-white transition-all hover:bg-[#0f4fb5] hover:shadow-lg md:py-3.5" id="hero-btn-cari">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         Cari
                     </button>
                 </div>
             </form>
         </div>
-
-
     </div>
 </section>

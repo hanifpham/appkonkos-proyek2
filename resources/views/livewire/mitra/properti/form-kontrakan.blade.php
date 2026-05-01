@@ -122,45 +122,160 @@
                     <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                         <div class="flex items-center justify-between gap-3">
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#0F4C81] dark:text-blue-300">Foto Properti</p>
-                                <h3 class="mt-2 text-lg font-bold text-slate-900 dark:text-white">Foto Utama Kontrakan</h3>
+                                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#0F4C81] dark:text-blue-300">Foto Properti</p>
+                                <h3 class="mt-1 text-base font-bold text-slate-900 dark:text-white">Foto Kontrakan</h3>
                             </div>
-                            <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-300">5 file</span>
                         </div>
 
-                        <div class="mt-5 space-y-4">
-                            <input
-                                id="foto_properti_kontrakan"
-                                type="file"
-                                wire:model="foto_properti"
-                                accept=".jpg,.jpeg,.png,.webp"
-                                multiple
-                                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:font-semibold file:text-[#0F4C81] hover:file:bg-blue-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:file:bg-slate-800 dark:file:text-blue-300">
-                            <p class="text-xs leading-5 text-slate-500 dark:text-slate-400">Anda dapat memilih hingga 5 foto (Tahan tombol Ctrl/Shift untuk memilih banyak file). @if ($editId === null)Kolom ini wajib diisi. @endif Maksimal 2MB per foto, format JPG, JPEG, PNG, atau WEBP. Jika Anda mengunggah foto baru, foto lama akan tertimpa.</p>
-                            @error('foto_properti') <p class="text-sm text-rose-600">{{ $message }}</p> @enderror
-                            @error('foto_properti.*') <p class="text-sm text-rose-600">{{ $message }}</p> @enderror
+                        <div class="mt-4 space-y-3">
+                            <div class="flex flex-col gap-3">
+                                <!-- Foto 1: Utama -->
+                                <div class="group relative flex flex-col gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 transition-all hover:border-blue-200 hover:bg-blue-50/30 dark:border-slate-800 dark:bg-slate-950/40">
+                                    <div class="flex items-center justify-between">
+                                        <label for="foto_1" class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Foto Utama *</label>
+                                        <div class="flex items-center gap-2">
+                                            @if ($foto_1 || isset($existingPhotoUrls[0]))
+                                                <button type="button" wire:click="hapusFoto(1)" class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition hover:bg-rose-100">
+                                                    <span class="material-symbols-outlined text-[14px]">close</span>
+                                                </button>
+                                                <span class="flex items-center gap-1 text-[10px] font-medium text-emerald-600">
+                                                    <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                                    Ok
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1">
+                                            <input
+                                                id="foto_1"
+                                                type="file"
+                                                wire:model="foto_1"
+                                                accept=".jpg,.jpeg,.png,.webp"
+                                                class="block w-full text-[11px] text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-[#0F4C81] file:px-3 file:py-1.5 file:text-[10px] file:font-bold file:text-white transition hover:file:bg-[#0c3d68]">
+                                        </div>
+                                        <div class="shrink-0">
+                                            @if ($foto_1)
+                                                <img src="{{ $foto_1->temporaryUrl() }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @elseif(isset($existingPhotoUrls[0]))
+                                                <img src="{{ $existingPhotoUrls[0] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @else
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                    <span class="material-symbols-outlined text-[18px]">image</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @error('foto_1') <p class="text-[10px] font-medium text-rose-600">{{ $message }}</p> @enderror
+                                </div>
 
-                            @if (!empty($foto_properti))
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                @foreach ($foto_properti as $foto)
-                                <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
-                                    <img src="{{ $foto->temporaryUrl() }}" alt="Preview foto baru" class="h-32 w-full object-cover">
+                                <!-- Foto 2: Samping -->
+                                <div class="group relative flex flex-col gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 transition-all hover:border-blue-200 hover:bg-blue-50/30 dark:border-slate-800 dark:bg-slate-950/40">
+                                    <div class="flex items-center justify-between">
+                                        <label for="foto_2" class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Samping (Opsional)</label>
+                                        @if ($foto_2 || isset($existingPhotoUrls[1]))
+                                            <button type="button" wire:click="hapusFoto(2)" class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition hover:bg-rose-100">
+                                                <span class="material-symbols-outlined text-[14px]">close</span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1">
+                                            <input
+                                                id="foto_2"
+                                                type="file"
+                                                wire:model="foto_2"
+                                                accept=".jpg,.jpeg,.png,.webp"
+                                                class="block w-full text-[11px] text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-[10px] file:font-bold file:text-slate-700 transition hover:file:bg-slate-300">
+                                        </div>
+                                        <div class="shrink-0">
+                                            @if ($foto_2)
+                                                <img src="{{ $foto_2->temporaryUrl() }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @elseif(isset($existingPhotoUrls[1]))
+                                                <img src="{{ $existingPhotoUrls[1] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @else
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                    <span class="material-symbols-outlined text-[18px]">image</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @error('foto_2') <p class="text-[10px] font-medium text-rose-600">{{ $message }}</p> @enderror
                                 </div>
-                                @endforeach
-                            </div>
-                            @elseif (!empty($existingPhotoUrls))
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                @foreach ($existingPhotoUrls as $url)
-                                <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
-                                    <img src="{{ $url }}" alt="Foto kontrakan saat ini" class="h-32 w-full object-cover">
+
+                                <!-- Foto 3: Dalam -->
+                                <div class="group relative flex flex-col gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 transition-all hover:border-blue-200 hover:bg-blue-50/30 dark:border-slate-800 dark:bg-slate-950/40">
+                                    <div class="flex items-center justify-between">
+                                        <label for="foto_3" class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Dalam (Opsional)</label>
+                                        @if ($foto_3 || isset($existingPhotoUrls[2]))
+                                            <button type="button" wire:click="hapusFoto(3)" class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition hover:bg-rose-100">
+                                                <span class="material-symbols-outlined text-[14px]">close</span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1">
+                                            <input
+                                                id="foto_3"
+                                                type="file"
+                                                wire:model="foto_3"
+                                                accept=".jpg,.jpeg,.png,.webp"
+                                                class="block w-full text-[11px] text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-[10px] file:font-bold file:text-slate-700 transition hover:file:bg-slate-300">
+                                        </div>
+                                        <div class="shrink-0">
+                                            @if ($foto_3)
+                                                <img src="{{ $foto_3->temporaryUrl() }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @elseif(isset($existingPhotoUrls[2]))
+                                                <img src="{{ $existingPhotoUrls[2] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @else
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                    <span class="material-symbols-outlined text-[18px]">image</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @error('foto_3') <p class="text-[10px] font-medium text-rose-600">{{ $message }}</p> @enderror
                                 </div>
-                                @endforeach
+
+                                <!-- Foto 4: Fasilitas -->
+                                <div class="group relative flex flex-col gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 transition-all hover:border-blue-200 hover:bg-blue-50/30 dark:border-slate-800 dark:bg-slate-950/40">
+                                    <div class="flex items-center justify-between">
+                                        <label for="foto_4" class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Fasilitas (Opsional)</label>
+                                        @if ($foto_4 || isset($existingPhotoUrls[3]))
+                                            <button type="button" wire:click="hapusFoto(4)" class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition hover:bg-rose-100">
+                                                <span class="material-symbols-outlined text-[14px]">close</span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1">
+                                            <input
+                                                id="foto_4"
+                                                type="file"
+                                                wire:model="foto_4"
+                                                accept=".jpg,.jpeg,.png,.webp"
+                                                class="block w-full text-[11px] text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-[10px] file:font-bold file:text-slate-700 transition hover:file:bg-slate-300">
+                                        </div>
+                                        <div class="shrink-0">
+                                            @if ($foto_4)
+                                                <img src="{{ $foto_4->temporaryUrl() }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @elseif(isset($existingPhotoUrls[3]))
+                                                <img src="{{ $existingPhotoUrls[3] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @else
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                    <span class="material-symbols-outlined text-[18px]">image</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @error('foto_4') <p class="text-[10px] font-medium text-rose-600">{{ $message }}</p> @enderror
+                                </div>
                             </div>
-                            @else
-                            <div class="flex h-32 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-sm font-medium text-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-500">
-                                Preview foto akan muncul di sini
-                            </div>
-                            @endif
+
+                            <p class="text-[10px] leading-relaxed text-slate-400">
+                                Maksimal 2MB, format JPG/PNG/WEBP. Unggahan baru akan menggantikan foto lama.
+                            </p>
                         </div>
                     </section>
 

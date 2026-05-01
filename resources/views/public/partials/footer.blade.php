@@ -79,7 +79,7 @@
     </div>
 
     {{-- Bottom bar --}}
-    <div class="border-t border-gray-100 bg-slate-50/50">
+    <div class="footer-bottom-bar border-t border-gray-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-950">
         <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
             <p class="text-center text-sm text-slate-400">
                 &copy; 2026 APPKONKOS. Seluruh hak cipta dilindungi.

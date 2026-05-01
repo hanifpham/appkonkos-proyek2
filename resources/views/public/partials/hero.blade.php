@@ -84,27 +84,27 @@
 
         {{-- Search & Filter Box --}}
         <div class="relative mx-auto mt-10 max-w-4xl">
-            <form action="{{ route('cari') }}" method="GET" class="rounded-full bg-white p-2 shadow-[0_20px_50px_rgba(15,79,181,0.12)] md:p-2.5">
+            <form action="{{ route('cari') }}" method="GET" class="hero-search-card rounded-full bg-white p-2 shadow-[0_20px_50px_rgba(15,79,181,0.12)] md:p-2.5">
                 <div class="flex flex-col gap-2 md:flex-row md:items-center">
 
                     {{-- Dropdown Jenis Properti --}}
                     <div class="relative md:w-auto md:min-w-[11rem]" x-data="{ open: false, selected: 'Semua Tipe', icon: 'all' }" @click.outside="open = false">
                         <input type="hidden" name="tipe" x-model="selected">
-                        <button type="button" @click="open = !open" class="flex w-full items-center gap-2 rounded-full bg-slate-50 px-4 py-3 text-sm text-slate-600 transition hover:bg-slate-100 md:py-3.5" id="hero-dropdown-tipe">
+                        <button type="button" @click="open = !open" class="hero-search-trigger flex w-full items-center gap-2 rounded-full bg-slate-50 px-4 py-3 text-sm text-slate-600 transition hover:bg-slate-100 md:py-3.5" id="hero-dropdown-tipe">
                             <svg class="h-4 w-4 flex-shrink-0 text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                             <span x-text="selected" class="flex-1 whitespace-nowrap text-left"></span>
                             <svg class="h-3.5 w-3.5 flex-shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
-                        <div x-show="open" x-cloak x-transition class="absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-gray-100 bg-white py-1 shadow-lg">
-                            <button type="button" @click="selected = 'Semua Tipe'; open = false" class="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">
+                        <div x-show="open" x-cloak x-transition class="hero-search-menu absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-gray-100 bg-white py-1 shadow-lg">
+                            <button type="button" @click="selected = 'Semua Tipe'; open = false" class="hero-search-option flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                                 Semua Tipe
                             </button>
-                            <button type="button" @click="selected = 'Kos'; open = false" class="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">
+                            <button type="button" @click="selected = 'Kos'; open = false" class="hero-search-option flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
                                 Kos
                             </button>
-                            <button type="button" @click="selected = 'Kontrakan'; open = false" class="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">
+                            <button type="button" @click="selected = 'Kontrakan'; open = false" class="hero-search-option flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                 Kontrakan
                             </button>
@@ -112,35 +112,35 @@
                     </div>
 
                     {{-- Divider --}}
-                    <div class="hidden h-8 w-px bg-slate-200 md:block"></div>
+                    <div class="hero-search-divider hidden h-8 w-px bg-slate-200 md:block"></div>
 
                     {{-- Input Lokasi --}}
                     <div class="relative flex-1">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                            <svg class="h-4 w-4 text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <svg class="hero-search-icon h-4 w-4 text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         </div>
                         <input type="text" name="lokasi" placeholder="Cari lokasi atau nama properti..." class="w-full rounded-full border-0 bg-transparent py-3 pl-10 pr-4 text-sm text-slate-700 outline-none ring-0 placeholder:text-slate-400 focus:ring-0 md:py-3.5" id="hero-input-lokasi">
                     </div>
 
                     {{-- Divider --}}
-                    <div class="hidden h-8 w-px bg-slate-200 md:block"></div>
+                    <div class="hero-search-divider hidden h-8 w-px bg-slate-200 md:block"></div>
 
                     {{-- Dropdown Harga --}}
                     <div class="relative md:w-auto md:min-w-[11rem]" x-data="{ open: false, selected: 'Rentang Harga' }" @click.outside="open = false">
                         <input type="hidden" name="harga" x-model="selected">
-                        <button type="button" @click="open = !open" class="flex w-full items-center gap-2 rounded-full bg-slate-50 px-4 py-3 text-sm text-slate-500 transition hover:bg-slate-100 md:bg-transparent md:py-3.5" id="hero-dropdown-harga">
+                        <button type="button" @click="open = !open" class="hero-search-trigger flex w-full items-center gap-2 rounded-full bg-slate-50 px-4 py-3 text-sm text-slate-500 transition hover:bg-slate-100 md:bg-transparent md:py-3.5" id="hero-dropdown-harga">
                             <svg class="h-4 w-4 flex-shrink-0 text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             <span x-text="selected" class="flex-1 whitespace-nowrap text-left"></span>
                             <svg class="h-3.5 w-3.5 flex-shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
-                        <div x-show="open" x-cloak x-transition class="absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-gray-100 bg-white py-1 shadow-lg">
-                            <button type="button" @click="selected = 'Semua Harga'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Semua Harga</button>
-                            <button type="button" @click="selected = '< Rp 1 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">&lt; Rp 1 Juta</button>
-                            <button type="button" @click="selected = 'Rp 1 - 3 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 1 - 3 Juta</button>
-                            <button type="button" @click="selected = 'Rp 3 - 5 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 3 - 5 Juta</button>
-                            <button type="button" @click="selected = 'Rp 5 - 10 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 5 - 10 Juta</button>
-                            <button type="button" @click="selected = 'Rp 10 - 20 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 10 - 20 Juta</button>
-                            <button type="button" @click="selected = '> Rp 20 Juta'; open = false" class="block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">&gt; Rp 20 Juta</button>
+                        <div x-show="open" x-cloak x-transition class="hero-search-menu absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-gray-100 bg-white py-1 shadow-lg">
+                            <button type="button" @click="selected = 'Semua Harga'; open = false" class="hero-search-option block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Semua Harga</button>
+                            <button type="button" @click="selected = '< Rp 1 Juta'; open = false" class="hero-search-option block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">&lt; Rp 1 Juta</button>
+                            <button type="button" @click="selected = 'Rp 1 - 3 Juta'; open = false" class="hero-search-option block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 1 - 3 Juta</button>
+                            <button type="button" @click="selected = 'Rp 3 - 5 Juta'; open = false" class="hero-search-option block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 3 - 5 Juta</button>
+                            <button type="button" @click="selected = 'Rp 5 - 10 Juta'; open = false" class="hero-search-option block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 5 - 10 Juta</button>
+                            <button type="button" @click="selected = 'Rp 10 - 20 Juta'; open = false" class="hero-search-option block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">Rp 10 - 20 Juta</button>
+                            <button type="button" @click="selected = '> Rp 20 Juta'; open = false" class="hero-search-option block w-full px-4 py-2.5 text-left text-sm text-[#090a0b] hover:bg-sky-50 hover:text-[#1967d2]">&gt; Rp 20 Juta</button>
                         </div>
                     </div>
 

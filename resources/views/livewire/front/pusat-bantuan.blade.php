@@ -93,7 +93,7 @@
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
                             </span>
                         </button>
-                        <div x-show="expanded" x-collapse x-cloak>
+                        <div x-show="expanded" x-cloak>
                             <div class="px-6 pb-6 pt-0 text-[15px] leading-relaxed text-slate-600">
                                 Kami menggunakan sistem pembayaran aman. Anda bisa membayar melalui transfer bank (Virtual Account), e-Wallet (GoPay, dll), atau QRIS yang terintegrasi di sistem setelah Anda memilih nomor kamar dan klik "Ajukan Sewa".
                             </div>
@@ -108,7 +108,7 @@
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
                             </span>
                         </button>
-                        <div x-show="expanded" x-collapse x-cloak>
+                        <div x-show="expanded" x-cloak>
                             <div class="px-6 pb-6 pt-0 text-[15px] leading-relaxed text-slate-600">
                                 Ya! APPKONKOS memiliki fitur pemilihan kamar secara langsung. Anda bisa melihat denah nomor kamar yang tersedia (kotak putih) dan kamar yang sudah terisi (kotak abu-abu berikon gembok).
                             </div>
@@ -123,7 +123,7 @@
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
                             </span>
                         </button>
-                        <div x-show="expanded" x-collapse x-cloak>
+                        <div x-show="expanded" x-cloak>
                             <div class="px-6 pb-6 pt-0 text-[15px] leading-relaxed text-slate-600">
                                 Jika Anda membatalkan pesanan yang sudah dibayar SEBELUM tanggal check-in, Anda berhak mendapatkan pengembalian dana (Refund) sebesar <strong class="font-bold text-slate-900">75%</strong> dari total transaksi. Pemotongan 25% digunakan untuk biaya administrasi dan kompensasi pemilik kos.
                             </div>
@@ -143,7 +143,7 @@
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
                             </span>
                         </button>
-                        <div x-show="expanded" x-collapse x-cloak>
+                        <div x-show="expanded" x-cloak>
                             <div class="px-6 pb-6 pt-0 text-[15px] leading-relaxed text-slate-600">
                                 Sistem akan memotong persentase komisi (sesuai kebijakan saat ini) secara otomatis dari setiap transaksi sewa yang berhasil. Pendapatan yang Anda lihat di dashboard adalah Pendapatan Bersih.
                             </div>
@@ -158,7 +158,7 @@
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
                             </span>
                         </button>
-                        <div x-show="expanded" x-collapse x-cloak>
+                        <div x-show="expanded" x-cloak>
                             <div class="px-6 pb-6 pt-0 text-[15px] leading-relaxed text-slate-600">
                                 Pendapatan dari penyewa akan masuk ke "Saldo Tersedia" Anda setelah transaksi berhasil. Anda bisa mengajukan pencairan dana ke rekening bank Anda kapan saja melalui menu Keuangan di Dashboard Mitra.
                             </div>
@@ -173,7 +173,7 @@
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
                             </span>
                         </button>
-                        <div x-show="expanded" x-collapse x-cloak>
+                        <div x-show="expanded" x-cloak>
                             <div class="px-6 pb-6 pt-0 text-[15px] leading-relaxed text-slate-600">
                                 Setiap properti yang didaftarkan akan melalui tahap moderasi. Jika ditolak, Anda dapat melihat "Alasan Penolakan" (misal: foto buram atau informasi tidak lengkap) di halaman Detail Properti Anda, lalu Anda dapat mengedit dan mengajukannya kembali.
                             </div>

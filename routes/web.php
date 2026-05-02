@@ -45,6 +45,7 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:pencari'])->group(function (): void {
     Route::get('/dashboard', PencariDashboard::class)->name('dashboard');
+    Route::get('/profil-saya', \App\Livewire\Pencari\ProfilSaya::class)->name('pencari.profil');
     Route::get('/pembayaran/{booking}', [PembayaranController::class, 'show'])->name('pencari.pembayaran.show');
     Route::post('/pembayaran/{booking}/snap-token', [PembayaranController::class, 'snapToken'])->name('pencari.pembayaran.snap-token');
 });

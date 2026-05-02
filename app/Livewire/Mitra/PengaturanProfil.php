@@ -87,13 +87,6 @@ class PengaturanProfil extends Component
      */
     public function updatedFotoBaru(): void
     {
-        /** @var User|null $user */
-        $user = Auth::user();
-
-        if ($user === null) {
-            abort(403, 'Unauthorized action.');
-        }
-
         try {
             $this->validate([
                 'foto_baru' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
@@ -108,9 +101,49 @@ class PengaturanProfil extends Component
 
             throw $exception;
         }
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function simpanFotoProfil(): void
+    {
+        /** @var User|null $user */
+        $user = Auth::user();
+
+        if ($user === null) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $this->validate([
+                'foto_baru' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            ], [
+                'foto_baru.required' => 'Pilih foto profil terlebih dahulu.',
+                'foto_baru.image' => 'Foto profil harus berupa gambar.',
+                'foto_baru.mimes' => 'Foto profil harus berformat JPG, JPEG, PNG, atau WEBP.',
+                'foto_baru.max' => 'Ukuran foto profil maksimal 2MB.',
+            ]);
+        } catch (ValidationException $exception) {
+            $this->dispatchValidationErrorToast($exception);
+
+            throw $exception;
+        }
 
         $oldProfilePhotoPath = $user->profile_photo_path;
-        $path = $this->foto_baru->store('profile-photos', 'public');
+        $extension = $this->foto_baru->getClientOriginalExtension() ?: $this->foto_baru->extension() ?: 'jpg';
+        $path = $this->foto_baru->storeAs(
+            'profile-photos',
+            'user-'.$user->id.'-'.now()->format('YmdHis').'.'.$extension,
+            'public'
+        );
+
+        if (! is_string($path) || $path === '') {
+            throw ValidationException::withMessages([
+                'foto_baru' => 'Foto profil gagal disimpan. Silakan coba lagi.',
+            ]);
+        }
+
         $this->ensurePublicStorageFile($path);
 
         $user->update([

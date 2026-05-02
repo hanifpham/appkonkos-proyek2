@@ -79,9 +79,30 @@
             @auth
                 @php
                     $navUser = Auth::user();
-                    $navProfilePhoto = $navUser->profile_photo_path
-                        ? '/storage/'.ltrim($navUser->profile_photo_path, '/').'?v='.($navUser->updated_at?->timestamp ?? now()->timestamp)
+                    $navProfilePhotoPath = is_string($navUser?->profile_photo_path)
+                        ? ltrim($navUser->profile_photo_path, '/')
+                        : '';
+
+                    if ($navProfilePhotoPath !== '') {
+                        $navProfilePhotoPath = preg_replace('#^(storage/|public/storage/)#', '', $navProfilePhotoPath) ?? $navProfilePhotoPath;
+                        $sourceNavProfilePhoto = storage_path('app/public/'.$navProfilePhotoPath);
+                        $publicNavProfilePhoto = public_path('storage/'.$navProfilePhotoPath);
+
+                        if (file_exists($sourceNavProfilePhoto)) {
+                            if (! is_dir(dirname($publicNavProfilePhoto))) {
+                                mkdir(dirname($publicNavProfilePhoto), 0775, true);
+                            }
+
+                            if (! file_exists($publicNavProfilePhoto) || filesize($publicNavProfilePhoto) !== filesize($sourceNavProfilePhoto)) {
+                                copy($sourceNavProfilePhoto, $publicNavProfilePhoto);
+                            }
+                        }
+                    }
+
+                    $navProfilePhoto = $navProfilePhotoPath !== ''
+                        ? '/storage/'.$navProfilePhotoPath.'?v='.($navUser->updated_at?->timestamp ?? now()->timestamp)
                         : 'https://ui-avatars.com/api/?name='.urlencode($navUser->name).'&color=113C7A&background=EBF4FF';
+                    $navProfileFallbackPhoto = 'https://ui-avatars.com/api/?name='.urlencode($navUser->name).'&color=113C7A&background=EBF4FF';
                 @endphp
                 <div class="hidden items-center gap-2 md:flex">
                     {{-- A. Toggle Dark/Light Mode (synced with mitra dashboard) --}}
@@ -96,7 +117,7 @@
                     {{-- C. Dropdown Profil User (Premium Airbnb style) --}}
                     <div class="relative" x-data="{ open: false }" @click.outside="open = false">
                         <button @click="open = !open" class="flex items-center gap-2 rounded-full border border-slate-200/80 bg-white py-1.5 pl-1.5 pr-2.5 shadow-sm transition-all hover:border-slate-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600" aria-label="Menu profil">
-                            <img src="{{ $navProfilePhoto }}" alt="{{ $navUser->name }}" class="h-9 w-9 rounded-full object-cover ring-2 ring-white dark:ring-slate-700" data-appkonkos-profile-photo>
+                            <img src="{{ $navProfilePhoto }}" alt="{{ $navUser->name }}" class="h-9 w-9 rounded-full object-cover ring-2 ring-white dark:ring-slate-700" data-appkonkos-profile-photo onerror="this.onerror=null;this.src='{{ $navProfileFallbackPhoto }}';">
                             <svg class="h-4 w-4 text-slate-400 transition-transform duration-300" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                         </button>
 
@@ -121,9 +142,8 @@
                                 </div>
                             </div>
 
-                            {{-- Menu Items --}}
                             <div class="py-2">
-                                <a href="{{ route('profile.show') }}" class="flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-blue-50 hover:text-[#1967d2] dark:text-slate-300 dark:hover:bg-slate-700/50 dark:hover:text-blue-400">
+                                <a href="{{ route('pencari.profil') }}" wire:navigate class="flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-blue-50 hover:text-[#1967d2] dark:text-slate-300 dark:hover:bg-slate-700/50 dark:hover:text-blue-400">
                                     <svg class="h-[18px] w-[18px] text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                                     Profil Saya
                                 </a>
@@ -224,7 +244,7 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('profile.show') }}" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-blue-50 hover:text-[#1967d2] dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400">
+                    <a href="{{ route('pencari.profil') }}" wire:navigate class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-blue-50 hover:text-[#1967d2] dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400">
                         <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                         Profil Saya
                     </a>

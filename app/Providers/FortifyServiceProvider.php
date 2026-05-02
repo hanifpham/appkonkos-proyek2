@@ -9,15 +9,21 @@ use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Http\Responses\RoleLoginResponse;
+use App\Http\Responses\RoleRegisterResponse;
 use App\Http\Responses\RoleTwoFactorLoginResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
-use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseContract;
+use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
+use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseContract;
 use Laravel\Fortify\Fortify;
+use App\Models\User;
+
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -27,6 +33,7 @@ class FortifyServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(LoginResponseContract::class, RoleLoginResponse::class);
+        $this->app->singleton(RegisterResponseContract::class, RoleRegisterResponse::class);
         $this->app->singleton(TwoFactorLoginResponseContract::class, RoleTwoFactorLoginResponse::class);
     }
 
@@ -43,6 +50,40 @@ class FortifyServiceProvider extends ServiceProvider
 
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
+        });
+
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where('email', $request->email)->first();
+
+            if ($user && Hash::check($request->password, $user->password)) {
+                // Ambil tipe portal dari session (diset di routes/web.php)
+                $loginPortal = session('login_portal', 'pencari');
+                
+                if ($loginPortal === 'pencari') {
+                    if ($user->role !== 'pencari') {
+                        throw ValidationException::withMessages([
+                            'email' => 'Akun ini terdaftar sebagai Admin/Mitra. Silakan login melalui portal Admin Kos & Kontrakan.',
+                        ]);
+                    }
+                } elseif ($loginPortal === 'pemilik') {
+                    // Portal mitra/pemilik membolehkan role pemilik dan superadmin
+                    if (!in_array($user->role, ['pemilik', 'superadmin'])) {
+                        throw ValidationException::withMessages([
+                            'email' => 'Akun ini terdaftar sebagai Pencari Kos. Silakan login melalui portal Pencari Kos & Kontrakan.',
+                        ]);
+                    }
+                } elseif ($loginPortal === 'superadmin') {
+                    if ($user->role !== 'superadmin') {
+                        throw ValidationException::withMessages([
+                            'email' => 'Akses ditolak. Anda bukan Super Admin.',
+                        ]);
+                    }
+                }
+
+                return $user;
+            }
+            
+            return false;
         });
     }
 }

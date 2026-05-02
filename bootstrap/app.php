@@ -4,6 +4,7 @@ use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,6 +17,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => RoleMiddleware::class,
         ]);
+
+        $middleware->redirectUsersTo(function (Request $request) {
+            $role = $request->user()?->role ?? 'pencari';
+            return match ($role) {
+                'superadmin' => route('superadmin.dashboard', absolute: false),
+                'pemilik' => route('mitra.dashboard', absolute: false),
+                default => route('home', absolute: false),
+            };
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

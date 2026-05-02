@@ -60,3 +60,160 @@ html {
 .animate-pulse-glow {
     animation: pulseGlow 2.5s ease-in-out infinite;
 }
+
+html.dark body.app-public-theme,
+html.dark .app-public-theme {
+    background-color: #020617;
+    color: #e2e8f0;
+}
+
+html.dark .app-public-theme #hero-section {
+    background: linear-gradient(180deg, #0b1120 0%, #111827 100%) !important;
+}
+
+html.dark .app-public-theme #rekomendasi-kos,
+html.dark .app-public-theme #rekomendasi-kontrakan,
+html.dark .app-public-theme #area-populer,
+html.dark .app-public-theme #sekitar-kampus,
+html.dark .app-public-theme [class~="bg-[#F8FAFC]"] {
+    background-color: #0f172a !important;
+}
+
+html.dark .app-public-theme :where(section, div, article, footer, form, button).bg-white,
+html.dark .app-public-theme a.bg-white:not([href^="https://wa.me"]),
+html.dark .app-public-theme [class~="bg-[#ffffff]"] {
+    background-color: #111827 !important;
+}
+
+html.dark .app-public-theme :where(div, article, section, form, input, textarea, select, button)[class~="bg-slate-50"],
+html.dark .app-public-theme :where(div, article, section, form, input, textarea, select, button)[class~="bg-gray-50"],
+html.dark .app-public-theme :where(div, article, section, form, input, textarea, select, button)[class~="bg-blue-50"],
+html.dark .app-public-theme :where(div, article, section, form, input, textarea, select, button)[class~="bg-slate-100"],
+html.dark .app-public-theme :where(div, article, section, form, input, textarea, select, button)[class~="bg-gray-100"] {
+    background-color: #1e293b !important;
+}
+
+html.dark .app-public-theme input:not([type="checkbox"]):not([type="radio"]),
+html.dark .app-public-theme select,
+html.dark .app-public-theme textarea {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+html.dark .app-public-theme input.bg-transparent,
+html.dark .app-public-theme select.bg-transparent,
+html.dark .app-public-theme textarea.bg-transparent {
+    background-color: transparent !important;
+}
+
+html.dark .app-public-theme input::placeholder,
+html.dark .app-public-theme textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+html.dark .app-public-theme .text-\[\#090a0b\],
+html.dark .app-public-theme .text-slate-950,
+html.dark .app-public-theme .text-slate-900,
+html.dark .app-public-theme .text-slate-800,
+html.dark .app-public-theme .text-gray-900,
+html.dark .app-public-theme .text-gray-800 {
+    color: #f8fafc !important;
+}
+
+html.dark .app-public-theme .text-\[\#6b7280\],
+html.dark .app-public-theme .text-slate-700,
+html.dark .app-public-theme .text-slate-600,
+html.dark .app-public-theme .text-slate-500,
+html.dark .app-public-theme .text-gray-700,
+html.dark .app-public-theme .text-gray-600,
+html.dark .app-public-theme .text-gray-500 {
+    color: #cbd5e1 !important;
+}
+
+html.dark .app-public-theme .text-slate-400,
+html.dark .app-public-theme .text-gray-400 {
+    color: #94a3b8 !important;
+}
+
+html.dark .app-public-theme :where(.border-slate-100, .border-slate-200, .border-slate-300, .border-gray-100, .border-gray-200, .border-\[\#e5e7eb\], .border-\[\#090a0b\]) {
+    border-color: #334155 !important;
+}
+
+html.dark .app-public-theme :where(.ring-slate-100, .ring-gray-100, .ring-\[\#e5e7eb\]) {
+    --tw-ring-color: #334155 !important;
+}
+
+html.dark .app-public-theme .shadow-sm,
+html.dark .app-public-theme .shadow-md,
+html.dark .app-public-theme .shadow-lg,
+html.dark .app-public-theme .shadow-xl,
+html.dark .app-public-theme .shadow-2xl {
+    --tw-shadow-color: rgba(0, 0, 0, 0.45);
+}
+
+html.dark .app-public-theme .hero-search-card {
+    background-color: #0f172a !important;
+    border: 1px solid #334155;
+    box-shadow: 0 22px 55px rgba(2, 6, 23, 0.5);
+}
+
+html.dark .app-public-theme .hero-search-trigger {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+}
+
+html.dark .app-public-theme .hero-search-trigger:hover {
+    background-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+html.dark .app-public-theme .hero-search-trigger svg:first-child,
+html.dark .app-public-theme .hero-search-icon {
+    color: #60a5fa !important;
+}
+
+html.dark .app-public-theme .hero-search-trigger svg:last-child {
+    color: #cbd5e1 !important;
+}
+
+html.dark .app-public-theme #hero-input-lokasi {
+    color: #f8fafc !important;
+}
+
+html.dark .app-public-theme #hero-input-lokasi::placeholder {
+    color: #94a3b8 !important;
+}
+
+html.dark .app-public-theme .hero-search-divider {
+    background-color: #334155 !important;
+}
+
+html.dark .app-public-theme .hero-search-menu {
+    background-color: #0b1120 !important;
+    border-color: #334155 !important;
+    box-shadow: 0 18px 45px rgba(2, 6, 23, 0.55);
+}
+
+html.dark .app-public-theme .hero-search-option {
+    background-color: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+html.dark .app-public-theme .hero-search-option svg {
+    color: #93c5fd !important;
+}
+
+html.dark .app-public-theme .hero-search-option:hover {
+    background-color: #1e3a5f !important;
+    color: #f8fafc !important;
+}
+
+html.dark .app-public-theme .hero-search-option:hover svg {
+    color: #bfdbfe !important;
+}
+
+html.dark .app-public-theme #footer .footer-bottom-bar {
+    background-color: #020617 !important;
+    border-color: #1e293b !important;
+}

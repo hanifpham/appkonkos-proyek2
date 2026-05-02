@@ -38,18 +38,17 @@
     </head>
     <body
         x-data="{
-            darkMode: localStorage.getItem('mitra-dark-mode') === 'true',
+            darkMode: false,
             mobileSidebarOpen: false,
             init() {
-                this.applyTheme();
-            },
-            applyTheme() {
-                document.documentElement.classList.toggle('dark', this.darkMode);
+                this.darkMode = window.appkonkosTheme?.isDark() ?? document.documentElement.classList.contains('dark');
+                window.addEventListener('appkonkos-theme-changed', (event) => {
+                    this.darkMode = event.detail.darkMode;
+                });
             },
             toggleDarkMode() {
-                this.darkMode = !this.darkMode;
-                localStorage.setItem('mitra-dark-mode', this.darkMode ? 'true' : 'false');
-                this.applyTheme();
+                this.darkMode = window.appkonkosTheme?.toggle() ?? !this.darkMode;
+                document.documentElement.classList.toggle('dark', this.darkMode);
             }
         }"
         x-init="init()"

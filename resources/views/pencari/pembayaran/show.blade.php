@@ -78,7 +78,7 @@
                             </button>
                         @endif
 
-                        <a href="{{ route('dashboard') }}" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                        <a href="{{ route('home') }}" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                             <span class="material-symbols-outlined text-lg">arrow_back</span>
                             Kembali ke Dashboard
                         </a>

@@ -2,13 +2,13 @@
 @section('mitra-subtitle', 'Atur informasi rumah kontrakan dengan presentasi yang rapi dan mudah dipahami.')
 
 @push('styles')
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 @endpush
 
 @push('scripts')
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 @endpush
 
 <div class="px-4 py-8 sm:px-6 xl:px-8">
@@ -32,8 +32,7 @@
 
             <a
                 href="{{ route('mitra.properti') }}"
-                class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300"
-            >
+                class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                 Kembali ke Properti Saya
             </a>
@@ -56,8 +55,7 @@
                                 type="text"
                                 wire:model.defer="nama_properti"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
-                                placeholder="Contoh: Kontrakan An-Nur"
-                            >
+                                placeholder="Contoh: Kontrakan An-Nur">
                             @error('nama_properti') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -68,8 +66,7 @@
                                 rows="5"
                                 wire:model.defer="alamat_lengkap"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
-                                placeholder="Masukkan alamat lengkap kontrakan"
-                            ></textarea>
+                                placeholder="Masukkan alamat lengkap kontrakan"></textarea>
                             @error('alamat_lengkap') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -81,8 +78,7 @@
                                 min="0"
                                 wire:model.defer="harga_sewa_tahun"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
-                                placeholder="6000000"
-                            >
+                                placeholder="6000000">
                             @error('harga_sewa_tahun') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -94,8 +90,7 @@
                                 min="0"
                                 wire:model.defer="sisa_kamar"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
-                                placeholder="1"
-                            >
+                                placeholder="1">
                             @error('sisa_kamar') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -106,8 +101,7 @@
                                 rows="6"
                                 wire:model.defer="fasilitas"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
-                                placeholder="Contoh: 2 kamar tidur, dapur, carport, PAM, listrik token"
-                            ></textarea>
+                                placeholder="Contoh: 2 kamar tidur, dapur, carport, PAM, listrik token"></textarea>
                             @error('fasilitas') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -118,8 +112,7 @@
                                 rows="6"
                                 wire:model.defer="peraturan_kontrakan"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
-                                placeholder="Contoh: Tidak boleh renovasi tanpa izin, wajib menjaga kebersihan area rumah."
-                            ></textarea>
+                                placeholder="Contoh: Tidak boleh renovasi tanpa izin, wajib menjaga kebersihan area rumah."></textarea>
                             @error('peraturan_kontrakan') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -129,36 +122,160 @@
                     <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                         <div class="flex items-center justify-between gap-3">
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#0F4C81] dark:text-blue-300">Foto Properti</p>
-                                <h3 class="mt-2 text-lg font-bold text-slate-900 dark:text-white">Foto Utama Kontrakan</h3>
+                                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#0F4C81] dark:text-blue-300">Foto Properti</p>
+                                <h3 class="mt-1 text-base font-bold text-slate-900 dark:text-white">Foto Kontrakan</h3>
                             </div>
-                            <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-300">1 file</span>
                         </div>
 
-                        <div class="mt-5 space-y-4">
-                            <input
-                                id="foto_properti_kontrakan"
-                                type="file"
-                                wire:model="foto_properti"
-                                accept=".jpg,.jpeg,.png,.webp"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:font-semibold file:text-[#0F4C81] hover:file:bg-blue-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:file:bg-slate-800 dark:file:text-blue-300"
-                            >
-                            <p class="text-xs leading-5 text-slate-500 dark:text-slate-400">Pilih foto utama yang paling mewakili tampilan kontrakan. @if ($editId === null)Kolom ini wajib diisi. @endif Maksimal 2MB, format JPG, JPEG, PNG, atau WEBP.</p>
-                            @error('foto_properti') <p class="text-sm text-rose-600">{{ $message }}</p> @enderror
+                        <div class="mt-4 space-y-3">
+                            <div class="flex flex-col gap-3">
+                                <!-- Foto 1: Utama -->
+                                <div class="group relative flex flex-col gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 transition-all hover:border-blue-200 hover:bg-blue-50/30 dark:border-slate-800 dark:bg-slate-950/40">
+                                    <div class="flex items-center justify-between">
+                                        <label for="foto_1" class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Foto Utama *</label>
+                                        <div class="flex items-center gap-2">
+                                            @if ($foto_1 || isset($existingPhotoUrls[0]))
+                                                <button type="button" wire:click="hapusFoto(1)" class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition hover:bg-rose-100">
+                                                    <span class="material-symbols-outlined text-[14px]">close</span>
+                                                </button>
+                                                <span class="flex items-center gap-1 text-[10px] font-medium text-emerald-600">
+                                                    <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                                    Ok
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1">
+                                            <input
+                                                id="foto_1"
+                                                type="file"
+                                                wire:model="foto_1"
+                                                accept=".jpg,.jpeg,.png,.webp"
+                                                class="block w-full text-[11px] text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-[#0F4C81] file:px-3 file:py-1.5 file:text-[10px] file:font-bold file:text-white transition hover:file:bg-[#0c3d68]">
+                                        </div>
+                                        <div class="shrink-0">
+                                            @if ($foto_1)
+                                                <img src="{{ $foto_1->temporaryUrl() }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @elseif(isset($existingPhotoUrls[0]))
+                                                <img src="{{ $existingPhotoUrls[0] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @else
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                    <span class="material-symbols-outlined text-[18px]">image</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @error('foto_1') <p class="text-[10px] font-medium text-rose-600">{{ $message }}</p> @enderror
+                                </div>
 
-                            @if ($foto_properti)
-                                <div class="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
-                                    <img src="{{ $foto_properti->temporaryUrl() }}" alt="Preview foto kontrakan" class="h-60 w-full object-cover">
+                                <!-- Foto 2: Samping -->
+                                <div class="group relative flex flex-col gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 transition-all hover:border-blue-200 hover:bg-blue-50/30 dark:border-slate-800 dark:bg-slate-950/40">
+                                    <div class="flex items-center justify-between">
+                                        <label for="foto_2" class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Samping (Opsional)</label>
+                                        @if ($foto_2 || isset($existingPhotoUrls[1]))
+                                            <button type="button" wire:click="hapusFoto(2)" class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition hover:bg-rose-100">
+                                                <span class="material-symbols-outlined text-[14px]">close</span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1">
+                                            <input
+                                                id="foto_2"
+                                                type="file"
+                                                wire:model="foto_2"
+                                                accept=".jpg,.jpeg,.png,.webp"
+                                                class="block w-full text-[11px] text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-[10px] file:font-bold file:text-slate-700 transition hover:file:bg-slate-300">
+                                        </div>
+                                        <div class="shrink-0">
+                                            @if ($foto_2)
+                                                <img src="{{ $foto_2->temporaryUrl() }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @elseif(isset($existingPhotoUrls[1]))
+                                                <img src="{{ $existingPhotoUrls[1] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @else
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                    <span class="material-symbols-outlined text-[18px]">image</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @error('foto_2') <p class="text-[10px] font-medium text-rose-600">{{ $message }}</p> @enderror
                                 </div>
-                            @elseif ($existingPhotoUrl)
-                                <div class="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
-                                    <img src="{{ $existingPhotoUrl }}" alt="Foto kontrakan saat ini" class="h-60 w-full object-cover">
+
+                                <!-- Foto 3: Dalam -->
+                                <div class="group relative flex flex-col gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 transition-all hover:border-blue-200 hover:bg-blue-50/30 dark:border-slate-800 dark:bg-slate-950/40">
+                                    <div class="flex items-center justify-between">
+                                        <label for="foto_3" class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Dalam (Opsional)</label>
+                                        @if ($foto_3 || isset($existingPhotoUrls[2]))
+                                            <button type="button" wire:click="hapusFoto(3)" class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition hover:bg-rose-100">
+                                                <span class="material-symbols-outlined text-[14px]">close</span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1">
+                                            <input
+                                                id="foto_3"
+                                                type="file"
+                                                wire:model="foto_3"
+                                                accept=".jpg,.jpeg,.png,.webp"
+                                                class="block w-full text-[11px] text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-[10px] file:font-bold file:text-slate-700 transition hover:file:bg-slate-300">
+                                        </div>
+                                        <div class="shrink-0">
+                                            @if ($foto_3)
+                                                <img src="{{ $foto_3->temporaryUrl() }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @elseif(isset($existingPhotoUrls[2]))
+                                                <img src="{{ $existingPhotoUrls[2] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @else
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                    <span class="material-symbols-outlined text-[18px]">image</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @error('foto_3') <p class="text-[10px] font-medium text-rose-600">{{ $message }}</p> @enderror
                                 </div>
-                            @else
-                                <div class="flex h-60 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-sm font-medium text-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-500">
-                                    Preview foto akan muncul di sini
+
+                                <!-- Foto 4: Fasilitas -->
+                                <div class="group relative flex flex-col gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 transition-all hover:border-blue-200 hover:bg-blue-50/30 dark:border-slate-800 dark:bg-slate-950/40">
+                                    <div class="flex items-center justify-between">
+                                        <label for="foto_4" class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Fasilitas (Opsional)</label>
+                                        @if ($foto_4 || isset($existingPhotoUrls[3]))
+                                            <button type="button" wire:click="hapusFoto(4)" class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition hover:bg-rose-100">
+                                                <span class="material-symbols-outlined text-[14px]">close</span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1">
+                                            <input
+                                                id="foto_4"
+                                                type="file"
+                                                wire:model="foto_4"
+                                                accept=".jpg,.jpeg,.png,.webp"
+                                                class="block w-full text-[11px] text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-[10px] file:font-bold file:text-slate-700 transition hover:file:bg-slate-300">
+                                        </div>
+                                        <div class="shrink-0">
+                                            @if ($foto_4)
+                                                <img src="{{ $foto_4->temporaryUrl() }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @elseif(isset($existingPhotoUrls[3]))
+                                                <img src="{{ $existingPhotoUrls[3] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @else
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                    <span class="material-symbols-outlined text-[18px]">image</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @error('foto_4') <p class="text-[10px] font-medium text-rose-600">{{ $message }}</p> @enderror
                                 </div>
-                            @endif
+                            </div>
+
+                            <p class="text-[10px] leading-relaxed text-slate-400">
+                                Maksimal 2MB, format JPG/PNG/WEBP. Unggahan baru akan menggantikan foto lama.
+                            </p>
                         </div>
                     </section>
 
@@ -227,8 +344,7 @@
 
                                 setTimeout(() => { map.invalidateSize(); }, 500);
                             }, 100);
-                        "
-                    >
+                        ">
                         <div id="map-kontrakan" x-ref="mapKontrakan" style="height: 420px; width: 100%; z-index: 0;"></div>
                     </div>
 
@@ -244,8 +360,7 @@
                                 id="latitude-kontrakan"
                                 type="text"
                                 wire:model.live="latitude"
-                                class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
-                            >
+                                class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400">
                             @error('latitude') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -255,8 +370,7 @@
                                 id="longitude-kontrakan"
                                 type="text"
                                 wire:model.live="longitude"
-                                class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
-                            >
+                                class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400">
                             @error('longitude') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -271,8 +385,7 @@
                 <div class="flex flex-col gap-3 sm:flex-row">
                     <a
                         href="{{ route('mitra.properti') }}"
-                        class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300"
-                    >
+                        class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300">
                         Batal
                     </a>
 
@@ -280,8 +393,7 @@
                         type="submit"
                         wire:loading.attr="disabled"
                         wire:target="simpan,foto_properti"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0F4C81] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-[#0F4C81]/20 transition hover:bg-[#0c3d68] disabled:cursor-not-allowed disabled:opacity-70"
-                    >
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0F4C81] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-[#0F4C81]/20 transition hover:bg-[#0c3d68] disabled:cursor-not-allowed disabled:opacity-70">
                         <svg wire:loading wire:target="simpan,foto_properti" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4Z"></path>

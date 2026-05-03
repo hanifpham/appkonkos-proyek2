@@ -76,15 +76,6 @@ class DetailProperti extends Component
             return redirect()->route('login');
         }
 
-        $this->validate([
-            'tanggalCheckIn' => 'required|date|after_or_equal:today',
-            'durasiSewa' => 'required|integer|min:1|max:36',
-        ], [
-            'tanggalCheckIn.required' => 'Tanggal Masuk harus diisi.',
-            'tanggalCheckIn.after_or_equal' => 'Tanggal Masuk tidak boleh di masa lalu.',
-            'durasiSewa.required' => 'Durasi sewa harus dipilih.',
-        ]);
-
         $user = Auth::user();
         if ($user->role !== 'pencari') {
             session()->flash('error', 'Hanya akun pencari yang dapat melakukan booking.');
@@ -96,11 +87,6 @@ class DetailProperti extends Component
             session()->flash('error', 'Profil Pencari Kos Anda belum lengkap.');
             return;
         }
-
-        $booking = new Booking();
-        $booking->pencari_kos_id = $pencari->id;
-        $booking->tgl_mulai_sewa = $this->tanggalCheckIn;
-        $booking->status_booking = 'pending';
         
         if ($this->tipe === 'kosan') {
             if (!$this->selectedKamarId) {
@@ -108,34 +94,10 @@ class DetailProperti extends Component
                 return;
             }
 
-            $booking->tgl_selesai_sewa = \Carbon\Carbon::parse($this->tanggalCheckIn)->addMonths($this->durasiSewa);
-            
-            $kamar = Kamar::query()
-                ->with('tipeKamar')
-                ->whereHas('tipeKamar', fn ($query) => $query->where('kosan_id', $this->properti->id))
-                ->find($this->selectedKamarId);
-
-            if (!$kamar || $kamar->status_kamar !== 'tersedia') {
-                session()->flash('error', 'Kamar tidak tersedia.');
-                return;
-            }
-
-            $booking->kamar_id = $kamar->id;
-            $booking->total_biaya = $kamar->tipeKamar->harga_per_bulan * $this->durasiSewa;
+            return redirect()->route('pencari.checkout', ['kamar_id' => $this->selectedKamarId]);
         } else {
-            $booking->tgl_selesai_sewa = \Carbon\Carbon::parse($this->tanggalCheckIn)->addYears($this->durasiSewa);
-            
-            if ($this->properti->sisa_kamar < 1) {
-                session()->flash('error', 'Mohon maaf, kontrakan ini sudah penuh.');
-                return;
-            }
-            $booking->kontrakan_id = $this->properti->id;
-            $booking->total_biaya = $this->properti->harga_sewa_tahun * $this->durasiSewa;
+            return redirect()->route('pencari.checkout', ['kontrakan_id' => $this->propertiId]);
         }
-
-        $booking->save();
-
-        return redirect()->route('pencari.pembayaran.show', $booking->id);
     }
 
     public function profilePhotoUrlFor(?User $user, string $fallbackName = 'User'): string

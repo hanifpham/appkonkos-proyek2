@@ -495,7 +495,7 @@
                             </a>
                         @endauth
 
-                        <p class="text-center text-xs font-medium leading-5 text-slate-500">Booking akan dibuat setelah tombol diajukan. Pembayaran dilakukan di halaman berikutnya.</p>
+                        <p class="text-center text-xs font-medium leading-5 text-slate-500">Anda akan diarahkan ke halaman checkout untuk melengkapi data sewa dan pembayaran.</p>
                     </form>
                 </div>
             </aside>

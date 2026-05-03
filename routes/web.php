@@ -48,6 +48,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:penca
     Route::get('/profil-saya', \App\Livewire\Pencari\ProfilSaya::class)->name('pencari.profil');
     Route::get('/pembayaran/{booking}', [PembayaranController::class, 'show'])->name('pencari.pembayaran.show');
     Route::post('/pembayaran/{booking}/snap-token', [PembayaranController::class, 'snapToken'])->name('pencari.pembayaran.snap-token');
+    Route::get('/riwayat-pesanan', \App\Livewire\Pencari\RiwayatPesanan::class)->name('pencari.riwayat-pesanan');
+    Route::get('/checkout', \App\Livewire\Pencari\Checkout::class)->name('pencari.checkout');
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:pemilik'])->group(function (): void {

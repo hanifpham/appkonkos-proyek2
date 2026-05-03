@@ -191,7 +191,7 @@ class MidtransService
 
     protected function generateOrderId(Booking $booking): string
     {
-        return 'APPKONKOS-'.$booking->id.'-'.now()->format('YmdHis');
+        return 'AK-'.str_replace('-', '', (string) $booking->id).'-'.now()->format('YmdHis');
     }
 
     protected function resolvePropertyLabel(Booking $booking): string

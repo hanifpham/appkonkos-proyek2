@@ -106,8 +106,8 @@
             <span class="font-semibold text-slate-900">{{ $properti->nama_properti }}</span>
         </nav>
 
-        <section class="mb-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
-            <div class="animate-[detailFadeUp_.55s_ease-out_both]">
+        <section class="mb-6 flex flex-wrap items-start justify-between gap-6 animate-[detailFadeUp_.55s_ease-out_both]">
+            <div class="min-w-0 flex-1">
                 <div class="mb-3 flex flex-wrap items-center gap-2">
                     <span class="inline-flex items-center rounded-full bg-[#1967d2] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">{{ $categoryLabel }}</span>
                     <span class="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
@@ -125,20 +125,7 @@
                 </p>
             </div>
 
-            <div class="flex flex-wrap gap-3 lg:justify-end animate-[detailFadeUp_.65s_ease-out_both]">
-                @if($mapUrl)
-                    <a href="{{ $mapUrl }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-[#1967d2] hover:text-[#1967d2] hover:shadow-md">
-                        <span class="material-symbols-outlined text-lg">map</span>
-                        Buka Maps
-                    </a>
-                @endif
-                @if($ownerEmail)
-                    <a href="mailto:{{ $ownerEmail }}?subject={{ rawurlencode('Tanya properti '.$properti->nama_properti) }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-[#1967d2] hover:text-[#1967d2] hover:shadow-md">
-                        <span class="material-symbols-outlined text-lg">mail</span>
-                        Email Mitra
-                    </a>
-                @endif
-            </div>
+
         </section>
 
         <section class="relative mb-10 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 animate-[detailFadeUp_.75s_ease-out_both]">
@@ -349,6 +336,70 @@
                     @endif
                 </section>
 
+                {{-- Seksi Lokasi & Peta --}}
+                <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                    <div class="flex items-center gap-3 mb-5">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#1967d2]/10">
+                            <svg class="h-5 w-5 text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </span>
+                        <div class="min-w-0">
+                            <h2 class="text-2xl font-extrabold text-slate-950">Lokasi Properti</h2>
+                            <p class="mt-1 text-sm leading-6 text-slate-600 line-clamp-1">{{ $properti->alamat_lengkap }}</p>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full h-72 sm:h-80 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100">
+                        @if(filled($properti->latitude) && filled($properti->longitude))
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                frameborder="0"
+                                scrolling="no"
+                                marginheight="0"
+                                marginwidth="0"
+                                src="https://maps.google.com/maps?q={{ $properti->latitude }},{{ $properti->longitude }}&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                class="absolute inset-0 w-full h-full"
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                title="Peta lokasi {{ $properti->nama_properti }}"
+                            ></iframe>
+                        @else
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                frameborder="0"
+                                scrolling="no"
+                                marginheight="0"
+                                marginwidth="0"
+                                src="https://maps.google.com/maps?q={{ urlencode($properti->alamat_lengkap) }}&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                class="absolute inset-0 w-full h-full"
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                title="Peta lokasi {{ $properti->nama_properti }}"
+                            ></iframe>
+                        @endif
+
+                        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
+                            <a
+                                href="{{ $mapUrl ?? 'https://www.google.com/maps/search/?api=1&query='.urlencode($properti->alamat_lengkap) }}"
+                                target="_blank"
+                                rel="noopener"
+                                class="inline-flex items-center gap-2 rounded-full bg-white/95 px-5 py-2.5 text-sm font-bold text-slate-800 shadow-lg backdrop-blur-md border border-slate-200 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[#1967d2] hover:shadow-xl"
+                            >
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Lihat di Google Maps
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- Seksi Ulasan --}}
                 <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
                     <h2 class="flex items-center gap-2 text-2xl font-extrabold text-slate-950">
                         <span class="material-symbols-outlined text-2xl text-[#1967d2]">star</span>

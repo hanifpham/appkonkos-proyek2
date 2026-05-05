@@ -85,6 +85,14 @@ class Kosan extends Model implements HasMedia
         return $this->hasMany(TipeKamar::class, 'kosan_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Favorit, $this>
+     */
+    public function favorits(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Favorit::class, 'favoritable');
+    }
+
     public function getHargaRangeAttribute(): ?string
     {
         /** @var Collection<int, TipeKamar> $tipeKamar */

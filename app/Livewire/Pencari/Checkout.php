@@ -19,7 +19,7 @@ class Checkout extends Component
 {
     public ?int $kamar_id = null;
     public ?int $kontrakan_id = null;
-    
+
     public string $tipeProperti = '';
     public string $namaProperti = '';
     public string $namaTipe = '';
@@ -32,7 +32,7 @@ class Checkout extends Component
     public string $catatan = '';
 
     public int $biayaLayanan = 10000;
-    
+
     public bool $setuju_aturan = false;
     public array $aturanProperti = [];
 
@@ -52,10 +52,10 @@ class Checkout extends Component
             $this->namaTipe = $kamar->tipeKamar->nama_tipe;
             $this->nomorKamar = $kamar->nomor_kamar;
             $this->hargaPerBulan = $kamar->tipeKamar->harga_per_bulan;
-            
+
             $kosan = $kamar->tipeKamar->kosan;
             $this->fotoUrl = $kosan->getFirstMediaUrl('foto_properti', 'webp') ?: $kosan->getFirstMediaUrl('foto_properti');
-            
+
             $aturanString = trim((string) $kosan->peraturan_kos);
             if (empty($aturanString)) {
                 $aturanString = "Dilarang membawa hewan peliharaan\nDilarang membuat keributan di malam hari\nTamu dilarang menginap tanpa izin";
@@ -67,9 +67,9 @@ class Checkout extends Component
             $this->namaProperti = $kontrakan->nama_properti;
             $this->hargaPerBulan = (int) ($kontrakan->harga_sewa_tahun / 12);
             $this->durasi_sewa = 12; // Default 1 tahun untuk kontrakan
-            
+
             $this->fotoUrl = $kontrakan->getFirstMediaUrl('foto_properti', 'webp') ?: $kontrakan->getFirstMediaUrl('foto_properti');
-            
+
             $aturanString = trim((string) $kontrakan->peraturan_kontrakan);
             if (empty($aturanString)) {
                 $aturanString = "Menjaga kebersihan lingkungan\nMembayar iuran sampah/keamanan bulanan\nDilarang mengubah struktur bangunan tanpa izin";
@@ -135,10 +135,10 @@ class Checkout extends Component
 
         // Simpan catatan jika diperlukan di masa depan (saat ini tabel booking tidak punya kolom catatan)
         // Kita bisa menambahkannya ke kolom notes jika ada, atau abaikan.
-        
+
         try {
             $payment = $midtrans->createOrRefreshTransaction($booking);
-            
+
             if ($payment && $payment->snap_token) {
                 $this->dispatch('pay-midtrans', token: $payment->snap_token);
             } else {

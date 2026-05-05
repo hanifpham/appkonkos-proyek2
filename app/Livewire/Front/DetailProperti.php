@@ -3,6 +3,7 @@
 namespace App\Livewire\Front;
 
 use App\Models\Booking;
+use App\Models\Favorit;
 use App\Models\Kamar;
 use App\Models\Kontrakan;
 use App\Models\Kosan;
@@ -22,6 +23,7 @@ class DetailProperti extends Component
     public $selectedKamarId = null;
     public $tanggalCheckIn;
     public $durasiSewa = 1;
+    public $isFavorit = false;
 
     public function mount(string $tipe, string $id): void
     {
@@ -55,6 +57,39 @@ class DetailProperti extends Component
                 ->findOrFail($id);
         } else {
             abort(404);
+        }
+
+        if (Auth::check()) {
+            $this->isFavorit = Favorit::query()
+                ->where('user_id', Auth::id())
+                ->where('favoritable_type', get_class($this->properti))
+                ->where('favoritable_id', $this->properti->id)
+                ->exists();
+        }
+    }
+
+    public function toggleFavorit()
+    {
+        if (! Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $existing = Favorit::query()
+            ->where('user_id', Auth::id())
+            ->where('favoritable_type', get_class($this->properti))
+            ->where('favoritable_id', $this->properti->id)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            $this->isFavorit = false;
+        } else {
+            Favorit::create([
+                'user_id' => Auth::id(),
+                'favoritable_type' => get_class($this->properti),
+                'favoritable_id' => $this->properti->id,
+            ]);
+            $this->isFavorit = true;
         }
     }
 

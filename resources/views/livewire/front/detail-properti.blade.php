@@ -192,7 +192,11 @@
                             <p class="text-sm font-semibold uppercase tracking-wide text-[#1967d2]">Detail Properti</p>
                             <h2 class="mt-1 text-2xl font-extrabold text-slate-950">Data yang Diinput Mitra</h2>
                         </div>
-                        <img src="{{ $ownerAvatarUrl }}" alt="{{ $ownerName }}" class="h-14 w-14 rounded-full object-cover ring-2 ring-white" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ rawurlencode($ownerName) }}&color=113C7A&background=EBF4FF';">
+                        @php
+                            $encodedOwnerName = rawurlencode($ownerName);
+                            $ownerFallback = "https://ui-avatars.com/api/?name={$encodedOwnerName}&color=113C7A&background=EBF4FF";
+                        @endphp
+                        <img src="{{ $ownerAvatarUrl }}" alt="{{ $ownerName }}" class="h-14 w-14 rounded-full object-cover ring-2 ring-white" data-fallback="{{ $ownerFallback }}" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback');">
                     </div>
 
                     <dl class="mt-6 grid gap-4 sm:grid-cols-2">
@@ -304,8 +308,9 @@
                                                     {{ $room->nomor_kamar }}
                                                 </button>
                                             @else
-                                                <div class="flex aspect-square items-center justify-center rounded-xl bg-slate-200 text-sm font-bold text-slate-400">
-                                                    {{ $room->nomor_kamar }}
+                                                <div class="relative flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-slate-200 text-sm font-bold text-slate-400" title="Tidak Tersedia / Penuh">
+                                                    <span class="material-symbols-outlined absolute text-2xl text-slate-400/30">lock</span>
+                                                    <span class="z-10">{{ $room->nomor_kamar }}</span>
                                                 </div>
                                             @endif
                                         @endforeach
@@ -411,10 +416,13 @@
                             @foreach($properti->ulasan->take(6) as $review)
                                 @php
                                     $reviewer = $review->pencariKos?->user;
+                                    $reviewerName = $reviewer?->name ?? 'Pengguna';
+                                    $encodedName = rawurlencode($reviewerName);
+                                    $fallbackAvatar = "https://ui-avatars.com/api/?name={$encodedName}&color=113C7A&background=EBF4FF";
                                 @endphp
                                 <article class="rounded-2xl border border-slate-100 p-5">
                                     <div class="flex items-center gap-3">
-                                        <img src="{{ $this->profilePhotoUrlFor($reviewer, 'Pengguna') }}" alt="{{ $reviewer?->name ?? 'Pengguna' }}" class="h-11 w-11 rounded-full object-cover" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ rawurlencode($reviewer?->name ?? 'Pengguna') }}&color=113C7A&background=EBF4FF';">
+                                        <img src="{{ $this->profilePhotoUrlFor($reviewer, 'Pengguna') }}" alt="{{ $reviewerName }}" class="h-11 w-11 rounded-full object-cover" data-fallback="{{ $fallbackAvatar }}" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback');">
                                         <div>
                                             <h3 class="font-bold text-slate-950">{{ $reviewer?->name ?? 'Pengguna' }}</h3>
                                             <p class="text-xs font-medium text-slate-500">{{ $review->created_at?->translatedFormat('F Y') ?? '-' }}</p>
@@ -444,7 +452,7 @@
                 <div class="overflow-hidden rounded-2xl bg-white shadow-xl shadow-slate-900/10 ring-1 ring-slate-100">
                     <div class="bg-[#1967d2] p-6 text-white">
                         <div class="mb-5 flex items-center gap-3">
-                            <img src="{{ $ownerAvatarUrl }}" alt="{{ $ownerName }}" class="h-12 w-12 rounded-full object-cover ring-2 ring-white/30" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ rawurlencode($ownerName) }}&color=113C7A&background=EBF4FF';">
+                            <img src="{{ $ownerAvatarUrl }}" alt="{{ $ownerName }}" class="h-12 w-12 rounded-full object-cover ring-2 ring-white/30" data-fallback="{{ $ownerFallback }}" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback');">
                             <div class="min-w-0">
                                 <p class="text-xs font-semibold uppercase tracking-wide text-white/75">Disewakan oleh</p>
                                 <p class="truncate text-sm font-extrabold">{{ $ownerName }}</p>
@@ -531,13 +539,20 @@
                         @endphp
 
                         @auth
-                            <button type="submit" @disabled($bookingDisabled) class="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl px-4 py-4 text-base font-extrabold text-white shadow-lg transition duration-300 {{ $bookingDisabled ? 'cursor-not-allowed bg-slate-300 shadow-none' : 'bg-[#1967d2] shadow-blue-500/25 hover:-translate-y-0.5 hover:bg-[#0f4fb5] hover:shadow-xl hover:shadow-blue-500/30' }}">
-                                @unless($bookingDisabled)
+                            @if(! $bookingDisabled)
+                                <!-- Tombol Aktif -->
+                                <button type="submit" class="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl bg-[#1967d2] px-4 py-4 text-base font-extrabold text-white shadow-lg shadow-blue-500/25 transition duration-300 hover:-translate-y-0.5 hover:bg-[#0f4fb5] hover:shadow-xl hover:shadow-blue-500/30">
                                     <span class="absolute inset-y-0 -left-1/2 w-1/2 skew-x-[-18deg] bg-white/20 transition-transform duration-700 group-hover:translate-x-[320%]"></span>
-                                @endunless
-                                <span class="material-symbols-outlined text-xl">payments</span>
-                                <span>Ajukan Sewa</span>
-                            </button>
+                                    <span class="material-symbols-outlined text-xl">payments</span>
+                                    <span class="ml-1">Ajukan Sewa</span>
+                                </button>
+                            @else
+                                <!-- Tombol Tergembok -->
+                                <button disabled type="button" class="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-slate-300 px-4 py-4 text-base font-extrabold text-slate-500 cursor-not-allowed transition duration-300">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                    <span>Kamar Penuh</span>
+                                </button>
+                            @endif
                         @else
                             <a href="{{ route('login') }}" class="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl bg-[#1967d2] px-4 py-4 text-base font-extrabold text-white shadow-lg shadow-blue-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-[#0f4fb5] hover:shadow-xl hover:shadow-blue-500/30">
                                 <span class="absolute inset-y-0 -left-1/2 w-1/2 skew-x-[-18deg] bg-white/20 transition-transform duration-700 group-hover:translate-x-[320%]"></span>

@@ -11,6 +11,7 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/midtrans/notifications', MidtransNotificationController::class)->name('api.midtrans.notifications');
 
+Route::post('/midtrans/callback', [\App\Http\Controllers\Api\PaymentCallbackController::class, 'receive']);
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);

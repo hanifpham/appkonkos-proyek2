@@ -75,6 +75,11 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>Menunggu Pembayaran
                     </span>
                     @break
+                    @case('kedaluwarsa')
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Kedaluwarsa
+                    </span>
+                    @break
                     @case('berhasil')
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Aktif / Berhasil
@@ -134,14 +139,40 @@
                         <p class="text-xs text-[#6b7280] dark:text-slate-500">Total Pembayaran</p>
                         <p class="text-xl font-bold text-[#1967d2] dark:text-blue-400">Rp {{ number_format($booking->total_biaya ?? 0, 0, ',', '.') }}</p>
                     </div>
-                    <div class="flex flex-wrap gap-3">
-                        @if($status === 'menunggu_pembayaran')
-                        <button wire:click="batalkanPesanan('{{ $booking->id }}')" wire:confirm="Apakah Anda yakin ingin membatalkan pesanan ini?" class="px-4 py-2 border border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl text-sm font-semibold transition">
-                            Batalkan
-                        </button>
-                        <button wire:click="lanjutkanPembayaran('{{ $booking->id }}')" class="inline-flex items-center gap-2 px-5 py-2 bg-[#1967d2] hover:bg-[#0f4fb5] text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-blue-500/20">
-                            <span class="material-symbols-outlined text-[18px]">payment</span>Lanjutkan Pembayaran
-                        </button>
+                    <div class="flex flex-wrap gap-3 items-end">
+                        @if($status === 'menunggu_pembayaran' || $status === 'kedaluwarsa')
+                        <div class="flex flex-col items-end gap-2">
+                            @if($this->getExpiryTime($booking))
+                            <div x-data="{ 
+                                expiry: new Date('{{ $this->getExpiryTime($booking) }}').getTime(),
+                                timeLeft: 0,
+                                formatTime(ms) {
+                                    if (ms <= 0) return '00:00:00';
+                                    const hours = Math.floor(ms / 3600000);
+                                    const minutes = Math.floor((ms % 3600000) / 60000);
+                                    const seconds = Math.floor((ms % 60000) / 1000);
+                                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                                }
+                            }" x-init="
+                                timeLeft = expiry - new Date().getTime();
+                                setInterval(() => {
+                                    timeLeft = expiry - new Date().getTime();
+                                }, 1000);
+                            " class="text-[11px] font-bold px-2 py-0.5 rounded bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-800/50">
+                                <span x-show="timeLeft > 0">Sisa Waktu: <span x-text="formatTime(timeLeft)"></span></span>
+                                <span x-show="timeLeft <= 0">Waktu Habis</span>
+                            </div>
+                            @endif
+                            <div class="flex gap-2">
+                                <button wire:click="batalkanPesanan('{{ $booking->id }}')" wire:confirm="Apakah Anda yakin ingin membatalkan pesanan ini?" class="px-4 py-2 border border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl text-sm font-semibold transition">
+                                    Batalkan
+                                </button>
+                                <button wire:click="lanjutkanPembayaran('{{ $booking->id }}')" class="inline-flex items-center gap-2 px-5 py-2 bg-[#1967d2] hover:bg-[#0f4fb5] text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-blue-500/20">
+                                    <span class="material-symbols-outlined text-[18px]">payment</span>
+                                    {{ $status === 'kedaluwarsa' ? 'Ulangi Pembayaran' : 'Lanjutkan Pembayaran' }}
+                                </button>
+                            </div>
+                        </div>
                         @elseif($status === 'berhasil')
                         @if($waPhone)
                         <a href="https://wa.me/{{ $waPhone }}?text={{ urlencode('Halo, saya penyewa dari APPKONKOS untuk properti ' . $namaProperti . '. Saya ingin menghubungi Anda.') }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2.5 border border-emerald-500 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-sm font-bold rounded-xl transition-all">

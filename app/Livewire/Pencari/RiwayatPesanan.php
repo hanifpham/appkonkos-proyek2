@@ -190,7 +190,15 @@ class RiwayatPesanan extends Component
 
         $pembayaran = $booking->pembayaran;
 
-        if (! $pembayaran || $pembayaran->isPending()) {
+        if (! $pembayaran) {
+            return 'menunggu_pembayaran';
+        }
+
+        if ($pembayaran->status_bayar === 'expire') {
+            return 'kedaluwarsa';
+        }
+
+        if ($pembayaran->isPending()) {
             return 'menunggu_pembayaran';
         }
 
@@ -210,6 +218,17 @@ class RiwayatPesanan extends Component
         }
 
         return 'menunggu_pembayaran';
+    }
+
+    public function getExpiryTime(Booking $booking): ?string
+    {
+        $pembayaran = $booking->pembayaran;
+        if (! $pembayaran) {
+            return null;
+        }
+
+        // Midtrans default expiry is 24 hours from updated_at (when snap_token was created/refreshed)
+        return $pembayaran->updated_at->addHours(24)->toIso8601String();
     }
 
     private function buildQuery()
@@ -238,7 +257,7 @@ class RiwayatPesanan extends Component
                 $query->where(function ($q) {
                     $q->whereDoesntHave('pembayaran')
                       ->orWhereHas('pembayaran', function ($pq) {
-                          $pq->whereIn('status_bayar', Pembayaran::PENDING_STATUSES);
+                          $pq->whereIn('status_bayar', array_merge(Pembayaran::PENDING_STATUSES, ['expire']));
                       });
                 })->where('status_booking', '!=', 'batal');
                 break;

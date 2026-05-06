@@ -12,18 +12,19 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class DetailProperti extends Component
 {
-    public $tipe;
-    public $propertiId;
-    public $properti;
-    public $selectedTipeKamarId = null;
-    public $selectedKamarId = null;
-    public $tanggalCheckIn;
-    public $durasiSewa = 1;
-    public $isFavorit = false;
+    public string $tipe;
+    public string $propertiId;
+    public mixed $properti;
+    public ?int $selectedTipeKamarId = null;
+    public ?int $selectedKamarId = null;
+    public string $tanggalCheckIn;
+    public int $durasiSewa = 1;
+    public bool $isFavorit = false;
 
     public function mount(string $tipe, string $id): void
     {
@@ -129,8 +130,22 @@ class DetailProperti extends Component
                 return;
             }
 
+            // Validasi ketat keamanan Backend (Mencegah user bypass inspect element)
+            $kamarCheck = \App\Models\Kamar::find($this->selectedKamarId);
+            if (!$kamarCheck || $kamarCheck->status_kamar !== 'tersedia') {
+                session()->flash('error', 'Mohon maaf, kamar ini baru saja habis dipesan.');
+                return;
+            }
+
             return redirect()->route('pencari.checkout', ['kamar_id' => $this->selectedKamarId]);
         } else {
+            // Validasi ketat keamanan Backend untuk Kontrakan
+            $kontrakanCheck = \App\Models\Kontrakan::find($this->propertiId);
+            if (!$kontrakanCheck || $kontrakanCheck->sisa_kamar <= 0 || $kontrakanCheck->status !== 'aktif') {
+                session()->flash('error', 'Mohon maaf, unit kontrakan ini baru saja habis dipesan.');
+                return;
+            }
+
             return redirect()->route('pencari.checkout', ['kontrakan_id' => $this->propertiId]);
         }
     }
@@ -153,9 +168,10 @@ class DetailProperti extends Component
         return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=113C7A&background=EBF4FF';
     }
 
+    #[Layout('layouts.public')]
     public function render(): View
     {
-        return view('livewire.front.detail-properti')->layout('layouts.public');
+        return view('livewire.front.detail-properti');
     }
 
     protected function normalizeStoragePath(string $path): string

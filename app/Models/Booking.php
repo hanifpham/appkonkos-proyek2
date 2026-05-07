@@ -10,6 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property \Illuminate\Support\Carbon|null $tgl_mulai_sewa
+ * @property \Illuminate\Support\Carbon|null $tgl_selesai_sewa
+ * @property int $total_biaya
+ */
 class Booking extends Model
 {
     use HasFactory;

@@ -174,6 +174,9 @@
                             </div>
                         </div>
                         @elseif($status === 'berhasil')
+                        <a href="{{ route('pencari.e-ticket', $booking->id) }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-emerald-500/20">
+                            <span class="material-symbols-outlined text-[18px]">receipt_long</span>Lihat E-Ticket
+                        </a>
                         @if($waPhone)
                         <a href="https://wa.me/{{ $waPhone }}?text={{ urlencode('Halo, saya penyewa dari APPKONKOS untuk properti ' . $namaProperti . '. Saya ingin menghubungi Anda.') }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2.5 border border-emerald-500 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-sm font-bold rounded-xl transition-all">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">

@@ -52,6 +52,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:penca
     Route::get('/riwayat-pesanan', \App\Livewire\Pencari\RiwayatPesanan::class)->name('pencari.riwayat-pesanan');
     Route::get('/ulasan-saya', \App\Livewire\Pencari\UlasanSaya::class)->name('pencari.ulasan-saya');
     Route::get('/checkout', \App\Livewire\Pencari\Checkout::class)->name('pencari.checkout');
+    Route::get('/e-ticket/{booking}', [PembayaranController::class, 'eTicket'])->name('pencari.e-ticket');
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:pemilik'])->group(function (): void {

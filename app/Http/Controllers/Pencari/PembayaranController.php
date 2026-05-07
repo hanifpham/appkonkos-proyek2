@@ -87,4 +87,28 @@ class PembayaranController extends Controller
 
         return $booking->kontrakan?->pemilikProperti?->user?->name ?? 'Pemilik properti';
     }
+
+    public function eTicket(Request $request, Booking $booking): View
+    {
+        $booking = $this->ownedBooking($request, $booking);
+
+        $booking->load([
+            'pencariKos.user',
+            'pembayaran',
+            'kamar.tipeKamar.kosan.pemilikProperti.user',
+            'kontrakan.pemilikProperti.user',
+        ]);
+
+        if (!$booking->pembayaran || !$booking->pembayaran->isSuccessful()) {
+            abort(403, 'E-Ticket hanya tersedia untuk pesanan yang sudah berhasil dibayar.');
+        }
+
+        return view('pencari.e-ticket', [
+            'booking' => $booking,
+            'propertyName' => $this->propertyName($booking),
+            'ownerName' => $this->ownerName($booking),
+            'isKosan' => $booking->kamar_id !== null,
+            'orderId' => $booking->pembayaran->midtrans_order_id ?? '#TRX-' . strtoupper(substr($booking->id, 0, 8)),
+        ]);
+    }
 }

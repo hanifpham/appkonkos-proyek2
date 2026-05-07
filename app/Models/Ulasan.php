@@ -25,6 +25,7 @@ class Ulasan extends Model
         'rating',
         'komentar',
         'balasan_pemilik',
+        'is_anonymous',
     ];
 
     /**
@@ -34,6 +35,7 @@ class Ulasan extends Model
     {
         return [
             'rating' => 'integer',
+            'is_anonymous' => 'boolean',
         ];
     }
 

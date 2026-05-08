@@ -34,12 +34,12 @@ class PengajuanRefund extends Component
 
     public bool $showModalDetail = false;
 
-    public $detailRefund = null;
+    public ?Refund $detailRefund = null;
 
     public bool $showModalRefund = false;
 
     #[Locked]
-    public $selectedRefund = null;
+    public ?Refund $selectedRefund = null;
 
     public int $totalPotongan = 0;
 
@@ -119,6 +119,7 @@ class PengajuanRefund extends Component
                 'Tanggal Pengajuan',
             ]);
 
+            /** @var \App\Models\Refund $refund */
             foreach ($rows as $refund) {
                 fputcsv($handle, [
                     $this->getRefundDisplayId($refund),
@@ -203,7 +204,9 @@ class PengajuanRefund extends Component
 
     public function tolakRefund(int $id): void
     {
-        $refund = Refund::query()->findOrFail($id);
+        $refund = Refund::query()
+            ->with(['booking.kamar', 'booking.kontrakan'])
+            ->findOrFail($id);
 
         if ($refund->status_refund !== 'pending') {
             $this->dispatch(
@@ -216,9 +219,15 @@ class PengajuanRefund extends Component
             return;
         }
 
-        $refund->update([
-            'status_refund' => 'ditolak',
-        ]);
+        DB::transaction(function () use ($refund) {
+            $refund->update([
+                'status_refund' => 'ditolak',
+            ]);
+
+            if ($refund->booking) {
+                $this->bebaskanProperti($refund->booking);
+            }
+        });
 
         $this->refreshDetailRefund($refund->id);
 
@@ -226,138 +235,157 @@ class PengajuanRefund extends Component
             'appkonkos-toast',
             icon: 'info',
             title: 'Refund ditolak',
-            text: 'Pengajuan refund berhasil ditolak.'
+            text: 'Pengajuan refund berhasil ditolak dan properti telah tersedia kembali.'
         );
     }
 
-    public function prosesRefund(): void
+    public function tandaiSudahDitransfer(int $id): void
     {
-        if (! $this->selectedRefund instanceof Refund) {
-            $this->dispatch(
-                'appkonkos-toast',
-                icon: 'error',
-                title: 'Error',
-                text: 'Tidak ada pengajuan refund yang sedang diproses.'
-            );
+        $this->prosesRefund($id);
+    }
 
+    public function prosesRefund(?int $refundId = null): void
+    {
+        $id = $refundId ?? $this->selectedRefund?->id;
+
+        if (! $id) {
+            session()->flash('error', 'Tidak ada pengajuan refund yang sedang diproses.');
             return;
         }
 
-        $this->configureMidtrans();
-
-        $persenRefund = $this->getRefundPersen();
-        $persenPotongan = $this->formatPercentage($this->potonganRefundPersen);
-        $refundApiNote = sprintf(
-            'Refund parsial %s%% selesai diproses dan ketersediaan properti sudah dikembalikan.',
-            $persenRefund
-        );
-
         try {
-            /** @var Refund $refund */
-            $refund = DB::transaction(function () use (&$refundApiNote, $persenPotongan): Refund {
-                /** @var Refund $refund */
-                $refund = Refund::query()
-                    ->with([
-                        'booking.kamar.tipeKamar.kosan',
-                        'booking.kontrakan',
-                        'pembayaran',
-                    ])
-                    ->lockForUpdate()
-                    ->findOrFail($this->selectedRefund->id);
-
-                if ($refund->status_refund !== 'pending') {
-                    throw new \RuntimeException('Status pengajuan refund ini sudah berubah.');
-                }
-
-                $payment = $refund->pembayaran;
-                $booking = $refund->booking;
-
-                if ($payment === null || $booking === null) {
-                    throw new \RuntimeException('Data pembayaran atau booking refund tidak lengkap.');
-                }
-
-                try {
-                    if (filled($payment->midtrans_order_id) && $payment->isSuccessful()) {
-                        $refundResponse = Transaction::refund((string) $payment->midtrans_order_id, [
-                            'refund_key' => 'ref-'.(string) $payment->midtrans_order_id,
-                            'amount' => $this->totalKembali,
-                            'reason' => 'Refund Parsial '.$this->getRefundPersen().'%',
-                        ]);
-
-                        $refundApiNote = sprintf(
-                            'Refund parsial %s%% berhasil diajukan ke Midtrans dan properti sudah dikembalikan ke stok publik.',
-                            $this->getRefundPersen()
-                        );
-                        $payment->status_midtrans = (string) data_get($refundResponse, 'transaction_status', 'refund');
-                    } else {
-                        $refundApiNote = sprintf(
-                            'Refund lokal selesai. Pengembalian dana perlu ditransfer manual sebesar %s%% setelah potongan %s%%.',
-                            $this->getRefundPersen(),
-                            $persenPotongan
-                        );
-                        $payment->status_midtrans = 'manual_refund';
-                    }
-                } catch (Throwable $exception) {
-                    report($exception);
-
-                    $refundApiNote = sprintf(
-                        'Refund lokal selesai, tetapi API Midtrans tidak dapat diproses sehingga pengembalian dana perlu ditransfer manual sebesar %s%% setelah potongan %s%%.',
-                        $this->getRefundPersen(),
-                        $persenPotongan
-                    );
-                    $payment->status_midtrans = 'manual_refund';
-                }
-
-                $refund->update([
-                    'status_refund' => 'selesai',
-                    'nominal_refund' => $this->totalKembali,
-                ]);
-
-                $payment->update([
-                    'status_bayar' => 'refund',
-                    'status_midtrans' => $payment->status_midtrans ?: 'refund',
-                ]);
-
-                $booking->update([
-                    'status_booking' => 'batal',
-                ]);
-
-                if ($booking->kamar !== null) {
-                    $booking->kamar->update([
-                        'status_kamar' => 'tersedia',
-                    ]);
-                }
-
-                if ($booking->kontrakan !== null) {
-                    $booking->kontrakan->increment('sisa_kamar');
-                }
-
-                return $refund->fresh([
-                    'booking.pencariKos.user',
+            $refund = Refund::query()
+                ->with([
                     'booking.kamar.tipeKamar.kosan',
                     'booking.kontrakan',
                     'pembayaran',
-                ]);
-            });
+                ])
+                ->findOrFail($id);
 
-            $this->refreshDetailRefund($refund->id);
-            $this->resetRefundReviewState();
+            $payment = $refund->pembayaran;
+            $booking = $refund->booking;
 
-            $this->dispatch(
-                'appkonkos-toast',
-                icon: 'success',
-                title: 'Refund berhasil diproses',
-                text: $refundApiNote
-            );
-        } catch (Throwable $exception) {
-            report($exception);
+            if ($payment === null || $booking === null) {
+                session()->flash('error', 'Data transaksi tidak valid.');
+                return;
+            }
 
-            $this->dispatch(
-                'appkonkos-toast',
-                icon: 'error',
-                title: 'Error',
-                text: 'Gagal memproses refund: '.$exception->getMessage()
-            );
+            // 1. AMBIL PENGATURAN POTONGAN DARI SUPERADMIN
+            $nominalTransaksi = (int) ($payment->nominal_bayar ?? $booking->total_biaya ?? 0);
+            $potonganRefundPersen = Setting::getNumber(Setting::KEY_REFUND_DEDUCTION, 25);
+            $persenPotongan = $potonganRefundPersen / 100;
+
+            $totalPotongan = (int) round($nominalTransaksi * $persenPotongan);
+            $nominalRefund = (int) max(0, $nominalTransaksi - $totalPotongan);
+
+            // 2. CEK JALUR REFUND (MANUAL VS OTOMATIS)
+            $metode = strtolower($payment->metode_bayar ?? '');
+            $metodeManual = ['bank_transfer', 'echannel', 'bca_va', 'bni_va', 'bri_va', 'cstore'];
+
+            if (in_array($metode, $metodeManual)) {
+                // JALUR MANUAL
+                $this->updateStatusBerhasil($refund, $payment, $booking, $nominalRefund);
+                $this->refreshDetailRefund($refund->id);
+                if ($refundId === null) $this->resetRefundReviewState();
+                
+                session()->flash('success', "Status berhasil diupdate! Jangan lupa segera transfer manual sebesar Rp " . number_format($nominalRefund, 0, ',', '.') . " ke rekening penyewa.");
+                return;
+            }
+
+            if (empty($payment->midtrans_order_id)) {
+                session()->flash('error', 'Data transaksi tidak valid atau order_id kosong.');
+                return;
+            }
+
+            // JALUR OTOMATIS
+            $serverKey = config('midtrans.server_key');
+            $isProduction = config('midtrans.is_production', false);
+
+            // KONFIGURASI SDK MIDTRANS
+            \Midtrans\Config::$serverKey = (string) $serverKey;
+            \Midtrans\Config::$isProduction = (bool) $isProduction;
+            \Midtrans\Config::$isSanitized = true;
+            \Midtrans\Config::$is3ds = true;
+
+            // Gunakan transaction_id jika ada, jika tidak gunakan order_id
+            $idTransaksiMidtrans = $payment->midtrans_transaction_id ?: $payment->midtrans_order_id;
+
+            $params = [
+                'refund_key' => 'ref-' . $payment->midtrans_order_id . '-' . time(),
+                'amount'     => (int) $nominalRefund,
+                'reason'     => 'Refund disetujui Super Admin',
+            ];
+
+            try {
+                $response = \Midtrans\Transaction::refund($idTransaksiMidtrans, $params);
+                
+                // Cek apakah Midtrans menerima request refund (status_code 200, 201)
+                $statusCode = (string) ($response->status_code ?? '');
+                
+                if ($statusCode === '200' || $statusCode === '201') {
+                    $this->updateStatusBerhasil($refund, $payment, $booking, (int) $nominalRefund);
+                    $this->refreshDetailRefund($refund->id);
+                    if ($refundId === null) $this->resetRefundReviewState();
+                    
+                    session()->flash('success', "Refund Otomatis senilai Rp " . number_format($nominalRefund, 0, ',', '.') . " berhasil diproses!");
+                } else {
+                    $pesanError = $response->status_message ?? 'Gagal memproses refund di Midtrans.';
+                    \Illuminate\Support\Facades\Log::error('Midtrans Refund Error: ' . json_encode($response));
+                    session()->flash('error', 'Midtrans menolak: ' . $pesanError . ' (Status: ' . $statusCode . ')');
+                }
+            } catch (\Exception $e) {
+                // Jika terjadi error dari SDK (misal 404 atau 412)
+                \Illuminate\Support\Facades\Log::error('Midtrans SDK Error: ' . $e->getMessage());
+                session()->flash('error', 'Error Midtrans: ' . $e->getMessage());
+            }
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Refund System Error: ' . $e->getMessage());
+            session()->flash('error', 'Terjadi kesalahan sistem saat menghubungi Midtrans.');
+        }
+    }
+
+    private function updateStatusBerhasil(Refund $refund, \App\Models\Pembayaran $payment, \App\Models\Booking $booking, int $nominalRefund): void
+    {
+        DB::transaction(function () use ($refund, $payment, $booking, $nominalRefund) {
+            $refund->update([
+                'status_refund' => 'selesai',
+                'nominal_refund' => $nominalRefund,
+            ]); 
+            
+            $payment->update([
+                'status_bayar' => 'refund',
+                'status_midtrans' => 'refund',
+            ]);
+
+            $booking->update([
+                'status_booking' => 'batal',
+            ]);
+
+            $this->bebaskanProperti($booking);
+        });
+    }
+
+    /**
+     * Helper untuk mengembalikan status kamar menjadi tersedia atau menambah stok kontrakan.
+     */
+    private function bebaskanProperti(\App\Models\Booking $booking): void
+    {
+        // 1. Jika itu Kamar Kosan
+        if ($booking->kamar !== null) {
+            $booking->kamar->update([
+                'status_kamar' => 'tersedia',
+            ]);
+        }
+
+        // 2. Jika itu Kontrakan
+        if ($booking->kontrakan !== null) {
+            $booking->kontrakan->increment('sisa_kamar');
+            
+            // Jika sebelumnya nonaktif karena stok habis, aktifkan kembali
+            if ($booking->kontrakan->status === 'nonaktif') {
+                $booking->kontrakan->update(['status' => 'aktif']);
+            }
         }
     }
 

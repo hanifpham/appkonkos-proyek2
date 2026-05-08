@@ -169,7 +169,7 @@ class RiwayatPesanan extends Component
             'status_refund'  => 'pending',
         ]);
 
-        $booking->update(['status_booking' => 'refund']);
+        $booking->update(['status_booking' => 'batal']);
 
         session()->flash('success', 'Pengajuan refund berhasil dikirim. Tim APPKONKOS akan meninjau permintaan Anda.');
         $this->closeRefundModal();

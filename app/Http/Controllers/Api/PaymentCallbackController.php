@@ -33,6 +33,9 @@ class PaymentCallbackController extends Controller
             'status_bayar' => $status,
             'status_midtrans' => $status,
             'payload_midtrans' => $request->all(),
+            'metode_bayar' => $request->payment_type,
+            'midtrans_transaction_id' => $request->transaction_id,
+            'nominal_bayar' => (int) $request->gross_amount,
         ]);
 
         if (in_array($status, ['capture', 'settlement'])) {

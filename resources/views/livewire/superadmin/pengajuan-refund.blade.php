@@ -11,6 +11,18 @@
 @endphp
 
 <div class="flex-1 p-8 pb-12 space-y-8 overflow-y-auto">
+    @if(session()->has('success'))
+        <div class="rounded-xl border border-green-200 bg-green-50 p-4 text-green-700 shadow-sm dark:border-green-800/50 dark:bg-green-900/40 dark:text-green-300">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session()->has('error'))
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 shadow-sm dark:border-red-800/50 dark:bg-red-900/40 dark:text-red-300">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <section class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-slate-900">
             <div class="flex justify-between items-start mb-4">
@@ -85,7 +97,7 @@
                         <button type="button" @click="open = ! open" @click.outside="open = false" class="flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300">
                             <span class="flex min-w-0 items-center gap-2">
                                 <span class="material-symbols-outlined shrink-0 text-[18px]">filter_list</span>
-                                <span class="truncate">{{ $filterStatusOptions[$filterStatus] ?? 'Semua Status' }}</span>
+                                <span class="truncate">{{ $filterStatusOptions[(string) $filterStatus] ?? 'Semua Status' }}</span>
                             </span>
                             <span class="material-symbols-outlined shrink-0 text-[18px] text-slate-400 dark:text-slate-500">expand_more</span>
                         </button>
@@ -112,6 +124,7 @@
                         <th class="px-8 py-5 border-b border-gray-100 dark:border-gray-700">Informasi Refund</th>
                         <th class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">Pengguna</th>
                         <th class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">Nominal</th>
+                        <th class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">Metode Pembayaran</th>
                         <th class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">Status</th>
                         <th class="px-8 py-5 border-b border-gray-100 dark:border-gray-700 text-center">Aksi Manajemen</th>
                     </tr>
@@ -141,6 +154,16 @@
                             </td>
 
                             <td class="px-6 py-5">
+                                @if($refund->pembayaran && $refund->pembayaran->metode_bayar)
+                                    <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs uppercase tracking-wider font-semibold">
+                                        {{ str_replace('_', ' ', $refund->pembayaran->metode_bayar) }}
+                                    </span>
+                                @else
+                                    <span class="text-gray-400 italic text-xs">Belum Tersedia</span>
+                                @endif
+                            </td>
+
+                            <td class="px-6 py-5">
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold {{ $this->getStatusBadgeClasses((string) $refund->status_refund) }} uppercase tracking-tight">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $this->getStatusDotClasses((string) $refund->status_refund) }}"></span>
                                     {{ $this->getStatusLabel((string) $refund->status_refund) }}
@@ -150,22 +173,29 @@
                             <td class="px-8 py-5">
                                 <div class="flex items-center justify-center gap-2">
                                     @if($refund->status_refund === 'pending')
-                                        <button
-                                            type="button"
-                                            wire:click="tinjauRefund({{ $refund->id }})"
-                                            wire:loading.attr="disabled"
-                                            class="bg-[#113C7A] hover:bg-[#0d2f60] text-white px-5 py-2.5 rounded-lg text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-2 ring-offset-2 focus:ring-2 focus:ring-[#113C7A]"
-                                        >
-                                            <span class="material-symbols-outlined text-[18px]">rate_review</span>
-                                            Tinjau Pengajuan
+                                        @php
+                                            $metode = strtolower($refund->pembayaran?->metode_bayar ?? '');
+                                            $metodeManual = ['bank_transfer', 'echannel', 'bca_va', 'bni_va', 'bri_va', 'cstore'];
+                                        @endphp
+
+                                        @if(in_array($metode, $metodeManual))
+                                            <button wire:click="tandaiSudahDitransfer({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition shadow-sm">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                Tandai Ditransfer
+                                            </button>
+                                            <span class="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-semibold rounded-md border border-amber-200">Transfer Manual</span>
+                                        @else
+                                            <button wire:click="prosesRefund({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-[#1967d2] hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                                Refund Otomatis
+                                            </button>
+                                        @endif
+                                        
+                                        <button wire:click="tinjauPengajuan({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg transition shadow-sm">
+                                            Detail
                                         </button>
                                     @else
-                                        <button
-                                            type="button"
-                                            wire:click="tinjauPengajuan({{ $refund->id }})"
-                                            wire:loading.attr="disabled"
-                                            class="border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2.5 rounded-lg text-xs font-bold transition-all"
-                                        >
+                                        <button wire:click="tinjauPengajuan({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg transition shadow-sm">
                                             Detail
                                         </button>
                                     @endif

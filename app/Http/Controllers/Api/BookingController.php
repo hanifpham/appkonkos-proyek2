@@ -24,6 +24,7 @@ class BookingController extends Controller
         $pencari = $user->pencariKos;
 
         $isComplete =
+            !empty($user->profile_photo_path) &&
             !empty($user->name) &&
             !empty($user->email) &&
             !empty($user->no_telepon) &&

@@ -16,11 +16,11 @@ return new class extends Migration
         Schema::create('pencari_kos', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
-            $table->enum('jenis_kelamin', ['L', 'P']);
-            $table->date('tanggal_lahir');
-            $table->string('pekerjaan');
+            $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->string('pekerjaan')->nullable();
             $table->string('nama_instansi')->nullable();
-            $table->string('kota_asal');
+            $table->string('kota_asal')->nullable();
             $table->timestamps();
         });
     }

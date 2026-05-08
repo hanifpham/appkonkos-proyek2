@@ -3,7 +3,7 @@
     $dashboardUrl = match ($user->role) {
         'superadmin' => route('superadmin.dashboard'),
         'pemilik' => route('mitra.dashboard'),
-        default => route('dashboard'),
+        default => route('home'),
     };
 
     $profilePhotoUrl = Auth::user()->profile_photo_path
@@ -31,7 +31,7 @@
             ['label' => 'Pengaturan Profil', 'url' => route('mitra.pengaturan-profil'), 'active' => request()->routeIs('mitra.pengaturan-profil*')],
         ],
         default => [
-            ['label' => 'Beranda', 'url' => route('dashboard'), 'active' => request()->routeIs('dashboard')],
+            ['label' => 'Beranda', 'url' => route('home'), 'active' => request()->routeIs('home')],
             ['label' => 'Cari Kos', 'url' => url('/cari-kos'), 'active' => request()->is('cari-kos*')],
             ['label' => 'Riwayat Booking', 'url' => url('/booking/riwayat'), 'active' => request()->is('booking/riwayat*')],
         ],

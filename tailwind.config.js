@@ -19,6 +19,20 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                primary: {
+                    DEFAULT: '#1967d2',
+                    dark: '#0f4fb5',
+                },
+                secondary: '#32baff',
+                apptext: '#090a0b',
+                muted: '#6b7280',
+                surface: '#ffffff',
+                border: '#e5e7eb',
+            },
+            boxShadow: {
+                'custom-hover': '0 20px 50px rgba(15, 79, 181, 0.12)',
+            }
         },
     },
 

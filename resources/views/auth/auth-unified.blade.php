@@ -1,0 +1,302 @@
+<x-guest-layout>
+    <div class="relative h-screen w-full overflow-hidden bg-white"
+        x-data="{ isRightPanelActive: {{ request()->routeIs('register') ? 'true' : 'false' }}, showPassword: false, showConfirmPassword: false }">
+
+        {{-- REGISTER FORM (LEFT) --}}
+        <div class="absolute left-0 top-0 z-10 h-full w-1/2 p-8 transition-all duration-700 ease-in-out"
+            :class="isRightPanelActive ? 'translate-x-0 opacity-100' : 'pointer-events-none translate-x-[20%] opacity-0'">
+
+            <div class="mx-auto flex h-full w-full max-w-md flex-col justify-center px-4">
+                <div class="mb-3 flex justify-center">
+                    <img src="{{ asset('images/appkonkos.png') }}" alt="APPKONKOS" class="h-10 object-contain">
+                </div>
+                <h2 class="mb-3 text-center text-2xl font-bold text-[#090a0b]">Daftar Akun</h2>
+
+                <form method="POST" action="{{ route('register') }}" class="space-y-3" x-data="{ selectedRole: '{{ old('role', 'pencari') }}' }">
+                    @csrf
+                    <input type="hidden" name="role" x-model="selectedRole">
+
+                    {{-- Role Selector --}}
+                    <div>
+                        <x-formulir.label value="{{ __('Daftar Sebagai') }}" />
+                        <div class="mt-1.5 grid grid-cols-2 gap-3">
+                            {{-- Pencari --}}
+                            <button type="button" @click="selectedRole = 'pencari'"
+                                :class="selectedRole === 'pencari' ? 'border-[#1967d2] bg-blue-50 ring-2 ring-[#1967d2]/20' : 'border-slate-200 bg-white hover:border-slate-300'"
+                                class="flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all duration-200">
+                                <div :class="selectedRole === 'pencari' ? 'bg-[#1967d2] text-white' : 'bg-slate-100 text-slate-400'"
+                                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p :class="selectedRole === 'pencari' ? 'text-[#1967d2]' : 'text-slate-700'" class="text-sm font-bold transition-colors">Pencari Kos</p>
+                                    <p class="text-[11px] text-slate-400">Cari & sewa hunian</p>
+                                </div>
+                            </button>
+                            {{-- Pemilik --}}
+                            <button type="button" @click="selectedRole = 'pemilik'"
+                                :class="selectedRole === 'pemilik' ? 'border-[#ff8a00] bg-orange-50 ring-2 ring-[#ff8a00]/20' : 'border-slate-200 bg-white hover:border-slate-300'"
+                                class="flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all duration-200">
+                                <div :class="selectedRole === 'pemilik' ? 'bg-[#ff8a00] text-white' : 'bg-slate-100 text-slate-400'"
+                                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p :class="selectedRole === 'pemilik' ? 'text-[#ff8a00]' : 'text-slate-700'" class="text-sm font-bold transition-colors">Pemilik/Mitra</p>
+                                    <p class="text-[11px] text-slate-400">Sewakan properti</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <div>
+                        <x-formulir.label for="name" value="{{ __('Nama Lengkap') }}" />
+                        <x-formulir.input id="name" class="mt-1 block w-full !rounded-full px-5 py-2.5 text-sm" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+                    </div>
+
+                    <div>
+                        <x-formulir.label for="email_reg" value="{{ __('Email') }}" />
+                        <x-formulir.input id="email_reg" class="mt-1 block w-full !rounded-full px-5 py-2.5 text-sm" type="email" name="email" :value="old('email')" required autocomplete="username" />
+                    </div>
+
+                    <div>
+                        <x-formulir.label for="no_telepon" value="{{ __('No. Telepon') }}" />
+                        <x-formulir.input id="no_telepon" class="mt-1 block w-full !rounded-full px-5 py-2.5 text-sm" type="text" name="no_telepon" :value="old('no_telepon')" required autocomplete="tel" />
+                    </div>
+
+                    <div class="relative">
+                        <x-formulir.label for="password_reg" value="{{ __('Kata Sandi') }}" />
+                        <div class="relative">
+                            <x-formulir.input id="password_reg" class="mt-1 block w-full !rounded-full px-5 py-2.5 pr-10 text-sm" x-bind:type="showPassword ? 'text' : 'password'" name="password" required autocomplete="new-password" />
+                            <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                                <svg x-show="!showPassword" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <svg x-show="showPassword" x-cloak class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <x-formulir.label for="password_confirmation" value="{{ __('Konfirmasi Kata Sandi') }}" />
+                        <div class="relative">
+                            <x-formulir.input id="password_confirmation" class="mt-1 block w-full !rounded-full px-5 py-2.5 pr-10 text-sm" x-bind:type="showConfirmPassword ? 'text' : 'password'" name="password_confirmation" required autocomplete="new-password" />
+                            <button type="button" @click="showConfirmPassword = !showConfirmPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                                <svg x-show="!showConfirmPassword" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <svg x-show="showConfirmPassword" x-cloak class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="w-full rounded-full bg-[#1967d2] px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-[#0f4fb5]">
+                            Daftar
+                        </button>
+                    </div>
+
+                    <div class="relative mt-4 flex items-center justify-center">
+                        <span class="absolute bg-white px-2 text-xs text-slate-400">atau</span>
+                        <div class="w-full border-t border-slate-200"></div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="button" class="flex w-full items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                                <path d="M1 1h22v22H1z" fill="none" />
+                            </svg>
+                            Daftar dengan Google
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- LOGIN FORM (RIGHT) --}}
+        <div class="absolute right-0 top-0 z-10 h-full w-1/2 p-8 transition-all duration-700 ease-in-out"
+            :class="!isRightPanelActive ? 'translate-x-0 opacity-100' : 'pointer-events-none -translate-x-[20%] opacity-0'">
+
+            <div class="mx-auto flex h-full w-full max-w-md flex-col justify-center px-4">
+                <div class="mb-6 flex justify-center">
+                    <img src="{{ asset('images/appkonkos.png') }}" alt="APPKONKOS" class="h-10 object-contain">
+                </div>
+                <h2 class="mb-6 text-center text-2xl font-bold text-[#090a0b]">Masuk</h2>
+
+                @php
+                $loginPortal = session('login_portal');
+                $loginPortalLabel = match ($loginPortal) {
+                'pemilik' => 'Login Mitra',
+                'superadmin' => 'Login Super Admin',
+                default => 'Login Pencari',
+                };
+                $loginPortalText = match ($loginPortal) {
+                'pemilik' => 'Masuk untuk mengelola properti, pesanan, keuangan, dan profil verifikasi mitra.',
+                'superadmin' => 'Masuk ke panel pengawasan sistem APPKONKOS.',
+                default => 'Masuk untuk mencari properti dan mengelola booking Anda.',
+                };
+                @endphp
+
+                @session('status')
+                <div class="mb-4 text-sm font-medium text-green-600">
+                    {{ $value }}
+                </div>
+                @endsession
+
+                @if ($loginPortal !== null)
+                <div class="mb-4 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-slate-700">
+                    <p class="font-semibold text-[#113C7A]">{{ $loginPortalLabel }}</p>
+                    <p class="mt-1 text-xs leading-6 text-slate-600">{{ $loginPortalText }}</p>
+                </div>
+                @endif
+
+                <form method="POST" action="{{ route('login') }}" class="space-y-4">
+                    @csrf
+
+                    <div>
+                        <x-formulir.label for="email" value="{{ __('Email') }}" />
+                        <x-formulir.input id="email" class="mt-1 block w-full !rounded-full px-5 py-2.5 text-sm" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+                    </div>
+
+                    <div class="relative">
+                        <x-formulir.label for="password" value="{{ __('Kata Sandi') }}" />
+                        <div class="relative">
+                            <x-formulir.input id="password" class="mt-1 block w-full !rounded-full px-5 py-2.5 pr-10 text-sm" x-bind:type="showPassword ? 'text' : 'password'" name="password" required autocomplete="current-password" />
+                            <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                                <svg x-show="!showPassword" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <svg x-show="showPassword" x-cloak class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="mt-2 text-right">
+                            @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" class="text-xs font-medium text-[#1967d2] hover:text-[#0f4fb5]">
+                                Lupa Kata Sandi?
+                            </a>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <button type="submit" class="w-full rounded-full bg-[#1967d2] px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-[#0f4fb5]">
+                            Masuk
+                        </button>
+                    </div>
+
+                    <div class="relative mt-6 flex items-center justify-center">
+                        <span class="absolute bg-white px-2 text-xs text-slate-400">atau</span>
+                        <div class="w-full border-t border-slate-200"></div>
+                    </div>
+
+                    <div class="mt-6">
+                        <button type="button" class="flex w-full items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                                <path d="M1 1h22v22H1z" fill="none" />
+                            </svg>
+                            Masuk dengan Google
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- OVERLAY CONTAINER (SLIDING PANEL) --}}
+        <div class="absolute left-0 top-0 z-50 flex h-full w-1/2 flex-col justify-center bg-[#1967d2] px-8 text-center text-white transition-all duration-700 ease-in-out"
+            x-bind:class="isRightPanelActive ? 'translate-x-full rounded-l-full' : 'translate-x-0 rounded-r-full'">
+
+            {{-- Content when Login is active (Overlay on left side, prompting to Register) --}}
+            <div class="absolute inset-0 flex flex-col items-center justify-center p-8 transition-all duration-700 ease-in-out"
+                x-bind:class="isRightPanelActive ? 'pointer-events-none -translate-x-[20%] opacity-0' : 'translate-x-0 opacity-100'">
+                <h2 class="mb-4 text-4xl font-bold leading-tight">Belum punya Akun?</h2>
+                <p class="mb-10 text-base leading-relaxed text-blue-100">Yuk gabung jadi bagian dari APPKONKOS sekarang dan dapatkan manfaatnya!</p>
+                <img src="{{ asset('images/illustration-1.svg') }}" alt="Register" class="mb-10 max-h-64 object-contain opacity-90" onerror="this.src='https://illustrations.popsy.co/blue/freelancer.svg'">
+                <button x-on:click="isRightPanelActive = true" class="rounded-full border-2 border-white px-10 py-3 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-[#1967d2]">
+                    Daftar
+                </button>
+            </div>
+
+            {{-- Content when Register is active (Overlay on right side, prompting to Login) --}}
+            <div class="absolute inset-0 flex flex-col items-center justify-center p-8 transition-all duration-700 ease-in-out"
+                x-bind:class="!isRightPanelActive ? 'pointer-events-none translate-x-[20%] opacity-0' : 'translate-x-0 opacity-100'">
+                <h2 class="mb-4 text-4xl font-bold leading-tight">Sudah Punya Akun?</h2>
+                <p class="mb-10 text-base leading-relaxed text-blue-100">Untuk tetap terhubung dengan kami, silakan Masuk sekarang.</p>
+                <img src="{{ asset('images/illustration-2.svg') }}" alt="Login" class="mb-10 max-h-64 object-contain opacity-90" onerror="this.src='https://illustrations.popsy.co/blue/work-from-home.svg'">
+                <button x-on:click="isRightPanelActive = false" class="rounded-full border-2 border-white px-10 py-3 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-[#1967d2]">
+                    Masuk
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    @if ($errors->any())
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <div id="form-errors-data" data-errors="{{ json_encode($errors->all()) }}" class="hidden"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let errorsData = JSON.parse(document.getElementById('form-errors-data').dataset.errors || '[]');
+            let errorList = '';
+            errorsData.forEach(function(error) {
+                errorList += '<li>' + error + '</li>';
+            });
+
+            Swal.fire({
+                html: `
+                        <div class="flex flex-col items-center">
+                            <div class="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 ring-8 ring-red-50">
+                                <svg class="h-10 w-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <h3 class="mb-2 text-2xl font-extrabold text-slate-800">Ups! Gagal Memproses</h3>
+                            <p class="mb-6 text-sm text-slate-500">Silakan periksa kembali informasi berikut:</p>
+                            
+                            <div class="w-full rounded-2xl bg-red-50/80 p-5 text-left border border-red-100">
+                                <ul class="list-disc pl-5 space-y-1.5 text-sm font-medium text-red-700">
+                                    ${errorList}
+                                </ul>
+                            </div>
+                        </div>
+                    `,
+                showConfirmButton: true,
+                confirmButtonText: 'Baik, Saya Mengerti',
+                buttonsStyling: false,
+                background: '#ffffff',
+                backdrop: `rgba(15, 23, 42, 0.6) backdrop-filter backdrop-blur-sm`,
+                customClass: {
+                    popup: '!rounded-[2rem] shadow-2xl p-8 border border-slate-100',
+                    confirmButton: 'mt-8 w-full rounded-full bg-[#1967d2] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:bg-[#0f4fb5] hover:shadow-blue-600/40 focus:outline-none focus:ring-4 focus:ring-blue-100',
+                    htmlContainer: '!m-0 !p-0'
+                }
+            }).then((result) => {
+                // Redirect ke beranda (home) setelah alert ditutup atau tombol diklik
+                window.location.href = "{{ route('home') }}";
+            });
+        });
+    </script>
+    @endif
+</x-guest-layout>

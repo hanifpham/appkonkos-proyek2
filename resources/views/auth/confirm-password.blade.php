@@ -5,7 +5,7 @@
         </x-slot>
 
         <div class="mb-4 text-sm text-gray-600">
-            {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
+            {{ __('Area ini merupakan bagian aplikasi yang aman. Harap konfirmasi kata sandi Anda sebelum melanjutkan.') }}
         </div>
 
         <x-formulir.error-validasi class="mb-4" />
@@ -14,13 +14,13 @@
             @csrf
 
             <div>
-                <x-formulir.label for="password" value="{{ __('Password') }}" />
+                <x-formulir.label for="password" value="{{ __('Kata Sandi') }}" />
                 <x-formulir.input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" autofocus />
             </div>
 
             <div class="flex justify-end mt-4">
                 <x-formulir.tombol class="ms-4">
-                    {{ __('Confirm') }}
+                    {{ __('Konfirmasi') }}
                 </x-formulir.tombol>
             </div>
         </form>

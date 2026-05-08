@@ -164,6 +164,10 @@ class UlasanPenyewa extends Component
 
     public function getPenyewaInitials(Ulasan $ulasan): string
     {
+        if ($ulasan->is_anonymous) {
+            return 'A'; // Inisial untuk Anonim
+        }
+        
         $name = $ulasan->booking?->pencariKos?->user?->name ?? 'Penyewa';
         $compactName = preg_replace('/\s+/', '', $name) ?? $name;
 

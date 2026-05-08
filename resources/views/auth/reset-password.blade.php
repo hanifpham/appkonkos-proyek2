@@ -17,18 +17,18 @@
             </div>
 
             <div class="mt-4">
-                <x-formulir.label for="password" value="{{ __('Password') }}" />
+                <x-formulir.label for="password" value="{{ __('Kata Sandi') }}" />
                 <x-formulir.input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
             </div>
 
             <div class="mt-4">
-                <x-formulir.label for="password_confirmation" value="{{ __('Confirm Password') }}" />
+                <x-formulir.label for="password_confirmation" value="{{ __('Konfirmasi Kata Sandi') }}" />
                 <x-formulir.input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
             </div>
 
             <div class="flex items-center justify-end mt-4">
                 <x-formulir.tombol>
-                    {{ __('Reset Password') }}
+                    {{ __('Atur Ulang Kata Sandi') }}
                 </x-formulir.tombol>
             </div>
         </form>

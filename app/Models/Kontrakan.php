@@ -88,9 +88,17 @@ class Kontrakan extends Model implements HasMedia
         return $this->hasMany(Ulasan::class, 'kontrakan_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Favorit, $this>
+     */
+    public function favorits(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Favorit::class, 'favoritable');
+    }
+
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('foto_properti')->singleFile();
+        $this->addMediaCollection('foto_properti');
     }
 
     public function registerMediaConversions(?Media $media = null): void

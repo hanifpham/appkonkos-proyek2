@@ -38,18 +38,17 @@
     </head>
     <body
         x-data="{
-            darkMode: localStorage.getItem('mitra-dark-mode') === 'true',
+            darkMode: false,
             mobileSidebarOpen: false,
             init() {
-                this.applyTheme();
-            },
-            applyTheme() {
-                document.documentElement.classList.toggle('dark', this.darkMode);
+                this.darkMode = window.appkonkosTheme?.isDark() ?? document.documentElement.classList.contains('dark');
+                window.addEventListener('appkonkos-theme-changed', (event) => {
+                    this.darkMode = event.detail.darkMode;
+                });
             },
             toggleDarkMode() {
-                this.darkMode = !this.darkMode;
-                localStorage.setItem('mitra-dark-mode', this.darkMode ? 'true' : 'false');
-                this.applyTheme();
+                this.darkMode = window.appkonkosTheme?.toggle() ?? !this.darkMode;
+                document.documentElement.classList.toggle('dark', this.darkMode);
             }
         }"
         x-init="init()"
@@ -82,12 +81,33 @@
                 $pendingBadgeCount = 0;
             }
 
-            $profilePhotoUrl = $user?->profile_photo_path
+            $profilePhotoPath = is_string($user?->profile_photo_path)
+                ? ltrim($user->profile_photo_path, '/')
+                : '';
+
+            if ($profilePhotoPath !== '') {
+                $profilePhotoPath = preg_replace('#^(storage/|public/storage/)#', '', $profilePhotoPath) ?? $profilePhotoPath;
+                $sourceProfilePhoto = storage_path('app/public/'.$profilePhotoPath);
+                $publicProfilePhoto = public_path('storage/'.$profilePhotoPath);
+
+                if (file_exists($sourceProfilePhoto)) {
+                    if (! is_dir(dirname($publicProfilePhoto))) {
+                        mkdir(dirname($publicProfilePhoto), 0775, true);
+                    }
+
+                    if (! file_exists($publicProfilePhoto) || filesize($publicProfilePhoto) !== filesize($sourceProfilePhoto)) {
+                        copy($sourceProfilePhoto, $publicProfilePhoto);
+                    }
+                }
+            }
+
+            $profilePhotoUrl = $profilePhotoPath !== ''
                 ? (rtrim(request()->getBaseUrl(), '/') === ''
-                    ? '/storage/'.ltrim($user->profile_photo_path, '/')
-                    : rtrim(request()->getBaseUrl(), '/').'/storage/'.ltrim($user->profile_photo_path, '/'))
-                    .'?v='.($user->updated_at?->timestamp ?? now()->timestamp)
+                    ? '/storage/'.$profilePhotoPath
+                    : rtrim(request()->getBaseUrl(), '/').'/storage/'.$profilePhotoPath)
+                    .'?v='.($user?->updated_at?->timestamp ?? now()->timestamp)
                 : 'https://ui-avatars.com/api/?name='.urlencode($user?->name ?? 'User').'&color=113C7A&background=EBF4FF';
+            $profilePhotoFallbackUrl = 'https://ui-avatars.com/api/?name='.urlencode($user?->name ?? 'User').'&color=113C7A&background=EBF4FF';
 
             $sidebarItems = $user?->role === 'superadmin'
                 ? [
@@ -277,7 +297,7 @@
 
                 <div class="shrink-0 border-t border-white/10 bg-[#14366a] {{ $sidebarProfileWrapperClass }} dark:bg-black/20">
                     <div class="mb-3 flex items-center {{ $sidebarProfileGapClass }}">
-                        <img alt="{{ $user?->name }}" class="{{ $sidebarProfileImageClass }} rounded-full border-2 border-white/30 object-cover shadow-sm" src="{{ $profilePhotoUrl }}" data-appkonkos-profile-photo>
+                        <img alt="{{ $user?->name }}" class="{{ $sidebarProfileImageClass }} rounded-full border-2 border-white/30 object-cover shadow-sm" src="{{ $profilePhotoUrl }}" data-appkonkos-profile-photo onerror="this.onerror=null;this.src='{{ $profilePhotoFallbackUrl }}';">
                         <div class="min-w-0 flex-1">
                             <span class="block truncate {{ $sidebarProfileNameClass }} font-semibold text-white">{{ $user?->name }}</span>
                             <span class="block truncate {{ $sidebarProfileEmailClass }} text-blue-300">{{ $user?->email }}</span>

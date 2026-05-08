@@ -13,7 +13,7 @@
                         <input type="hidden" name="tipe" x-model="selected">
                         <button type="button" @click="open = !open" class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
                             <div class="flex items-center gap-2">
-                                <svg class="h-4 w-4 text-[#0EA5E9]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                <svg class="h-4 w-4 text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                 <span x-text="selected"></span>
                             </div>
                             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -30,7 +30,7 @@
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
-                        <input type="text" name="lokasi" value="{{ $request->query('lokasi') }}" placeholder="Cari lokasi atau nama properti..." class="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-700 transition focus:border-[#0EA5E9] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0EA5E9]">
+                        <input type="text" name="lokasi" value="{{ $request->query('lokasi') }}" placeholder="Cari lokasi atau nama properti..." class="w-full rounded-xl border border-[#e5e7eb] bg-slate-50 py-3 pl-11 pr-4 text-sm text-[#090a0b] transition focus:border-[#1967d2] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#1967d2]">
                     </div>
 
                     {{-- Dropdown Harga --}}
@@ -38,7 +38,7 @@
                         <input type="hidden" name="harga" x-model="selected">
                         <button type="button" @click="open = !open" class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
                             <div class="flex items-center gap-2">
-                                <svg class="h-4 w-4 text-[#0EA5E9]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <svg class="h-4 w-4 text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <span x-text="selected"></span>
                             </div>
                             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -53,7 +53,7 @@
                     </div>
 
                     {{-- Tombol Cari --}}
-                    <button type="submit" class="rounded-xl bg-[#0EA5E9] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#3B82F6]">
+                    <button type="submit" class="rounded-xl bg-[#1967d2] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0f4fb5]">
                         Cari
                     </button>
                 </form>
@@ -74,7 +74,10 @@
             @else
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     @foreach($results as $properti)
-                    <article class="group overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+                    @php
+                        $detailTipe = $properti->tipe_properti === 'kos' ? 'kosan' : 'kontrakan';
+                    @endphp
+                    <a href="{{ route('properti.detail', ['tipe' => $detailTipe, 'id' => $properti->id]) }}" class="group overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1967d2] focus:ring-offset-2">
                         <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
                             @if($properti->foto_tampil)
                                 <img src="{{ $properti->foto_tampil }}" alt="{{ $properti->nama_properti }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
@@ -89,7 +92,7 @@
                         </div>
                         <div class="p-4">
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold uppercase tracking-wide {{ $properti->tipe_properti === 'kos' ? 'text-[#0EA5E9]' : 'text-teal-600' }}">
+                                <span class="text-xs font-bold uppercase tracking-wide {{ $properti->tipe_properti === 'kos' ? 'text-[#1967d2]' : 'text-[#32baff]' }}">
                                     {{ $properti->tipe_properti === 'kos' ? ($properti->jenis_kos ? 'Kos ' . ucfirst($properti->jenis_kos) : 'Kos') : 'Kontrakan' }}
                                 </span>
                                 @if($properti->rating_tampil)
@@ -104,6 +107,10 @@
                                 <svg class="h-3.5 w-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 <span class="truncate">{{ Str::limit($properti->alamat_lengkap, 35) }}</span>
                             </div>
+                            <div class="mt-3 flex items-center justify-between text-xs text-slate-500">
+                                <span>{{ $properti->sisa_kamar_tampil > 0 ? $properti->sisa_kamar_tampil.' unit tersedia' : 'Penuh' }}</span>
+                                <span class="font-semibold text-[#1967d2]">Lihat detail</span>
+                            </div>
                             
                             <div class="mt-4 border-t border-slate-100 pt-3">
                                 @if($properti->harga_tampil)
@@ -115,7 +122,7 @@
                                 @endif
                             </div>
                         </div>
-                    </article>
+                    </a>
                     @endforeach
                 </div>
             @endif

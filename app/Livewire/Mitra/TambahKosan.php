@@ -36,9 +36,19 @@ class TambahKosan extends Component
 
     public string $peraturan_kos = '';
 
-    public $foto_properti = null;
+    /** @var mixed */
+    public $foto_1;
 
-    public ?string $existingPhotoUrl = null;
+    /** @var mixed */
+    public $foto_2;
+
+    /** @var mixed */
+    public $foto_3;
+
+    /** @var mixed */
+    public $foto_4;
+
+    public array $existingPhotoUrls = [];
 
     public function mount(): void
     {
@@ -54,10 +64,6 @@ class TambahKosan extends Component
      */
     protected function rules(): array
     {
-        $fotoRules = $this->editId === null
-            ? ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048']
-            : ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'];
-
         return [
             'nama_properti' => ['required', 'string', 'max:255'],
             'jenis_kos' => $this->tipe_properti === 'kosan'
@@ -67,7 +73,12 @@ class TambahKosan extends Component
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'peraturan_kos' => ['required', 'string', 'max:5000'],
-            'foto_properti' => $fotoRules,
+            'foto_1' => $this->editId === null
+                ? ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048']
+                : ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'foto_2' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'foto_3' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'foto_4' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 
@@ -83,7 +94,10 @@ class TambahKosan extends Component
             'latitude' => 'Latitude',
             'longitude' => 'Longitude',
             'peraturan_kos' => 'Peraturan Kos',
-            'foto_properti' => 'Foto Properti',
+            'foto_1' => 'Foto Utama',
+            'foto_2' => 'Foto Samping',
+            'foto_3' => 'Foto Dalam',
+            'foto_4' => 'Foto Fasilitas',
         ];
     }
 
@@ -98,7 +112,7 @@ class TambahKosan extends Component
             'jenis_kos.in' => 'Kategori Kos yang dipilih tidak valid.',
             'string' => 'Kolom :attribute harus berupa teks.',
             'numeric' => 'Kolom :attribute harus berupa angka.',
-            'image' => 'Kolom :attribute harus berupa file gambar.',
+            'image' => 'File harus berupa gambar.',
             'in' => 'Pilihan :attribute tidak valid.',
             'mimes' => 'Format :attribute harus berupa: :values.',
             'max.string' => 'Teks :attribute maksimal :max karakter.',
@@ -127,24 +141,46 @@ class TambahKosan extends Component
             'peraturan_kos' => $this->peraturan_kos,
         ];
 
+        $uploadedPhotos = array_filter([
+            $this->foto_1,
+            $this->foto_2,
+            $this->foto_3,
+            $this->foto_4,
+        ]);
+
         if ($this->editId !== null) {
             $kosan = $this->ownedKosan($this->editId);
             $kosan->update(array_merge($payload, $this->getResubmissionPayload($kosan->status)));
 
-            if ($this->foto_properti !== null) {
+            if (!empty($uploadedPhotos)) {
                 $kosan->clearMediaCollection('foto_properti');
-                $kosan->addMedia($this->foto_properti)->toMediaCollection('foto_properti');
+                foreach ($uploadedPhotos as $foto) {
+                    $kosan->addMedia($foto)->toMediaCollection('foto_properti');
+                }
             }
 
             session()->flash('success', 'Profil kosan berhasil diperbarui. Kelola tipe kamar dan nomor kamar di langkah berikutnya.');
         } else {
             $kosan = Kosan::create($payload);
-            $kosan->addMedia($this->foto_properti)->toMediaCollection('foto_properti');
+            foreach ($uploadedPhotos as $foto) {
+                $kosan->addMedia($foto)->toMediaCollection('foto_properti');
+            }
 
             session()->flash('success', 'Profil kosan berhasil disimpan. Lanjutkan dengan mengatur tipe kamar dan nomor kamar.');
         }
 
         return redirect()->route('mitra.properti.kelola-kamar', ['kosan_id' => $kosan->id]);
+    }
+
+    public function hapusFoto(int $slot): void
+    {
+        $property = "foto_" . $slot;
+        if (property_exists($this, $property)) {
+            $this->$property = null;
+        }
+
+        // If editing, also clear existing if it was matching this slot? 
+        // Actually, the user just wants to clear the current selection.
     }
 
     #[Layout('layouts.mitra.utama')]
@@ -164,7 +200,7 @@ class TambahKosan extends Component
         $this->latitude = (string) $kosan->latitude;
         $this->longitude = (string) $kosan->longitude;
         $this->peraturan_kos = $kosan->peraturan_kos;
-        $this->existingPhotoUrl = $kosan->getMediaDisplayUrl('foto_properti');
+        $this->existingPhotoUrls = $kosan->getMediaDisplayUrls('foto_properti');
     }
 
     protected function pemilikProperti(): PemilikProperti

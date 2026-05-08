@@ -38,15 +38,15 @@
         @livewireStyles
         @stack('styles')
     </head>
-    <body class="font-sans antialiased">
+    <body class="font-sans antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
         <x-layout.banner />
 
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-gray-100 transition-colors duration-300 dark:bg-slate-950">
             @livewire('navigation-menu')
 
             <!-- Page Heading -->
             @if (isset($header))
-                <header class="bg-white shadow">
+                <header class="bg-white shadow transition-colors duration-300 dark:bg-slate-900">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>

@@ -75,9 +75,35 @@ class Pembayaran extends Model
 
             $owner = $booking->kamar?->tipeKamar?->kosan?->pemilikProperti?->user
                 ?? $booking->kontrakan?->pemilikProperti?->user;
+            
+            $penyewa = $booking->pencariKos?->user;
+            
+            $namaProperti = $booking->kamar?->tipeKamar?->kosan?->nama_properti 
+                ?? $booking->kontrakan?->nama_properti ?? 'Properti';
+                
+            $nomorKamarText = $booking->kamar ? '(Kamar: ' . $booking->kamar->nomor_kamar . ')' : '';
+            $durasiSewa = \Carbon\Carbon::parse($booking->tgl_mulai_sewa)->diffInMonths($booking->tgl_selesai_sewa);
+            if ($durasiSewa == 0) $durasiSewa = \Carbon\Carbon::parse($booking->tgl_mulai_sewa)->diffInYears($booking->tgl_selesai_sewa) * 12;
+            if ($durasiSewa == 0) $durasiSewa = 1; // Fallback
+            
+            $nominalFormatted = number_format((float) $payment->nominal_bayar, 0, ',', '.');
 
             if ($owner !== null) {
                 $owner->notify(new BookingSettlementNotification($booking->loadMissing('pembayaran')));
+                
+                // Notifikasi WA ke Pemilik
+                if (!empty($owner->no_telepon)) {
+                    $pesanPemilik = "Notifikasi APPKONKOS 🏠\n\nSelamat! Properti Anda {$namaProperti} {$nomorKamarText} baru saja disewa oleh {$penyewa->name} selama {$durasiSewa} bulan.\n\nTotal Pendapatan: Rp {$nominalFormatted}\n\nMohon bersiap untuk menyambut penyewa. Cek selengkapnya di Dashboard Mitra.";
+                    \App\Services\WhatsAppService::send($owner->no_telepon, $pesanPemilik);
+                }
+            }
+            
+            if ($penyewa !== null) {
+                // Notifikasi WA ke Penyewa
+                if (!empty($penyewa->no_telepon)) {
+                    $pesanPenyewa = "Notifikasi APPKONKOS ✅\n\nHalo {$penyewa->name}, pembayaran sebesar Rp {$nominalFormatted} telah berhasil!\n\nKamar Anda di {$namaProperti} {$nomorKamarText} sudah dikonfirmasi.\n\nSilakan tunjukkan pesan ini atau E-Ticket Anda saat Check-in kepada pemilik kos.";
+                    \App\Services\WhatsAppService::send($penyewa->no_telepon, $pesanPenyewa);
+                }
             }
         });
     }

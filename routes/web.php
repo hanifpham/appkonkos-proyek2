@@ -12,6 +12,7 @@ use App\Livewire\Mitra\TambahKontrakan;
 use App\Livewire\Mitra\TambahKosan;
 use App\Livewire\Mitra\UlasanPenyewa;
 use App\Livewire\Pencari\Dashboard as PencariDashboard;
+
 use App\Livewire\SuperAdmin\DetailModerasiProperti as SuperAdminDetailModerasiProperti;
 use App\Livewire\SuperAdmin\DashboardUtama as SuperAdminDashboard;
 use App\Livewire\SuperAdmin\ManajemenPencairan as SuperAdminManajemenPencairan;
@@ -24,7 +25,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', App\Http\Controllers\BerandaController::class)->name('home');
+Route::get('/pusat-bantuan', App\Livewire\Front\PusatBantuan::class)->name('pusat-bantuan');
 Route::get('/cari', [App\Http\Controllers\CariController::class, 'index'])->name('cari');
+Route::get('/properti/{tipe}/{id}', App\Livewire\Front\DetailProperti::class)->name('properti.detail');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/pilih-role', function () {
@@ -42,8 +45,14 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:pencari'])->group(function (): void {
     Route::get('/dashboard', PencariDashboard::class)->name('dashboard');
+    Route::get('/profil-saya', \App\Livewire\Pencari\ProfilSaya::class)->name('pencari.profil');
     Route::get('/pembayaran/{booking}', [PembayaranController::class, 'show'])->name('pencari.pembayaran.show');
     Route::post('/pembayaran/{booking}/snap-token', [PembayaranController::class, 'snapToken'])->name('pencari.pembayaran.snap-token');
+    Route::get('/favorit-saya', \App\Livewire\Pencari\FavoritSaya::class)->name('pencari.favorit');
+    Route::get('/riwayat-pesanan', \App\Livewire\Pencari\RiwayatPesanan::class)->name('pencari.riwayat-pesanan');
+    Route::get('/ulasan-saya', \App\Livewire\Pencari\UlasanSaya::class)->name('pencari.ulasan-saya');
+    Route::get('/checkout', \App\Livewire\Pencari\Checkout::class)->name('pencari.checkout');
+    Route::get('/e-ticket/{booking}', [PembayaranController::class, 'eTicket'])->name('pencari.e-ticket');
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:pemilik'])->group(function (): void {

@@ -10,7 +10,7 @@ class PropertyController extends Controller
 {
     public function index()
     {
-        $kosan = Kosan::with(['tipeKamar', 'ulasan'])
+        $kosan = Kosan::with(['tipeKamar', 'ulasan',])
             ->where('status', 'aktif')
             ->get()
             ->map(function ($item) {
@@ -28,15 +28,19 @@ class PropertyController extends Controller
                     'harga_max' => (int) $hargaMax,
                     'period'    => 'bulan',
                     'tipe'      => 'Kosan',
-                    'foto'      => str_replace('http://localhost', 'http://10.0.170.227:8000', $foto),
+                    'foto'      => str_replace('http://localhost', 'http://192.168.1.10:8000', $foto),
                     'rating'    => round($item->ulasan->avg('rating') ?? 0, 1),
                     'lat'       => (float) $item->latitude,
                     'lng'       => (float) $item->longitude,
                     'gender'    => $item->jenis_kos ?? '',
+                    'available_count' => $item->tipeKamar
+                        ->sum(fn($tipe) => $tipe->kamar
+                        ->where('status_kamar', 'tersedia')
+                        ->count()),
                 ];
             });
 
-        $kontrakan = Kontrakan::with(['ulasan'])
+        $kontrakan = Kontrakan::with(['ulasan',])
             ->where('status', 'aktif')
             ->get()
             ->map(function ($item) {
@@ -51,10 +55,11 @@ class PropertyController extends Controller
                     'harga_max' => (int) $item->harga_sewa_tahun,
                     'period'    => 'tahun',
                     'tipe'      => 'Kontrakan',
-                    'foto'      => str_replace('http://localhost', 'http://10.0.170.227:8000', $foto),
+                    'foto'      => str_replace('http://localhost', 'http://192.168.1.10:8000', $foto),
                     'rating'    => round($item->ulasan->avg('rating') ?? 0, 1),
                     'lat'       => (float) $item->latitude,
                     'lng'       => (float) $item->longitude,
+                    'available_count' => $item->status == 'aktif' ? 1 : 0,
                 ];
             });
 
@@ -70,13 +75,20 @@ class PropertyController extends Controller
     {
         $kosan = Kosan::with([
                 'tipeKamar.kamar',
-                'ulasan',
+                'ulasan', 
+                'pemilikProperti.user',
             ])
             ->where('status', 'aktif')
             ->findOrFail($id);
 
-        $foto = $kosan->getFirstMediaUrl('foto_properti', 'webp')
-            ?: 'https://via.placeholder.com/400x300';
+        $fotos = $kosan->getMedia('foto_properti')
+            ->map(function ($media) {
+                return str_replace(
+                    'http://localhost',
+                    'http://192.168.1.10:8000',
+                    $media->getUrl('webp')
+                );
+            })->values();
 
         return response()->json([
             'success' => true,
@@ -85,12 +97,13 @@ class PropertyController extends Controller
                 'nama'      => $kosan->nama_properti,
                 'alamat'    => $kosan->alamat_lengkap,
                 'peraturan' => $kosan->peraturan_kos ?? '',
-                'foto'      => str_replace('http://localhost', 'http://10.0.170.227:8000', $foto),
+                'fotos'     => $fotos,
                 'rating'    => round($kosan->ulasan->avg('rating') ?? 0, 1),
                 'lat'       => (float) $kosan->latitude,
                 'lng'       => (float) $kosan->longitude,
                 'tipe'      => 'Kosan',
                 'gender'    => $kosan->jenis_kos ?? '',
+                'no_wa' => $kosan->pemilikProperti?->user?->no_wa ?? null,
 
                 'room_types' => $kosan->tipeKamar->map(function ($tipe) {
                     return [
@@ -117,12 +130,18 @@ class PropertyController extends Controller
 
     public function detailKontrakan($id)
     {
-        $kontrakan = Kontrakan::with(['ulasan'])
+        $kontrakan = Kontrakan::with(['ulasan', 'pemilikProperti.user'])
             ->where('status', 'aktif')
             ->findOrFail($id);
 
-        $foto = $kontrakan->getFirstMediaUrl('foto_properti', 'webp')
-            ?: 'https://via.placeholder.com/400x300';
+        $fotos = $kontrakan->getMedia('foto_properti')
+            ->map(function ($media) {
+                return str_replace(
+                    'http://localhost',
+                    'http://192.168.1.10:8000',
+                    $media->getUrl('webp')
+                );
+            })->values();
 
         return response()->json([
             'success' => true,
@@ -133,11 +152,12 @@ class PropertyController extends Controller
                 'peraturan' => $kontrakan->peraturan_kontrakan ?? '',
                 'harga'     => (int) $kontrakan->harga_sewa_tahun,
                 'period'    => 'tahun',
-                'foto'      => str_replace('http://localhost', 'http://10.0.170.227:8000', $foto),
+                'fotos'     => $fotos,
                 'rating'    => round($kontrakan->ulasan->avg('rating') ?? 0, 1),
                 'lat'       => (float) $kontrakan->latitude,
                 'lng'       => (float) $kontrakan->longitude,
                 'tipe'      => 'Kontrakan',
+                'no_wa' => $kontrakan->pemilikProperti?->user?->no_wa ?? null,
             ],
         ]);
     }

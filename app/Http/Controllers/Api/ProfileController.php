@@ -8,26 +8,33 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-    public function show(Request $request)
-    {
-        $user = $request->user()->load('pencariKos');
-        $pencari = $user->pencariKos;
+    private function getPhotoUrl($user): ?string
+{
+    $url = $user->profile_photo_url;
+    if (!$url) return null;
+    return str_replace('http://localhost', 'http://10.0.170.227:8000', $url);
+}
 
-        return response()->json([
-            'success' => true,
-            'user' => [
-                'id'                => $user->id,
-                'name'              => $user->name,
-                'email'             => $user->email,
-                'no_telepon'        => $user->no_telepon,
-                'profile_photo_url' => $user->profile_photo_url,
-                'no_wa'             => $pencari?->no_wa ?? null,
-                'jenis_kelamin'     => $pencari?->jenis_kelamin ?? null,
-                'pekerjaan'         => $pencari?->pekerjaan ?? null,
-                'domisili'          => $pencari?->domisili ?? null,
-            ],
-        ]);
-    }
+public function show(Request $request)
+{
+    $user = $request->user()->load('pencariKos');
+    $pencari = $user->pencariKos;
+
+    return response()->json([
+        'success' => true,
+        'user' => [
+            'id'                => $user->id,
+            'name'              => $user->name,
+            'email'             => $user->email,
+            'no_telepon'        => $user->no_telepon,
+            'profile_photo_url' => $this->getPhotoUrl($user), 
+            'no_wa'             => $pencari?->no_wa ?? null,
+            'jenis_kelamin'     => $pencari?->jenis_kelamin ?? null,
+            'pekerjaan'         => $pencari?->pekerjaan ?? null,
+            'domisili'          => $pencari?->domisili ?? null,
+        ],
+    ]);
+}
 
     public function update(Request $request)
     {
@@ -83,7 +90,7 @@ class ProfileController extends Controller
                 'name'              => $user->name,
                 'email'             => $user->email,
                 'no_telepon'        => $user->no_telepon,
-                'profile_photo_url' => $user->profile_photo_url,
+                'profile_photo_url' => $this->getPhotoUrl($user),
                 'no_wa'             => $user->pencariKos?->no_wa ?? null,
                 'jenis_kelamin'     => $user->pencariKos?->jenis_kelamin ?? null,
                 'pekerjaan'         => $user->pencariKos?->pekerjaan ?? null,

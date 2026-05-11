@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;   
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\models\User;
 
 class Kontrakan extends Model implements HasMedia
 {
@@ -102,5 +103,11 @@ class Kontrakan extends Model implements HasMedia
         $this->addMediaConversion('webp')
             ->format('webp')
             ->nonQueued();
+    }
+    
+
+     public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

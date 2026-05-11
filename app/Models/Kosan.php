@@ -15,6 +15,7 @@ use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Models\User;
 
 class Kosan extends Model implements HasMedia
 {
@@ -122,5 +123,10 @@ class Kosan extends Model implements HasMedia
         $this->addMediaConversion('webp')
             ->format('webp')
             ->nonQueued();
+    }
+
+     public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

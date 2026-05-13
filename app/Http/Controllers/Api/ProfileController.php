@@ -12,7 +12,7 @@ class ProfileController extends Controller
 {
     $url = $user->profile_photo_url;
     if (!$url) return null;
-    return str_replace('http://localhost', 'http://10.0.170.227:8000', $url);
+    return str_replace('http://localhost', 'http://172.16.68.42:8000', $url);
 }
 
 public function show(Request $request)

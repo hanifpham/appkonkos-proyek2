@@ -115,6 +115,6 @@ class DetailProperti extends Component
 
     public function render()
     {
-        return view('livewire.front.detail-properti')->layout('layouts.public');
+        return view('livewire.front.detail-properti');
     }
 }

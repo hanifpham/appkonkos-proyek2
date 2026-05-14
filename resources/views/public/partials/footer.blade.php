@@ -4,18 +4,6 @@
     <div class="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-blue-50/50 blur-3xl dark:bg-blue-900/10"></div>
     <div class="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-indigo-50/50 blur-3xl dark:bg-indigo-900/10"></div>
 
-<<<<<<< HEAD
-    <div class="mx-auto max-w-7xl px-4 pb-12 pt-16 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 gap-12 lg:grid-cols-4 lg:gap-8">
-            {{-- Column 1: Logo + Social --}}
-            <div>
-                <a href="{{ route('home') }}" class="flex items-center gap-2">
-                    <svg class="h-8 w-8 text-[#1967d2]" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="8" fill="currentColor"/>
-                        <path d="M16 7L6 15h3v10h6v-6h2v6h6V15h3L16 7z" fill="white"/>
-                    </svg>
-                    <span class="text-sm font-bold tracking-tight text-[#090a0b]">appkonkos</span>
-=======
     <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
             {{-- Column 1: Brand & About --}}
@@ -25,7 +13,6 @@
                         <img src="{{ asset('images/appkonkos.png') }}" alt="{{ config('app.name', 'APPKONKOS') }}" class="h-9 w-9 object-contain">
                     </div>
                     <span class="text-xl font-black tracking-tight text-slate-900 dark:text-white">appkonkos</span>
->>>>>>> 61d1b33121855090630d4359a279d3293e8ff5f3
                 </a>
                 <p class="text-sm font-medium leading-relaxed text-slate-500 dark:text-slate-400">
                     Platform pencari kos dan kontrakan terpercaya yang menghubungkan ribuan penyewa dengan hunian impian mereka di seluruh Indonesia dengan mudah dan aman.
@@ -59,6 +46,7 @@
                         </svg>
                         @endif
                     </a>
+                    @endforeach
                 </div>
             </div>
 

@@ -49,11 +49,8 @@
     {{-- ==================== 3. PROMO CAROUSEL ==================== --}}
     @include('public.partials.promo')
 
-    {{-- ==================== 4. REKOMENDASI KOS ==================== --}}
-    @include('public.partials.kos')
-
-    {{-- ==================== 5. REKOMENDASI KONTRAKAN ==================== --}}
-    @include('public.partials.kontrakan')
+    {{-- ==================== 4. REKOMENDASI PROPERTI (LIVEWIRE) ==================== --}}
+    <livewire:front.beranda />
 
     {{-- ==================== 6. AREA POPULER ==================== --}}
     @include('public.partials.area')

@@ -52,7 +52,7 @@
                 $isKosan = $booking->kamar_id !== null;
                 $properti = $isKosan ? $booking->kamar?->tipeKamar?->kosan : $booking->kontrakan;
                 $propertyName = $properti?->nama_properti ?? 'Properti';
-                $fotoUrl = $properti ? ($properti->getFirstMediaUrl('foto_properti', 'webp') ?: $properti->getFirstMediaUrl('foto_properti')) : '';
+                $fotoUrl = $properti ? $properti->getMediaDisplayUrl('foto_properti') : '';
                 $fallbackIcon = $isKosan ? 'bed' : 'house';
             @endphp
 

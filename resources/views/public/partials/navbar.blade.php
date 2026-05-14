@@ -195,7 +195,7 @@
             </div>
             @else
             <div class="hidden items-center gap-3 md:flex">
-                <button type="button" @click="toggleDarkMode()" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 text-slate-500 transition-all hover:bg-slate-100 hover:text-[#1967d2] dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white" title="Mode Gelap/Terang" aria-label="Mode Gelap/Terang">
+                <button type="button" @click="toggleDarkMode()" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200/80 text-slate-500 transition-all hover:bg-slate-100 hover:text-[#1967d2] dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white" title="Mode Gelap/Terang" aria-label="Mode Gelap/Terang">
                     <svg x-show="!darkMode" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                     </svg>

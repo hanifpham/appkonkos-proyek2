@@ -54,7 +54,7 @@ class Checkout extends Component
             $this->hargaPerBulan = $kamar->tipeKamar->harga_per_bulan;
 
             $kosan = $kamar->tipeKamar->kosan;
-            $this->fotoUrl = $kosan->getFirstMediaUrl('foto_properti', 'webp') ?: $kosan->getFirstMediaUrl('foto_properti');
+            $this->fotoUrl = $kosan->getMediaDisplayUrl('foto_properti');
 
             $aturanString = trim((string) $kosan->peraturan_kos);
             if (empty($aturanString)) {
@@ -68,7 +68,7 @@ class Checkout extends Component
             $this->hargaPerBulan = (int) ($kontrakan->harga_sewa_tahun / 12);
             $this->durasi_sewa = 12; // Default 1 tahun untuk kontrakan
 
-            $this->fotoUrl = $kontrakan->getFirstMediaUrl('foto_properti', 'webp') ?: $kontrakan->getFirstMediaUrl('foto_properti');
+            $this->fotoUrl = $kontrakan->getMediaDisplayUrl('foto_properti');
 
             $aturanString = trim((string) $kontrakan->peraturan_kontrakan);
             if (empty($aturanString)) {
@@ -112,6 +112,7 @@ class Checkout extends Component
         ]);
 
         $user = Auth::user();
+
         $pencariKos = $user->pencariKos;
 
         if (!$pencariKos) {

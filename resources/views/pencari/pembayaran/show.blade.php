@@ -34,31 +34,7 @@
                         <div class="w-8 h-8 rounded-full bg-[#1967d2] text-white flex items-center justify-center border-4 border-white dark:border-slate-900 shadow-sm ring-4 ring-blue-50 dark:ring-blue-900/30">
                             <span class="text-sm font-bold">3</span>
                         </div>
-
-                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
-                            Pembayaran menggunakan Midtrans Sandbox. Status akhir tetap disinkronkan dari webhook Midtrans, jadi bila baru saja membayar dan status belum berubah, cukup refresh halaman ini beberapa detik kemudian.
-                        </div>
-
-                        @if ($payment?->isSuccessful())
-                            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm font-medium text-emerald-700">
-                                Pembayaran sudah diterima. Silakan tunggu konfirmasi pemilik properti.
-                            </div>
-                        @else
-                            <button
-                                type="button"
-                                id="pay-button"
-                                data-token-url="{{ route('pencari.pembayaran.snap-token', $booking) }}"
-                                class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0F4C81] px-5 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0c3d67] disabled:cursor-not-allowed disabled:opacity-70"
-                            >
-                                <span class="material-symbols-outlined text-lg">payments</span>
-                                {{ $payment?->isFailed() ? 'Coba Bayar Lagi' : 'Bayar Sekarang' }}
-                            </button>
-                        @endif
-
-                        <a href="{{ route('home') }}" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
-                            <span class="material-symbols-outlined text-lg">arrow_back</span>
-                            Kembali ke Dashboard
-                        </a>
+                        <span class="text-xs font-bold text-[#1967d2] dark:text-blue-400">Pembayaran</span>
                     </div>
                 </div>
                 

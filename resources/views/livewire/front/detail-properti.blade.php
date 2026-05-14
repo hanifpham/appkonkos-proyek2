@@ -40,33 +40,25 @@ default => 'Kos',
 
 $ruleText = $isKosan ? $properti->peraturan_kos : $properti->peraturan_kontrakan;
 $rules = $splitList($ruleText);
-$facilityGroups = [];
+$umumItems = $isKosan ? $splitList($properti->fasilitas_umum) : $splitList($properti->fasilitas);
 
+$kamarGroups = [];
 if ($isKosan) {
 foreach ($roomTypes as $roomType) {
 $items = $splitList($roomType->fasilitas_tipe);
 if ($items !== []) {
-$facilityGroups[] = [
+$kamarGroups[] = [
 'title' => $roomType->nama_tipe,
 'items' => $items,
 ];
 }
 }
-} else {
-$items = $splitList($properti->fasilitas);
-if ($items !== []) {
-$facilityGroups[] = [
-'title' => 'Fasilitas Kontrakan',
-'items' => $items,
-];
-}
 }
 
-$overviewFacilities = collect($facilityGroups)
-->flatMap(fn (array $group) => $group['items'])
-->unique()
-->take(6)
-->values();
+$allFacilities = collect($umumItems);
+foreach ($kamarGroups as $group) {
+$allFacilities = $allFacilities->merge($group['items']);
+}
 
 $currentPrice = $isKosan
 ? (int) ($activeType?->harga_per_bulan ?? $roomTypes->min('harga_per_bulan') ?? 0)
@@ -92,522 +84,494 @@ $durationOptions = $isKosan
 ];
 @endphp
 
-<div class="min-h-screen bg-[#F8FAFC] pb-16">
-    <div
-        class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8"
-        x-data="{ galleryOpen: false, activePhoto: 0, photos: @js($galleryPhotos) }"
-        x-on:keydown.escape.window="galleryOpen = false">
-        <nav class="mb-5 flex flex-wrap items-center gap-2 text-sm text-slate-500">
-            <a href="{{ route('home') }}" class="font-medium transition hover:text-[#1967d2]">Beranda</a>
-            <span class="material-symbols-outlined text-base">chevron_right</span>
-            <a href="{{ route('cari') }}" class="font-medium transition hover:text-[#1967d2]">Cari Properti</a>
-            <span class="material-symbols-outlined text-base">chevron_right</span>
-            <span class="font-semibold text-slate-900">{{ $properti->nama_properti }}</span>
+<div class="min-h-screen bg-slate-50 pb-24 font-[Inter] text-slate-900 selection:bg-blue-200 selection:text-blue-900"
+     x-data="{ galleryOpen: false, activePhoto: 0, photos: @js($galleryPhotos) }"
+     x-on:keydown.escape.window="galleryOpen = false">
+
+    {{-- Header / Title Section --}}
+    <div class="mx-auto max-w-7xl px-4 pt-8 pb-6 sm:px-6 lg:px-8 animate-fade-in-up">
+        <nav class="mb-4 flex items-center gap-2 text-sm font-medium text-slate-500">
+            <a href="{{ route('home') }}" class="transition-colors hover:text-[#1967d2]">Beranda</a>
+            <span class="material-symbols-outlined text-sm">chevron_right</span>
+            <a href="{{ route('cari') }}" class="transition-colors hover:text-[#1967d2]">Cari Properti</a>
+            <span class="material-symbols-outlined text-sm">chevron_right</span>
+            <span class="text-slate-800">{{ $properti->nama_properti }}</span>
         </nav>
 
-        <section class="mb-6 flex flex-wrap items-start justify-between gap-6 animate-[detailFadeUp_.55s_ease-out_both]">
-            <div class="min-w-0 flex-1">
-                <div class="mb-3 flex flex-wrap items-center gap-2">
-                    <span class="inline-flex items-center rounded-full bg-[#1967d2] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">{{ $categoryLabel }}</span>
-                    <span class="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
-                        <span class="material-symbols-outlined text-sm text-[#1967d2]">star</span>
-                        {{ number_format($ratingAverage, 1) }} dari {{ $reviewCount }} ulasan
-                    </span>
-                    <span class="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
-                        {{ $availableRooms > 0 ? $availableRooms.' unit tersedia' : 'Penuh' }}
-                    </span>
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+            <div>
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <span class="inline-flex items-center rounded-lg bg-blue-100/80 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#1967d2]">{{ $categoryLabel }}</span>
+                    <div class="flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700 ring-1 ring-amber-200/50">
+                        <span class="material-symbols-outlined text-[14px] text-amber-500">star</span>
+                        {{ number_format($ratingAverage, 1) }} <span class="font-medium text-amber-600/80">({{ $reviewCount }} Ulasan)</span>
+                    </div>
                 </div>
-                <h1 class="max-w-4xl text-3xl font-extrabold leading-tight text-slate-950 sm:text-4xl">{{ $properti->nama_properti }}</h1>
-                <p class="mt-3 flex max-w-4xl items-start gap-2 text-sm leading-6 text-slate-600">
-                    <span class="material-symbols-outlined mt-0.5 text-lg text-[#1967d2]">location_on</span>
-                    <span>{{ $properti->alamat_lengkap }}</span>
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900">{{ $properti->nama_properti }}</h1>
+                <p class="mt-4 flex items-start gap-2 text-base text-slate-600">
+                    <span class="material-symbols-outlined shrink-0 text-[#1967d2]">location_on</span>
+                    <span class="leading-relaxed">{{ $properti->alamat_lengkap }}</span>
                 </p>
             </div>
-
-
-        </section>
-
-        <section class="relative mb-10 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 animate-[detailFadeUp_.75s_ease-out_both]">
-            <div class="grid gap-1 md:h-[540px] md:max-h-[72vh] md:min-h-[360px] md:grid-cols-[1.35fr_.65fr]">
-                <button type="button" class="group relative h-[320px] overflow-hidden bg-slate-100 text-left sm:h-[380px] md:h-full" @click="photos.length && (galleryOpen = true, activePhoto = 0)">
-                    @if($mainPhoto)
-                    <img src="{{ $mainPhoto }}" alt="Foto utama {{ $properti->nama_properti }}" class="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.035]">
-                    @else
-                    <div class="flex h-full min-h-[280px] flex-col items-center justify-center gap-3 text-slate-400">
-                        <span class="material-symbols-outlined text-6xl">image</span>
-                        <span class="text-sm font-semibold">Mitra belum mengunggah foto properti.</span>
-                    </div>
-                    @endif
+            
+            <div class="flex items-center gap-3 self-start md:self-end">
+                <button wire:click="toggleFavorit" class="group flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-slate-200 transition-all hover:scale-105 hover:shadow-md hover:ring-slate-300">
+                    <span class="material-symbols-outlined text-2xl transition-colors {{ $isFavorit ? 'text-red-500 fill-current' : 'text-slate-400 group-hover:text-red-500' }}">favorite</span>
                 </button>
-
-                <div class="grid h-[240px] grid-cols-2 gap-1 md:h-full md:grid-cols-1 md:grid-rows-2">
-                    @php
-                    $frontPhotos = $photos->skip(1)->take(2)->values();
-                    @endphp
-
-                    @for($index = 0; $index < 2; $index++)
-                        @php
-                        $photo=$frontPhotos->get($index);
-                        $photoIndex = $index + 1;
-                        @endphp
-
-                        @if($photo)
-                        <button type="button" class="group relative overflow-hidden bg-slate-100" @click="galleryOpen = true; activePhoto = {{ $photoIndex }}">
-                            <img src="{{ $photo }}" alt="Foto {{ $photoIndex + 1 }} {{ $properti->nama_properti }}" class="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.04]">
-                            @if($index === 1 && $photos->count() > 3)
-                            <div class="absolute inset-0 flex items-center justify-center bg-[#1967d2]/70 text-white transition duration-300 group-hover:bg-[#1967d2]/80">
-                                <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-extrabold backdrop-blur-md">
-                                    <span class="material-symbols-outlined text-lg">photo_library</span>
-                                    +{{ $photos->count() - 3 }} foto
-                                </span>
-                            </div>
-                            @endif
-                        </button>
-                        @else
-                        <div class="flex items-center justify-center bg-slate-100 text-sm font-semibold text-slate-400">
-                            Foto tambahan belum tersedia
-                        </div>
-                        @endif
-                        @endfor
-                </div>
             </div>
+        </div>
+    </div>
+
+    {{-- Gallery Hero --}}
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-12 animate-fade-in-up" style="animation-delay: 100ms;">
+        <div class="relative grid h-[350px] sm:h-[450px] lg:h-[500px] grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-[2rem]">
+            {{-- Main Photo --}}
+            <div class="col-span-4 row-span-2 md:col-span-2 relative group cursor-pointer" @click="photos.length && (galleryOpen = true, activePhoto = 0)">
+                @if($mainPhoto)
+                    <img src="{{ $mainPhoto }}" alt="{{ $properti->nama_properti }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
+                @else
+                    <div class="flex h-full w-full items-center justify-center bg-slate-200 text-slate-500">
+                        <span class="material-symbols-outlined text-4xl">image</span>
+                    </div>
+                @endif
+            </div>
+            
+            {{-- Secondary Photos --}}
+            @php $frontPhotos = $photos->skip(1)->take(4)->values(); @endphp
+            @for($i = 0; $i < 4; $i++)
+                @php $photo = $frontPhotos->get($i); @endphp
+                <div class="hidden md:block col-span-1 row-span-1 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = {{ $i + 1 }}">
+                    @if($photo)
+                        <img src="{{ $photo }}" alt="Foto {{ $i+2 }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
+                        @if($i === 3 && $photos->count() > 5)
+                            <div class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-colors group-hover:bg-black/50">
+                                <span class="text-lg font-bold text-white">+{{ $photos->count() - 5 }} Foto</span>
+                            </div>
+                        @endif
+                    @else
+                        <div class="flex h-full w-full items-center justify-center bg-slate-100 text-slate-300">
+                            <span class="material-symbols-outlined text-2xl">image</span>
+                        </div>
+                    @endif
+                </div>
+            @endfor
 
             @if($photos->isNotEmpty())
-            <div class="pointer-events-none absolute bottom-0 left-0 right-0 flex items-center justify-between bg-gradient-to-t from-slate-950/60 to-transparent p-4 pt-16 md:p-6 md:pt-24">
-                <span class="text-sm font-bold text-white drop-shadow-md">{{ $photos->count() }} foto dari mitra</span>
-                <button type="button" class="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-white/95 px-4 py-2.5 text-sm font-bold text-slate-900 shadow-lg backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[#1967d2] hover:shadow-xl hover:shadow-slate-900/20" @click="galleryOpen = true; activePhoto = 0">
-                    <span class="material-symbols-outlined text-lg">grid_view</span>
-                    Lihat Semua Foto
-                </button>
-            </div>
+            <button @click="galleryOpen = true; activePhoto = 0" class="absolute bottom-6 right-6 z-10 flex items-center gap-2 rounded-xl bg-white/90 px-4 py-2.5 text-sm font-bold text-slate-800 shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-white">
+                <span class="material-symbols-outlined text-[18px]">grid_view</span>
+                Lihat Semua Foto
+            </button>
             @endif
-        </section>
+        </div>
+    </div>
 
-        <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-            <main class="space-y-6">
-                <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                    <div class="flex items-start justify-between gap-4">
+    {{-- Main Content & Sidebar --}}
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-12">
+            
+            {{-- Left Content --}}
+            <div class="w-full lg:w-[65%] space-y-12 animate-fade-in-up" style="animation-delay: 200ms;">
+                
+                {{-- Owner Info & Highlights --}}
+                <div class="flex flex-wrap items-center justify-between gap-6 border-b border-slate-200 pb-8">
+                    <div class="flex items-center gap-4">
+                        <img src="{{ $ownerAvatarUrl }}" alt="{{ $ownerName }}" class="h-16 w-16 rounded-full object-cover ring-4 ring-white shadow-md">
                         <div>
-                            <p class="text-sm font-semibold uppercase tracking-wide text-[#1967d2]">Detail Properti</p>
-                            <h2 class="mt-1 text-2xl font-extrabold text-slate-950">Data yang Diinput Mitra</h2>
+                            <p class="text-sm font-bold text-slate-500 uppercase tracking-wide">Disewakan Oleh</p>
+                            <h3 class="text-xl font-black text-slate-900">{{ $ownerName }}</h3>
                         </div>
-                        @php
-                        $encodedOwnerName = rawurlencode($ownerName);
-                        $ownerFallback = "https://ui-avatars.com/api/?name={$encodedOwnerName}&color=113C7A&background=EBF4FF";
-                        @endphp
-                        <img src="{{ $ownerAvatarUrl }}" alt="{{ $ownerName }}" class="h-14 w-14 rounded-full object-cover ring-2 ring-white" data-fallback="{{ $ownerFallback }}" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback');">
                     </div>
-
-                    <dl class="mt-6 grid gap-4 sm:grid-cols-2">
-                        <div class="rounded-xl bg-slate-50 p-4">
-                            <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Nama Properti</dt>
-                            <dd class="mt-1 font-semibold text-slate-950">{{ $properti->nama_properti }}</dd>
+                    <div class="flex gap-4">
+                        <div class="flex flex-col items-center justify-center rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+                            <span class="material-symbols-outlined text-[#1967d2] text-2xl mb-1">verified_user</span>
+                            <span class="text-xs font-bold text-slate-600">Mitra Terverifikasi</span>
                         </div>
-                        <div class="rounded-xl bg-slate-50 p-4">
-                            <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Kategori</dt>
-                            <dd class="mt-1 font-semibold text-slate-950">{{ $categoryLabel }}</dd>
-                        </div>
-                        <div class="rounded-xl bg-slate-50 p-4">
-                            <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Pemilik</dt>
-                            <dd class="mt-1 font-semibold text-slate-950">{{ $ownerName }}</dd>
-                        </div>
-                        <div class="rounded-xl bg-slate-50 p-4">
-                            <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Koordinat</dt>
-                            <dd class="mt-1 font-semibold text-slate-950">{{ filled($properti->latitude) && filled($properti->longitude) ? $properti->latitude.', '.$properti->longitude : '-' }}</dd>
-                        </div>
-                    </dl>
-
-                    <div class="mt-5 rounded-xl bg-slate-50 p-4">
-                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Alamat Lengkap</p>
-                        <p class="mt-2 leading-7 text-slate-700">{{ $properti->alamat_lengkap }}</p>
                     </div>
-                </section>
+                </div>
 
-                <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                    <h2 class="text-2xl font-extrabold text-slate-950">Fasilitas</h2>
-                    @if($overviewFacilities->isNotEmpty())
-                    <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        @foreach($overviewFacilities as $facility)
-                        <div class="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 transition duration-300 hover:-translate-y-0.5 hover:border-blue-100 hover:bg-white hover:shadow-sm">
-                            <span class="material-symbols-outlined text-xl text-[#1967d2]">check_circle</span>
-                            <span class="text-sm font-semibold text-slate-800">{{ $facility }}</span>
-                        </div>
-                        @endforeach
-                    </div>
-                    @else
-                    <p class="mt-4 rounded-xl bg-slate-50 p-4 text-sm font-medium text-slate-500">Mitra belum mengisi fasilitas tambahan.</p>
-                    @endif
+                {{-- Facilities --}}
+                <section class="border-t border-slate-200 pt-10">
+                    <h2 class="text-2xl font-black text-slate-900 mb-8">Fasilitas Properti</h2>
 
-                    @if(count($facilityGroups) > 0)
-                    <div class="mt-6 space-y-4">
-                        @foreach($facilityGroups as $group)
-                        <div class="rounded-xl border border-slate-100 p-4">
-                            <h3 class="font-bold text-slate-950">{{ $group['title'] }}</h3>
-                            <div class="mt-3 flex flex-wrap gap-2">
-                                @foreach($group['items'] as $item)
-                                <span class="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">{{ $item }}</span>
+                    <div class="space-y-6">
+                        {{-- Fasilitas Umum --}}
+                        @if(count($umumItems) > 0)
+                        <div class="group rounded-3xl border border-slate-100 bg-white p-6 sm:p-8 shadow-sm transition-all duration-300 hover:shadow-md hover:border-blue-100">
+                            <h3 class="flex items-center gap-4 font-black text-slate-800 mb-6 pb-4 border-b border-slate-100">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-[#1967d2] transition-colors duration-300 group-hover:bg-[#1967d2] group-hover:text-white shadow-sm ring-1 ring-blue-100/50">
+                                    <span class="material-symbols-outlined text-[24px]">apartment</span>
+                                </div>
+                                <span class="text-xl">Fasilitas Umum</span>
+                            </h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-y-5 gap-x-4">
+                                @foreach($umumItems as $item)
+                                <div class="flex items-center gap-3">
+                                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50/80 text-[#1967d2] ring-1 ring-blue-100 transition-transform duration-300 group-hover:scale-110 group-hover:bg-[#1967d2] group-hover:text-white group-hover:ring-[#1967d2]">
+                                        <span class="material-symbols-outlined text-[16px] font-bold">check</span>
+                                    </span>
+                                    <span class="text-sm font-bold text-slate-700">{{ $item }}</span>
+                                </div>
                                 @endforeach
                             </div>
                         </div>
-                        @endforeach
+                        @endif
+
+                        {{-- Fasilitas Kamar / Tipe Kamar --}}
+                        @if(count($kamarGroups) > 0)
+                        <div class="group rounded-3xl border border-slate-100 bg-white p-6 sm:p-8 shadow-sm transition-all duration-300 hover:shadow-md hover:border-emerald-100">
+                            <h3 class="flex items-center gap-4 font-black text-slate-800 mb-6 pb-4 border-b border-slate-100">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 transition-colors duration-300 group-hover:bg-emerald-600 group-hover:text-white shadow-sm ring-1 ring-emerald-100/50">
+                                    <span class="material-symbols-outlined text-[24px]">bed</span>
+                                </div>
+                                <span class="text-xl">Fasilitas Kamar</span>
+                            </h3>
+                            <div class="space-y-8">
+                                @foreach($kamarGroups as $index => $group)
+                                <div class="{{ $index > 0 ? 'pt-8 border-t border-slate-50' : '' }}">
+                                    <p class="inline-flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-bold tracking-wider text-slate-500 mb-5 border border-slate-100">
+                                        <span class="material-symbols-outlined text-[14px]">hotel_class</span>
+                                        Tipe: {{ $group['title'] }}
+                                    </p>
+                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-y-5 gap-x-4">
+                                        @foreach($group['items'] as $item)
+                                        <div class="flex items-center gap-3">
+                                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-50/80 text-emerald-600 ring-1 ring-emerald-100 transition-transform duration-300 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white group-hover:ring-emerald-600">
+                                                <span class="material-symbols-outlined text-[16px] font-bold">check</span>
+                                            </span>
+                                            <span class="text-sm font-bold text-slate-700">{{ $item }}</span>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
                     </div>
-                    @endif
                 </section>
 
+                {{-- Room Selection (Kosan Only) --}}
                 @if($isKosan)
-                <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                    <div class="flex flex-wrap items-end justify-between gap-3">
+                <section class="border-t border-slate-200 pt-10">
+                    <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
                         <div>
-                            <h2 class="text-2xl font-extrabold text-slate-950">Tipe dan Nomor Kamar</h2>
-                            <p class="mt-1 text-sm text-slate-500">Pilih tipe kamar lalu pilih nomor kamar yang masih tersedia.</p>
+                            <h2 class="text-2xl font-black text-slate-900">Pilih Tipe & Nomor Kamar</h2>
+                            <p class="text-sm text-slate-500 mt-1">Silakan pilih tipe kamar yang Anda inginkan</p>
                         </div>
-                        <span class="rounded-full bg-blue-50 px-3 py-1 text-sm font-bold text-[#1967d2]">{{ $availableRooms }} kamar tersedia</span>
+                        <div class="rounded-full bg-green-50 px-4 py-1.5 text-sm font-bold text-green-600 ring-1 ring-green-200/50">
+                            {{ $availableRooms }} Kamar Tersedia
+                        </div>
                     </div>
 
                     @if($roomTypes->isNotEmpty())
-                    <div class="mt-5 grid gap-4 md:grid-cols-2">
+                    <div class="grid gap-5 md:grid-cols-2 mb-8">
                         @foreach($roomTypes as $roomType)
                         @php
                         $interiorPhoto = $roomType->getMediaDisplayUrl('foto_interior');
                         $roomAvailableCount = $roomType->kamar->where('status_kamar', 'tersedia')->count();
+                        $isSelected = $selectedTipeKamarId === $roomType->id;
                         @endphp
-                        <button type="button" wire:click="$set('selectedTipeKamarId', {{ $roomType->id }})" class="overflow-hidden rounded-2xl border-2 text-left transition duration-300 hover:-translate-y-1 {{ $selectedTipeKamarId === $roomType->id ? 'border-[#1967d2] bg-blue-50/60 shadow-md shadow-blue-500/10' : 'border-slate-100 bg-white hover:border-sky-300 hover:shadow-md' }}">
-                            @if($interiorPhoto)
-                            <img src="{{ $interiorPhoto }}" alt="Interior {{ $roomType->nama_tipe }}" class="h-40 w-full object-cover">
+                        <button type="button" wire:click="$set('selectedTipeKamarId', {{ $roomType->id }})" 
+                                class="relative flex flex-col overflow-hidden rounded-3xl border-2 text-left transition-all duration-300 hover:-translate-y-1 {{ $isSelected ? 'border-[#1967d2] bg-blue-50/30 shadow-lg shadow-blue-500/10' : 'border-slate-100 bg-white hover:border-blue-200 hover:shadow-md' }}">
+                            @if($isSelected)
+                            <div class="absolute right-4 top-4 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#1967d2] text-white shadow-md">
+                                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+                            </div>
                             @endif
-                            <div class="p-4">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div>
-                                        <h3 class="font-extrabold text-slate-950">{{ $roomType->nama_tipe }}</h3>
-                                        <p class="mt-1 text-sm font-semibold text-[#1967d2]">Rp {{ number_format((int) $roomType->harga_per_bulan, 0, ',', '.') }} / bulan</p>
-                                    </div>
-                                    <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{{ $roomAvailableCount }} tersedia</span>
+                            
+                            @if($interiorPhoto)
+                            <img src="{{ $interiorPhoto }}" alt="{{ $roomType->nama_tipe }}" class="h-48 w-full object-cover">
+                            @endif
+                            <div class="flex-1 p-5">
+                                <h3 class="text-lg font-black text-slate-900">{{ $roomType->nama_tipe }}</h3>
+                                <p class="mt-1 text-base font-bold text-[#1967d2]">Rp {{ number_format((int) $roomType->harga_per_bulan, 0, ',', '.') }}<span class="text-xs font-medium text-slate-500">/bln</span></p>
+                                <div class="mt-4 inline-flex items-center rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">
+                                    {{ $roomAvailableCount }} unit tersisa
                                 </div>
-                                <p class="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">{{ $roomType->fasilitas_tipe }}</p>
                             </div>
                         </button>
                         @endforeach
                     </div>
 
-                    <div class="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-5">
-                        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-                            <h3 class="text-lg font-extrabold text-slate-950">Nomor Kamar {{ $activeType?->nama_tipe }}</h3>
-                            <div class="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-500">
-                                <span class="inline-flex items-center gap-1"><span class="h-3 w-3 rounded bg-white ring-1 ring-slate-300"></span>Tersedia</span>
-                                <span class="inline-flex items-center gap-1"><span class="h-3 w-3 rounded bg-[#1967d2]"></span>Dipilih</span>
-                                <span class="inline-flex items-center gap-1"><span class="h-3 w-3 rounded bg-slate-300"></span>Tidak tersedia</span>
+                    {{-- Room Numbers --}}
+                    <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                        <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
+                            <h3 class="text-base font-bold text-slate-900">Pilih Nomor Kamar</h3>
+                            <div class="flex gap-4 text-xs font-bold text-slate-500">
+                                <div class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-slate-100 ring-1 ring-slate-200"></span>Tersedia</div>
+                                <div class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#1967d2]"></span>Dipilih</div>
+                                <div class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-slate-200 line-through"></span>Penuh</div>
                             </div>
                         </div>
 
                         @if($activeType && $activeType->kamar->isNotEmpty())
-                        <div class="grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-8">
+                        <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
                             @foreach($activeType->kamar as $room)
                             @if($room->status_kamar === 'tersedia')
-                            <button type="button" wire:click="selectKamar({{ $room->id }}, '{{ $room->status_kamar }}')" class="aspect-square rounded-xl text-sm font-extrabold transition duration-300 hover:-translate-y-0.5 {{ $selectedKamarId === $room->id ? 'bg-[#1967d2] text-white shadow-lg shadow-blue-500/20 ring-2 ring-blue-200' : 'bg-white text-slate-800 ring-1 ring-slate-200 hover:text-[#1967d2] hover:ring-[#1967d2] hover:shadow-sm' }}">
+                            <button type="button" wire:click="selectKamar({{ $room->id }}, '{{ $room->status_kamar }}')" 
+                                    class="relative flex aspect-square items-center justify-center rounded-2xl text-sm font-black transition-all duration-300 {{ $selectedKamarId === $room->id ? 'bg-[#1967d2] text-white shadow-lg shadow-blue-500/30 scale-105' : 'bg-slate-50 text-slate-700 ring-1 ring-slate-200 hover:bg-blue-50 hover:text-[#1967d2] hover:ring-blue-200' }}">
                                 {{ $room->nomor_kamar }}
                             </button>
                             @else
-                            <div class="relative flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-slate-200 text-sm font-bold text-slate-400" title="Tidak Tersedia / Penuh">
-                                <span class="material-symbols-outlined absolute text-2xl text-slate-400/30">lock</span>
+                            <div class="relative flex aspect-square items-center justify-center rounded-2xl bg-slate-100 text-sm font-bold text-slate-400 opacity-60 cursor-not-allowed overflow-hidden">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="h-px w-full bg-slate-300 -rotate-45"></div>
+                                </div>
                                 <span class="z-10">{{ $room->nomor_kamar }}</span>
                             </div>
                             @endif
                             @endforeach
                         </div>
                         @else
-                        <p class="rounded-xl bg-white p-4 text-sm font-medium text-slate-500">Belum ada nomor kamar untuk tipe ini.</p>
+                        <div class="flex items-center justify-center rounded-2xl bg-slate-50 py-8 text-sm font-medium text-slate-500">
+                            Tidak ada data kamar.
+                        </div>
                         @endif
                     </div>
                     @else
-                    <p class="mt-4 rounded-xl bg-slate-50 p-4 text-sm font-medium text-slate-500">Mitra belum menambahkan tipe kamar.</p>
+                    <div class="rounded-3xl border border-slate-100 bg-white p-8 text-center text-slate-500 shadow-sm">
+                        Belum ada tipe kamar yang ditambahkan.
+                    </div>
                     @endif
                 </section>
                 @endif
 
-                <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                    <h2 class="text-2xl font-extrabold text-slate-950">Peraturan</h2>
+                {{-- Peraturan --}}
+                <section class="border-t border-slate-200 pt-10">
+                    <h2 class="text-2xl font-black text-slate-900 mb-6">Peraturan Properti</h2>
                     @if($rules !== [])
-                    <ul class="mt-5 space-y-3">
+                    <div class="grid sm:grid-cols-2 gap-4">
                         @foreach($rules as $rule)
-                        <li class="flex items-start gap-3 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700">
-                            <span class="material-symbols-outlined mt-0.5 text-lg text-[#1967d2]">rule</span>
-                            <span>{{ $rule }}</span>
-                        </li>
+                        <div class="flex items-start gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+                            <span class="material-symbols-outlined text-[#1967d2] text-xl">info</span>
+                            <span class="text-sm font-medium text-slate-700 leading-relaxed">{{ $rule }}</span>
+                        </div>
                         @endforeach
-                    </ul>
+                    </div>
                     @else
-                    <p class="mt-4 rounded-xl bg-slate-50 p-4 text-sm font-medium text-slate-500">Mitra belum menambahkan peraturan khusus.</p>
+                    <p class="text-slate-500 italic">Tidak ada peraturan khusus.</p>
                     @endif
                 </section>
 
-                {{-- Seksi Lokasi & Peta --}}
-                <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                    <div class="flex items-center gap-3 mb-5">
-                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#1967d2]/10">
-                            <svg class="h-5 w-5 text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                        </span>
-                        <div class="min-w-0">
-                            <h2 class="text-2xl font-extrabold text-slate-950">Lokasi Properti</h2>
-                            <p class="mt-1 text-sm leading-6 text-slate-600 line-clamp-1">{{ $properti->alamat_lengkap }}</p>
-                        </div>
-                    </div>
-
-                    <div class="relative w-full h-72 sm:h-80 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100">
+                {{-- Map --}}
+                <section class="border-t border-slate-200 pt-10">
+                    <h2 class="text-2xl font-black text-slate-900 mb-6">Lokasi</h2>
+                    <div class="relative h-[300px] sm:h-[400px] w-full overflow-hidden rounded-3xl bg-slate-100 shadow-sm ring-1 ring-slate-200 group">
                         @if(filled($properti->latitude) && filled($properti->longitude))
-                        <iframe
-                            width="100%"
-                            height="100%"
-                            frameborder="0"
-                            scrolling="no"
-                            marginheight="0"
-                            marginwidth="0"
-                            src="https://maps.google.com/maps?q={{ $properti->latitude }},{{ $properti->longitude }}&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                            class="absolute inset-0 w-full h-full"
-                            loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"
-                            title="Peta lokasi {{ $properti->nama_properti }}"></iframe>
+                        <iframe width="100%" height="100%" frameborder="0" src="https://maps.google.com/maps?q={{ $properti->latitude }},{{ $properti->longitude }}&t=&z=15&ie=UTF8&iwloc=&output=embed" class="grayscale transition-all duration-500 group-hover:grayscale-0"></iframe>
                         @else
-                        <iframe
-                            width="100%"
-                            height="100%"
-                            frameborder="0"
-                            scrolling="no"
-                            marginheight="0"
-                            marginwidth="0"
-                            src="https://maps.google.com/maps?q={{ urlencode($properti->alamat_lengkap) }}&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                            class="absolute inset-0 w-full h-full"
-                            loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"
-                            title="Peta lokasi {{ $properti->nama_properti }}"></iframe>
+                        <iframe width="100%" height="100%" frameborder="0" src="https://maps.google.com/maps?q={{ urlencode($properti->alamat_lengkap) }}&t=&z=15&ie=UTF8&iwloc=&output=embed" class="grayscale transition-all duration-500 group-hover:grayscale-0"></iframe>
                         @endif
-
-                        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
-                            <a
-                                href="{{ $mapUrl ?? 'https://www.google.com/maps/search/?api=1&query='.urlencode($properti->alamat_lengkap) }}"
-                                target="_blank"
-                                rel="noopener"
-                                class="inline-flex items-center gap-2 rounded-full bg-white/95 px-5 py-2.5 text-sm font-bold text-slate-800 shadow-lg backdrop-blur-md border border-slate-200 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[#1967d2] hover:shadow-xl">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                Lihat di Google Maps
+                        
+                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2">
+                            <a href="{{ $mapUrl ?? 'https://www.google.com/maps/search/?api=1&query='.urlencode($properti->alamat_lengkap) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full bg-slate-900/90 backdrop-blur-md px-6 py-3 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-slate-900">
+                                <span class="material-symbols-outlined text-[18px]">navigation</span>
+                                Buka di Google Maps
                             </a>
                         </div>
                     </div>
                 </section>
 
-                {{-- Seksi Ulasan --}}
-                <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                    <h2 class="flex items-center gap-2 text-2xl font-extrabold text-slate-950">
-                        <span class="material-symbols-outlined text-2xl text-[#1967d2]">star</span>
-                        {{ number_format($ratingAverage, 1) }} · {{ $reviewCount }} ulasan
-                    </h2>
+                {{-- Reviews --}}
+                <section class="border-t border-slate-200 pt-10">
+                    <div class="flex items-center gap-3 mb-8">
+                        <span class="material-symbols-outlined text-4xl text-amber-400">star</span>
+                        <div>
+                            <h2 class="text-3xl font-black text-slate-900">{{ number_format($ratingAverage, 1) }}</h2>
+                            <p class="text-sm font-bold text-slate-500">Berdasarkan {{ $reviewCount }} Ulasan</p>
+                        </div>
+                    </div>
 
                     @if($reviewCount > 0)
-                    <div class="mt-6 grid gap-5 md:grid-cols-2">
+                    <div class="grid md:grid-cols-2 gap-6">
                         @foreach($properti->ulasan->take(6) as $review)
                         @php
-                        $reviewer = $review->pencariKos?->user;
-                        $isAnon = $review->is_anonymous;
-                        $reviewerName = $isAnon ? 'Anonim' : ($reviewer?->name ?? 'Pengguna');
-                        $encodedName = rawurlencode($reviewerName);
-                        $fallbackAvatar = "https://ui-avatars.com/api/?name={$encodedName}&color=113C7A&background=EBF4FF";
-
-                        // Jika anonim, kita tidak usah menampilkan foto profil aslinya
-                        $avatarUrl = $isAnon
-                        ? $fallbackAvatar
-                        : $this->profilePhotoUrlFor($reviewer, 'Pengguna');
+                            $reviewer = $review->pencariKos?->user;
+                            $isAnon = $review->is_anonymous;
+                            $reviewerName = $isAnon ? 'Anonim' : ($reviewer?->name ?? 'Pengguna');
+                            $encodedName = rawurlencode($reviewerName);
+                            $avatarUrl = $isAnon ? "https://ui-avatars.com/api/?name={$encodedName}&color=113C7A&background=EBF4FF" : $this->profilePhotoUrlFor($reviewer, 'Pengguna');
                         @endphp
-                        <article class="rounded-2xl border border-slate-100 p-5">
-                            <div class="flex items-center gap-3">
-                                <img src="{{ $avatarUrl }}" alt="{{ $reviewerName }}" class="h-11 w-11 rounded-full object-cover" data-fallback="{{ $fallbackAvatar }}" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback');">
+                        <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                            <div class="flex items-center gap-4 mb-4">
+                                <img src="{{ $avatarUrl }}" alt="{{ $reviewerName }}" class="h-12 w-12 rounded-full object-cover ring-2 ring-slate-100">
                                 <div>
-                                    <h3 class="font-bold text-slate-950">{{ $reviewerName }}</h3>
-                                    <p class="text-xs font-medium text-slate-500">{{ $review->created_at?->translatedFormat('d F Y') ?? '-' }}</p>
+                                    <h4 class="font-bold text-slate-900">{{ $reviewerName }}</h4>
+                                    <p class="text-xs font-medium text-slate-500">{{ $review->created_at?->translatedFormat('d F Y') }}</p>
                                 </div>
                             </div>
-                            <div class="mt-3 flex gap-0.5 text-[#1967d2]">
-                                @for($star = 1; $star <= 5; $star++)
-                                    <span class="material-symbols-outlined text-base">{{ $star <= (int) $review->rating ? 'star' : 'star_outline' }}</span>
-                                    @endfor
+                            <div class="flex gap-1 mb-3 text-amber-400">
+                                @for($i = 1; $i <= 5; $i++)
+                                <span class="material-symbols-outlined text-[16px] {{ $i <= (int) $review->rating ? 'fill-current' : '' }}">star</span>
+                                @endfor
                             </div>
-                            <p class="mt-3 text-sm leading-6 text-slate-600">{{ $review->komentar }}</p>
+                            <p class="text-sm leading-relaxed text-slate-700">{{ $review->komentar }}</p>
+                            
                             @if(filled($review->balasan_pemilik))
-                            <div class="mt-4 rounded-xl bg-blue-50 p-3 text-sm leading-6 text-slate-700">
-                                <span class="font-bold text-[#1967d2]">Balasan mitra:</span> {{ $review->balasan_pemilik }}
+                            <div class="mt-4 relative rounded-2xl bg-blue-50/50 p-4 pl-5">
+                                <div class="absolute left-0 top-4 bottom-4 w-1 rounded-r-full bg-[#1967d2]/30"></div>
+                                <p class="text-xs font-bold text-[#1967d2] mb-1">Balasan Pemilik</p>
+                                <p class="text-sm leading-relaxed text-slate-700">{{ $review->balasan_pemilik }}</p>
                             </div>
                             @endif
-                        </article>
+                        </div>
                         @endforeach
                     </div>
                     @else
-                    <p class="mt-4 rounded-xl bg-slate-50 p-4 text-sm font-medium text-slate-500">Belum ada ulasan untuk properti ini.</p>
+                    <div class="rounded-3xl border border-slate-100 bg-white py-12 text-center shadow-sm">
+                        <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">reviews</span>
+                        <p class="text-sm font-bold text-slate-500">Belum ada ulasan untuk properti ini.</p>
+                    </div>
                     @endif
                 </section>
-            </main>
+            </div>
 
-            <aside class="lg:sticky lg:top-24">
-                <div class="overflow-hidden rounded-2xl bg-white shadow-xl shadow-slate-900/10 ring-1 ring-slate-100">
-                    <div class="bg-[#1967d2] p-6 text-white">
-                        <div class="mb-5 flex items-center gap-3">
-                            <img src="{{ $ownerAvatarUrl }}" alt="{{ $ownerName }}" class="h-12 w-12 rounded-full object-cover ring-2 ring-white/30" data-fallback="{{ $ownerFallback }}" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback');">
-                            <div class="min-w-0">
-                                <p class="text-xs font-semibold uppercase tracking-wide text-white/75">Disewakan oleh</p>
-                                <p class="truncate text-sm font-extrabold">{{ $ownerName }}</p>
-                            </div>
-                        </div>
-                        <p class="text-sm font-semibold text-white/80">Mulai dari</p>
+            {{-- Right Sidebar (Booking Card) --}}
+            <div class="w-full lg:w-[35%] relative animate-fade-in-up" style="animation-delay: 300ms;">
+                <div class="sticky top-28 rounded-[2rem] bg-white p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.08)] ring-1 ring-slate-100">
+                    <div class="mb-6">
+                        <p class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-1">Harga Sewa</p>
                         @if($currentPrice > 0)
-                        <p class="mt-1 text-3xl font-extrabold">Rp {{ number_format($currentPrice, 0, ',', '.') }}</p>
-                        <p class="text-sm font-semibold text-white/80">/{{ $isKosan ? 'bulan' : 'tahun' }}</p>
+                        <div class="flex items-end gap-1">
+                            <span class="text-3xl font-black text-[#1967d2]">Rp {{ number_format($currentPrice, 0, ',', '.') }}</span>
+                            <span class="text-sm font-bold text-slate-500 pb-1">/{{ $isKosan ? 'bln' : 'thn' }}</span>
+                        </div>
                         @else
-                        <p class="mt-1 text-xl font-extrabold">Harga belum tersedia</p>
+                        <span class="text-xl font-black text-slate-900">Belum Tersedia</span>
                         @endif
                     </div>
 
-                    <form wire:submit.prevent="buatBooking" class="space-y-4 p-6">
-                        <div class="space-y-3 rounded-xl bg-slate-50 p-4">
+                    <form wire:submit.prevent="buatBooking" class="space-y-6">
+                        
+                        {{-- Booking Summary Box --}}
+                        <div class="rounded-2xl border border-slate-100 bg-slate-50 p-5 space-y-4">
                             @if($isKosan)
-                            <div class="flex items-center justify-between gap-3">
-                                <span class="text-sm font-semibold text-slate-500">Tipe Kamar</span>
-                                <span class="text-right text-sm font-bold text-slate-950">{{ $activeType?->nama_tipe ?? '-' }}</span>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="font-bold text-slate-500">Tipe Kamar</span>
+                                <span class="font-bold text-slate-900">{{ $activeType?->nama_tipe ?? '-' }}</span>
                             </div>
-                            <div class="flex items-center justify-between gap-3">
-                                <span class="text-sm font-semibold text-slate-500">Nomor Kamar</span>
-                                <span class="text-right text-sm font-bold text-[#1967d2]">{{ $selectedRoom ? 'Kamar '.$selectedRoom->nomor_kamar : 'Pilih dulu' }}</span>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="font-bold text-slate-500">Nomor Kamar</span>
+                                <span class="font-bold {{ $selectedRoom ? 'text-[#1967d2]' : 'text-slate-400' }}">{{ $selectedRoom ? 'Kamar '.$selectedRoom->nomor_kamar : 'Belum dipilih' }}</span>
                             </div>
                             @else
-                            <div class="flex items-center justify-between gap-3">
-                                <span class="text-sm font-semibold text-slate-500">Unit Tersedia</span>
-                                <span class="text-sm font-bold text-[#1967d2]">{{ $availableRooms }} unit</span>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="font-bold text-slate-500">Status</span>
+                                <span class="font-bold {{ $availableRooms > 0 ? 'text-green-600' : 'text-red-500' }}">{{ $availableRooms > 0 ? 'Tersedia' : 'Penuh' }}</span>
                             </div>
                             @endif
-                            <div class="flex items-center justify-between gap-3 border-t border-slate-200 pt-3">
-                                <span class="text-sm font-semibold text-slate-500">Estimasi Total</span>
-                                <span class="text-right text-base font-extrabold text-slate-950">Rp {{ number_format($estimatedTotal, 0, ',', '.') }}</span>
-                            </div>
                         </div>
 
+                        {{-- Date Selection --}}
                         <div>
-                            <label for="tanggalCheckIn" class="mb-2 block text-sm font-bold text-slate-700">Tanggal Masuk</label>
-                            <div class="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition duration-300 focus-within:border-[#1967d2] focus-within:ring-4 focus-within:ring-[#1967d2]/10 hover:border-[#1967d2]/60">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#1967d2]/10 text-[#1967d2] transition duration-300 group-focus-within:bg-[#1967d2] group-focus-within:text-white">
-                                    <span class="material-symbols-outlined text-xl">calendar_month</span>
-                                </span>
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-[11px] font-bold uppercase tracking-wide text-slate-400">Mulai sewa</p>
-                                    <input id="tanggalCheckIn" type="date" min="{{ now()->toDateString() }}" wire:model.live="tanggalCheckIn" class="mt-0.5 w-full border-none bg-transparent p-0 text-sm font-extrabold text-slate-950 outline-none focus:ring-0">
+                            <label class="mb-2 block text-sm font-bold text-slate-900">Mulai Sewa</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-[#1967d2]">
+                                    <span class="material-symbols-outlined text-[20px]">event</span>
                                 </div>
+                                <input type="date" wire:model.live="tanggalCheckIn" min="{{ now()->toDateString() }}" 
+                                       class="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-12 pr-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-[#1967d2] focus:ring-4 focus:ring-[#1967d2]/10 hover:border-slate-300">
                             </div>
-                            @error('tanggalCheckIn') <p class="mt-2 text-sm font-semibold text-red-600">{{ $message }}</p> @enderror
+                            @error('tanggalCheckIn') <p class="mt-1.5 text-xs font-bold text-red-500">{{ $message }}</p> @enderror
                         </div>
 
+                        {{-- Duration --}}
                         <div>
-                            <div class="mb-2 flex items-center justify-between gap-3">
-                                <label class="block text-sm font-bold text-slate-700">Durasi Sewa</label>
-                                <span class="text-xs font-bold text-[#1967d2]">{{ $isKosan ? 'Bulanan' : 'Tahunan' }}</span>
+                            <label class="mb-2 flex items-center justify-between text-sm font-bold text-slate-900">
+                                <span>Durasi Sewa</span>
+                                <span class="text-[10px] uppercase tracking-wider text-slate-400">{{ $isKosan ? 'Bulan' : 'Tahun' }}</span>
+                            </label>
+                            <div class="grid {{ $isKosan ? 'grid-cols-4' : 'grid-cols-3' }} gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-200">
+                                @foreach($durationOptions as $option)
+                                @php $isSelected = (int) $durasiSewa === $option['value']; @endphp
+                                <button type="button" wire:click="$set('durasiSewa', {{ $option['value'] }})"
+                                        class="rounded-xl py-2.5 text-sm font-bold transition-all duration-300 {{ $isSelected ? 'bg-white text-[#1967d2] shadow-sm ring-1 ring-slate-200 scale-[1.02]' : 'text-slate-500 hover:bg-white/60' }}">
+                                    {{ $option['value'] }}
+                                </button>
+                                @endforeach
                             </div>
-                            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-1.5 shadow-sm">
-                                <div class="grid gap-1.5 {{ $isKosan ? 'grid-cols-2' : 'grid-cols-3' }}">
-                                    @foreach($durationOptions as $option)
-                                    @php
-                                    $isSelectedDuration = (int) $durasiSewa === $option['value'];
-                                    @endphp
-                                    <button
-                                        type="button"
-                                        wire:click="$set('durasiSewa', {{ $option['value'] }})"
-                                        class="min-h-11 rounded-xl px-3 py-2 text-sm font-extrabold transition duration-300 {{ $isSelectedDuration ? 'bg-[#1967d2] text-white shadow-md shadow-blue-500/20' : 'bg-white text-slate-600 ring-1 ring-slate-100 hover:text-[#1967d2] hover:ring-[#1967d2]/30' }}">
-                                        {{ $option['label'] }}
-                                    </button>
-                                    @endforeach
-                                </div>
-                            </div>
-                            @error('durasiSewa') <p class="mt-2 text-sm font-semibold text-red-600">{{ $message }}</p> @enderror
+                            @error('durasiSewa') <p class="mt-1.5 text-xs font-bold text-red-500">{{ $message }}</p> @enderror
                         </div>
 
-                        @if (session()->has('error'))
-                        <div class="rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-semibold text-red-700">
-                            {{ session('error') }}
+                        {{-- Total Price --}}
+                        <div class="flex items-center justify-between border-t border-slate-200 pt-6">
+                            <span class="text-sm font-bold text-slate-900">Total Harga</span>
+                            <span class="text-xl font-black text-[#1967d2]">Rp {{ number_format($estimatedTotal, 0, ',', '.') }}</span>
+                        </div>
+
+                        @if(session()->has('error'))
+                        <div class="rounded-2xl bg-red-50 p-4 border border-red-100 text-sm font-bold text-red-600 flex items-start gap-3">
+                            <span class="material-symbols-outlined text-[20px]">error</span>
+                            <p>{{ session('error') }}</p>
                         </div>
                         @endif
 
                         @php
-                        $bookingDisabled = ($isKosan && ! $selectedRoom) || (! $isKosan && $availableRooms < 1) || $currentPrice < 1;
-                            @endphp
+                        $bookingDisabled = ($isKosan && !$selectedRoom) || (!$isKosan && $availableRooms < 1) || $currentPrice < 1;
+                        @endphp
 
-                            @auth
-                            @if(! $bookingDisabled)
-                            <!-- Tombol Aktif -->
-                            <button type="submit" class="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl bg-[#1967d2] px-4 py-4 text-base font-extrabold text-white shadow-lg shadow-blue-500/25 transition duration-300 hover:-translate-y-0.5 hover:bg-[#0f4fb5] hover:shadow-xl hover:shadow-blue-500/30">
-                                <span class="absolute inset-y-0 -left-1/2 w-1/2 skew-x-[-18deg] bg-white/20 transition-transform duration-700 group-hover:translate-x-[320%]"></span>
-                                <span class="material-symbols-outlined text-xl">payments</span>
-                                <span class="ml-1">Ajukan Sewa</span>
+                        @auth
+                            @if(!$bookingDisabled)
+                            <button type="submit" class="group relative w-full overflow-hidden rounded-2xl bg-[#1967d2] py-4 text-center font-black text-white shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-[1.02] hover:bg-[#1556b0] hover:shadow-blue-500/40">
+                                <div class="absolute inset-0 bg-white/20 translate-y-full transition-transform duration-300 group-hover:translate-y-0 ease-out"></div>
+                                <span class="relative flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined">payments</span>
+                                    Lanjut Pembayaran
+                                </span>
                             </button>
                             @else
-                            <!-- Tombol Tergembok -->
-                            <button disabled type="button" class="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-slate-300 px-4 py-4 text-base font-extrabold text-slate-500 cursor-not-allowed transition duration-300">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                </svg>
-                                <span>Pilih Dulu</span>
+                            <button disabled type="button" class="w-full rounded-2xl bg-slate-100 py-4 text-center font-bold text-slate-400 cursor-not-allowed flex items-center justify-center gap-2 border border-slate-200">
+                                <span class="material-symbols-outlined">lock</span>
+                                {{ $isKosan ? 'Pilih Kamar Dulu' : 'Unit Habis' }}
                             </button>
                             @endif
-                            @else
-                            <a href="{{ route('login') }}" class="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl bg-[#1967d2] px-4 py-4 text-base font-extrabold text-white shadow-lg shadow-blue-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-[#0f4fb5] hover:shadow-xl hover:shadow-blue-500/30">
-                                <span class="absolute inset-y-0 -left-1/2 w-1/2 skew-x-[-18deg] bg-white/20 transition-transform duration-700 group-hover:translate-x-[320%]"></span>
-                                <span class="material-symbols-outlined text-xl">login</span>
-                                <span>Masuk untuk Menyewa</span>
+                        @else
+                            <a href="{{ route('login') }}" class="group relative w-full overflow-hidden flex justify-center rounded-2xl bg-[#1967d2] py-4 font-black text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-[#1556b0] hover:shadow-blue-500/30">
+                                <span class="relative flex items-center gap-2">
+                                    <span class="material-symbols-outlined">login</span>
+                                    Masuk untuk Lanjut
+                                </span>
                             </a>
-                            @endauth
-
-                            <p class="text-center text-xs font-medium leading-5 text-slate-500">Anda akan diarahkan ke halaman checkout untuk melengkapi data sewa dan pembayaran.</p>
+                        @endauth
                     </form>
                 </div>
-            </aside>
-        </div>
-
-        @if($photos->isNotEmpty())
-        <div
-            x-cloak
-            x-show="galleryOpen"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 p-4"
-            x-transition.opacity>
-            <button type="button" class="absolute right-4 top-4 rounded-full bg-white/10 p-3 text-white transition hover:bg-white/20" @click="galleryOpen = false" aria-label="Tutup galeri">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-
-            <button type="button" x-show="photos.length > 1" class="absolute left-4 rounded-full bg-white/10 p-3 text-white transition hover:bg-white/20" @click="activePhoto = activePhoto === 0 ? photos.length - 1 : activePhoto - 1" aria-label="Foto sebelumnya">
-                <span class="material-symbols-outlined">chevron_left</span>
-            </button>
-
-            <img :src="photos[activePhoto]" alt="Galeri foto properti" class="max-h-[82vh] max-w-full rounded-xl object-contain shadow-2xl">
-
-            <button type="button" x-show="photos.length > 1" class="absolute right-4 rounded-full bg-white/10 p-3 text-white transition hover:bg-white/20" @click="activePhoto = activePhoto === photos.length - 1 ? 0 : activePhoto + 1" aria-label="Foto berikutnya">
-                <span class="material-symbols-outlined">chevron_right</span>
-            </button>
-
-            <div class="absolute bottom-4 rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-white">
-                <span x-text="activePhoto + 1"></span> / <span x-text="photos.length"></span>
             </div>
+
         </div>
-        @endif
+    </div>
+
+    {{-- Gallery Modal --}}
+    <div x-cloak x-show="galleryOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-4" x-transition.opacity>
+        <button type="button" @click="galleryOpen = false" class="absolute right-6 top-6 rounded-full bg-white/10 p-3 text-white transition hover:bg-white hover:text-black">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <button type="button" x-show="photos.length > 1" @click="activePhoto = activePhoto === 0 ? photos.length - 1 : activePhoto - 1" class="absolute left-6 rounded-full bg-white/10 p-4 text-white transition hover:bg-white hover:text-black">
+            <span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+        </button>
+
+        <img :src="photos[activePhoto]" class="max-h-[85vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl transition-transform duration-300" alt="Gallery Photo">
+
+        <button type="button" x-show="photos.length > 1" @click="activePhoto = activePhoto === photos.length - 1 ? 0 : activePhoto + 1" class="absolute right-6 rounded-full bg-white/10 p-4 text-white transition hover:bg-white hover:text-black">
+            <span class="material-symbols-outlined text-2xl">arrow_forward_ios</span>
+        </button>
+
+        <div class="absolute bottom-8 rounded-full bg-white/10 px-5 py-2.5 text-sm font-black tracking-widest text-white backdrop-blur-md">
+            <span x-text="activePhoto + 1"></span> / <span x-text="photos.length"></span>
+        </div>
     </div>
 
     <style>
-        @keyframes detailFadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(18px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        [x-cloak] { display: none !important; }
     </style>
 </div>

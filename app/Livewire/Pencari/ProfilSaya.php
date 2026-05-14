@@ -31,12 +31,23 @@ class ProfilSaya extends Component
         /** @var \App\Models\User $user */
         $user = Auth::user();
         if ($user) {
+            $pencari = $user->pencariKos;
             $this->name = $user->name;
             $this->email = $user->email;
-            $this->no_wa = $user->no_wa ?? '';
-            $this->jenis_kelamin = $user->jenis_kelamin ?? '';
-            $this->pekerjaan = $user->pekerjaan ?? '';
-            $this->domisili = $user->domisili ?? '';
+            $this->no_wa = $user->no_telepon ?? '';
+            
+            if ($pencari) {
+                if ($pencari->jenis_kelamin === 'L') {
+                    $this->jenis_kelamin = 'Laki-laki';
+                } elseif ($pencari->jenis_kelamin === 'P') {
+                    $this->jenis_kelamin = 'Perempuan';
+                } else {
+                    $this->jenis_kelamin = $pencari->jenis_kelamin ?? '';
+                }
+                
+                $this->pekerjaan = $pencari->pekerjaan ?? '';
+                $this->domisili = $pencari->kota_asal ?? '';
+            }
             $this->foto_profil = $user->profile_photo_path ?? null;
         }
     }
@@ -55,12 +66,9 @@ class ProfilSaya extends Component
             'new_foto_profil' => 'nullable|image|max:2048', // max 2MB
         ]);
 
-        $data = [
+        $userData = [
             'name' => $this->name,
-            'no_wa' => $this->no_wa,
-            'jenis_kelamin' => $this->jenis_kelamin,
-            'pekerjaan' => $this->pekerjaan,
-            'domisili' => $this->domisili,
+            'no_telepon' => $this->no_wa,
         ];
 
         if ($this->new_foto_profil) {
@@ -70,11 +78,30 @@ class ProfilSaya extends Component
             }
             // Store new photo
             $path = $this->new_foto_profil->store('profile-photos', 'public');
-            $data['profile_photo_path'] = $path;
+            $userData['profile_photo_path'] = $path;
             $this->foto_profil = $path;
         }
 
-        $user->forceFill($data)->save();
+        $user->forceFill($userData)->save();
+
+        // Update PencariKos relation
+        $pencari = $user->pencariKos;
+        if (!$pencari) {
+            $pencari = new \App\Models\PencariKos();
+            $pencari->user_id = $user->id;
+        }
+
+        $jk = null;
+        if ($this->jenis_kelamin === 'Laki-laki') {
+            $jk = 'L';
+        } elseif ($this->jenis_kelamin === 'Perempuan') {
+            $jk = 'P';
+        }
+
+        $pencari->jenis_kelamin = $jk;
+        $pencari->pekerjaan = $this->pekerjaan ?: null;
+        $pencari->kota_asal = $this->domisili ?: null;
+        $pencari->save();
 
         // Reset the file input
         $this->new_foto_profil = null;

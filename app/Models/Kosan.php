@@ -37,6 +37,7 @@ class Kosan extends Model implements HasMedia
         'status',
         'alasan_penolakan',
         'peraturan_kos',
+        'fasilitas_umum',
     ];
 
     protected static function booted(): void

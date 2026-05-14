@@ -1,254 +1,284 @@
-<div>
-    {{-- Bagian Atas: Breadcrumb & Stepper --}}
-    <div class="bg-white border-b border-[#e5e7eb] py-4 sticky top-16 z-10 shadow-sm mb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
-            {{-- Tombol Kembali --}}
-            <a href="javascript:history.back()" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-[#1967d2] transition-colors border border-transparent hover:border-slate-200 mr-4 shrink-0">
-                <span class="material-symbols-outlined text-[24px]">arrow_back</span>
-            </a>
-            
-            {{-- Stepper / Progress Bar Horizontal --}}
-            <div class="flex-1 max-w-2xl mx-auto items-center justify-between relative hidden sm:flex">
-                {{-- Line connector --}}
-                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-[#e5e7eb] -z-10 rounded-full"></div>
-                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1/2 h-1 bg-[#1967d2] -z-10 rounded-full"></div>
-                
-                {{-- Step 1 --}}
-                <div class="flex flex-col items-center gap-2 bg-white px-2">
-                    <div class="w-8 h-8 rounded-full bg-[#1967d2] text-white flex items-center justify-center border-4 border-white shadow-sm">
-                        <span class="material-symbols-outlined text-[16px]">check</span>
-                    </div>
-                    <span class="text-xs font-semibold text-slate-900">Pilih Kamar</span>
-                </div>
-                
-                {{-- Step 2 --}}
-                <div class="flex flex-col items-center gap-2 bg-white px-2">
-                    <div class="w-8 h-8 rounded-full bg-[#1967d2] text-white flex items-center justify-center border-4 border-white shadow-sm ring-4 ring-blue-50">
-                        <span class="text-sm font-bold">2</span>
-                    </div>
-                    <span class="text-xs font-bold text-[#1967d2]">Isi Data Sewa</span>
-                </div>
-                
-                {{-- Step 3 --}}
-                <div class="flex flex-col items-center gap-2 bg-white px-2">
-                    <div class="w-8 h-8 rounded-full bg-[#f1f5f9] text-slate-400 flex items-center justify-center border-4 border-white">
-                        <span class="text-sm font-bold">3</span>
-                    </div>
-                    <span class="text-xs font-semibold text-slate-400">Pembayaran</span>
-                </div>
+@php
+    $pencari = auth()->user()->pencariKos;
+    $noTelp = auth()->user()->no_telepon;
+    $jKelamin = $pencari?->jenis_kelamin;
+    $pekerjaan = $pencari?->pekerjaan;
+    
+    $isDataLengkap = filled($noTelp) && filled($jKelamin) && filled($pekerjaan);
+@endphp
+<div class="min-h-screen bg-white font-[Inter] selection:bg-blue-200 selection:text-blue-900 pb-24 text-slate-800">
+    {{-- Simple Header --}}
+    <header class="border-b border-slate-200 bg-white sticky top-16 z-20 h-20 flex items-center">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 w-full flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="javascript:history.back()" class="flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[20px] text-slate-900">arrow_back_ios_new</span>
+                </a>
+                <h1 class="text-xl sm:text-2xl font-semibold text-slate-900">Konfirmasi dan Bayar</h1>
             </div>
             
-            <div class="sm:hidden flex-1 text-center font-bold text-slate-800">
-                Isi Data Sewa
+            {{-- Stepper --}}
+            <div class="hidden md:flex items-center gap-2 text-sm font-medium">
+                <span class="text-slate-900">Pilih Kamar</span>
+                <span class="material-symbols-outlined text-[16px] text-slate-400">chevron_right</span>
+                <span class="text-[#1967d2] font-semibold">Isi Data Sewa</span>
+                <span class="material-symbols-outlined text-[16px] text-slate-400">chevron_right</span>
+                <span class="text-slate-400">Selesai</span>
             </div>
         </div>
-    </div>
+    </header>
 
-    {{-- Grid Layout Utama --}}
-    <div class="bg-[#f8fafc] min-h-screen">
-        <div class="max-w-7xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {{-- Flash Error Message --}}
-            @if(session('error'))
-            <div class="lg:col-span-3">
-                <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl flex items-center gap-3">
-                    <span class="material-symbols-outlined text-[20px]">error</span>
-                    <span class="font-medium text-sm">{{ session('error') }}</span>
-                </div>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+        
+        @if(session('error'))
+        <div class="lg:col-span-12 animate-fade-in-up">
+            <div class="rounded-xl border border-rose-200 bg-rose-50 p-4 flex items-start gap-3 text-rose-700">
+                <span class="material-symbols-outlined mt-0.5 text-[20px]">error</span>
+                <span class="text-sm">{{ session('error') }}</span>
             </div>
-            @endif
+        </div>
+        @endif
 
-            {{-- KOLOM KIRI: Form Data --}}
-            <div class="lg:col-span-2 space-y-6">
-                
-                {{-- Card 1: Informasi Penyewa --}}
-                <div class="bg-white rounded-2xl border border-[#e5e7eb] p-6 shadow-sm">
-                    <h2 class="text-lg font-bold text-slate-900 mb-2">Informasi Penyewa</h2>
-                    <div class="bg-blue-50 border border-blue-100 text-blue-700 text-sm px-4 py-2.5 rounded-lg mb-5 flex items-start gap-2">
-                        <span class="material-symbols-outlined text-[18px] shrink-0 mt-0.5">info</span>
-                        <p>Data ini diambil dari profil Anda dan tidak dapat diubah di sini.</p>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="sm:col-span-2">
-                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
-                            <input type="text" value="{{ auth()->user()->name }}" readonly class="w-full border border-slate-200 rounded-xl bg-gray-50 text-gray-500 p-3 text-sm focus:ring-0 cursor-not-allowed">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email</label>
-                            <input type="email" value="{{ auth()->user()->email }}" readonly class="w-full border border-slate-200 rounded-xl bg-gray-50 text-gray-500 p-3 text-sm focus:ring-0 cursor-not-allowed">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor HP</label>
-                            <input type="text" value="{{ auth()->user()->no_telepon ?? '-' }}" readonly class="w-full border border-slate-200 rounded-xl bg-gray-50 text-gray-500 p-3 text-sm focus:ring-0 cursor-not-allowed">
-                        </div>
-                    </div>
+        {{-- KOLOM KIRI --}}
+        <div class="lg:col-span-7 space-y-10 animate-fade-in-up">
+            
+            {{-- Data Penyewa --}}
+            <section>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-semibold text-slate-900">Data Penyewa</h2>
+                    <a href="{{ route('pencari.profil') }}" class="text-sm font-semibold text-[#1967d2] hover:text-[#1556b0] hover:underline flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px]">edit</span> Edit Profil
+                    </a>
                 </div>
+                
+                <div class="rounded-xl border {{ $isDataLengkap ? 'border-slate-200 shadow-sm' : 'border-rose-300 ring-1 ring-rose-300 shadow-md shadow-rose-100' }} bg-white overflow-hidden p-6 space-y-5">
+                    <div class="flex items-start gap-3 rounded-lg bg-blue-50/50 p-4 border border-blue-100 mb-2">
+                        <span class="material-symbols-outlined text-[#1967d2] shrink-0">info</span>
+                        <p class="text-sm text-slate-600 leading-relaxed">Data ini diambil dari profil Anda dan digunakan oleh pemilik properti untuk verifikasi sebelum persetujuan sewa.</p>
+                    </div>
 
-                {{-- Card 2: Detail Waktu Sewa --}}
-                <div class="bg-white rounded-2xl border border-[#e5e7eb] p-6 shadow-sm">
-                    <h2 class="text-lg font-bold text-slate-900 mb-4">Detail Waktu Sewa</h2>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Mulai Sewa (Check-in)</label>
-                            <div class="relative">
-                                <input type="date" wire:model.live="tanggal_masuk" class="w-full border border-slate-200 rounded-xl bg-white text-slate-900 p-3 text-sm focus:border-[#1967d2] focus:ring focus:ring-[#1967d2]/20 transition-all">
-                            </div>
-                            @error('tanggal_masuk') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Nama Lengkap</span>
+                            <span class="block text-base font-medium text-slate-900">{{ auth()->user()->name }}</span>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Durasi Sewa</label>
-                            <select wire:model.live="durasi_sewa" class="w-full border border-slate-200 rounded-xl bg-white text-slate-900 p-3 text-sm focus:border-[#1967d2] focus:ring focus:ring-[#1967d2]/20 transition-all cursor-pointer">
-                                @if($tipeProperti === 'kosan')
-                                    <option value="1">1 Bulan</option>
-                                    <option value="3">3 Bulan</option>
-                                    <option value="6">6 Bulan</option>
-                                    <option value="12">1 Tahun</option>
-                                @else
-                                    <option value="12">1 Tahun</option>
-                                    <option value="24">2 Tahun</option>
-                                    <option value="36">3 Tahun</option>
-                                @endif
-                            </select>
-                            @error('durasi_sewa') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Email</span>
+                            <span class="block text-base font-medium text-slate-900">{{ auth()->user()->email }}</span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Nomor Telepon</span>
+                            <span class="block text-base font-medium {{ $noTelp ? 'text-slate-900' : 'text-rose-500 italic' }}">{{ $noTelp ?? 'Belum diisi' }}</span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Jenis Kelamin</span>
+                            <span class="block text-base font-medium {{ $jKelamin ? 'text-slate-900 capitalize' : 'text-rose-500 italic' }}">
+                                {{ $jKelamin === 'L' ? 'Laki-laki' : ($jKelamin === 'P' ? 'Perempuan' : 'Belum diisi') }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Pekerjaan</span>
+                            <span class="block text-base font-medium {{ $pekerjaan ? 'text-slate-900 capitalize' : 'text-rose-500 italic' }}">{{ $pekerjaan ?? 'Belum diisi' }}</span>
                         </div>
                     </div>
-                    
-                    @if($this->tanggalKeluar)
-                    <div class="mt-5 p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
-                                <span class="material-symbols-outlined text-[20px]">calendar_today</span>
-                            </div>
-                            <div>
-                                <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Perkiraan Check-out</p>
-                                <p class="text-[15px] font-bold text-slate-900">{{ $this->tanggalKeluar }}</p>
+
+                    @if(!$isDataLengkap)
+                    <div class="mt-6 rounded-lg border border-rose-200 bg-rose-50 p-4">
+                        <div class="flex items-start gap-3 text-rose-700">
+                            <span class="material-symbols-outlined text-[24px]">warning</span>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold mb-1">Profil Belum Lengkap</p>
+                                <p class="text-sm mb-4">Mohon lengkapi seluruh data diri Anda untuk dapat melanjutkan ke proses pembayaran.</p>
+                                <a href="{{ route('pencari.profil') }}" class="inline-flex w-full justify-center sm:w-auto items-center gap-2 rounded-lg bg-rose-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-rose-700 transition-colors">
+                                    Lengkapi Profil Sekarang
+                                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                </a>
                             </div>
                         </div>
                     </div>
                     @endif
                 </div>
+            </section>
 
-                {{-- Card 3: Catatan untuk Pemilik --}}
-                <div class="bg-white rounded-2xl border border-[#e5e7eb] p-6 shadow-sm">
-                    <h2 class="text-lg font-bold text-slate-900 mb-2">Catatan untuk Pemilik (Opsional)</h2>
-                    <p class="text-sm text-slate-500 mb-4">Tambahkan pesan khusus untuk pemilik kos/kontrakan jika ada.</p>
-                    
-                    <textarea wire:model="catatan" rows="3" placeholder="Misal: Saya akan datang sekitar jam 3 sore untuk survey lokasi dulu." class="w-full border border-slate-200 rounded-xl bg-white text-slate-900 p-3 text-sm focus:border-[#1967d2] focus:ring focus:ring-[#1967d2]/20 transition-all resize-none"></textarea>
-                </div>
+            <hr class="border-slate-200">
 
-                {{-- Card 4: Persetujuan Aturan Kos --}}
-                <div class="bg-white rounded-2xl border border-[#e5e7eb] p-6 shadow-sm">
-                    <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-rose-500 text-[22px]">gavel</span> 
-                        Aturan {{ $tipeProperti === 'kosan' ? 'Kosan' : 'Kontrakan' }}
-                    </h2>
-                    
-                    <div class="bg-slate-50 rounded-xl p-4 mb-5 border border-slate-100">
-                        <ul class="space-y-2.5">
-                            @foreach($aturanProperti as $aturan)
-                                <li class="flex items-start gap-2.5 text-sm text-slate-700">
-                                    <span class="material-symbols-outlined text-[18px] text-[#1967d2] shrink-0 mt-0.5">check_circle</span>
-                                    <span>{{ $aturan }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-
-                    <label class="flex items-start gap-3 cursor-pointer group">
-                        <div class="relative flex items-center mt-0.5">
-                            <input type="checkbox" wire:model.live="setuju_aturan" class="w-5 h-5 border-2 border-slate-300 rounded text-[#1967d2] focus:ring-[#1967d2] transition-all cursor-pointer peer">
+            {{-- Detail Sewa --}}
+            <section>
+                <h2 class="text-2xl font-semibold text-slate-900 mb-6">Detail Waktu Sewa</h2>
+                
+                <div class="grid sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-900 mb-2">Tanggal Check-in</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">
+                                <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                            </div>
+                            <input type="date" wire:model.live="tanggal_masuk" class="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow">
                         </div>
-                        <span class="text-sm text-slate-700 font-medium leading-relaxed group-hover:text-slate-900 transition-colors">
-                            Saya telah membaca dan menyetujui seluruh aturan kos ini. Saya bersedia menerima sanksi dari pemilik kos jika melanggar.
-                        </span>
-                    </label>
-                    @error('setuju_aturan') <span class="text-rose-500 text-xs mt-2 block font-semibold">{{ $message }}</span> @enderror
-                </div>
-
-            </div>
-
-            {{-- KOLOM KANAN: Ringkasan Pesanan --}}
-            <div class="lg:col-span-1">
-                <div class="sticky top-28 bg-white rounded-2xl border border-[#e5e7eb] shadow-md p-6">
+                        @error('tanggal_masuk') <span class="text-rose-600 text-xs mt-1.5 block">{{ $message }}</span> @enderror
+                    </div>
                     
-                    {{-- Timer Hitung Mundur --}}
-                    <div x-data="{ timer: 900 }" x-init="setInterval(() => { if(timer > 0) timer-- }, 1000)" class="bg-amber-50 border border-amber-200 text-amber-700 p-3 rounded-xl mb-5 text-center font-bold text-sm flex flex-col items-center justify-center gap-1 shadow-sm">
-                        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">timer</span>Selesaikan pengisian data dalam</span>
-                        <span class="text-lg" x-text="Math.floor(timer / 60).toString().padStart(2, '0') + ':' + (timer % 60).toString().padStart(2, '0')">15:00</span>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-900 mb-2">Durasi Sewa</label>
+                        <select wire:model.live="durasi_sewa" class="w-full rounded-lg border border-slate-300 bg-white py-3 px-3 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow">
+                            @if($tipeProperti === 'kosan')
+                                <option value="1">1 Bulan</option>
+                                <option value="3">3 Bulan</option>
+                                <option value="6">6 Bulan</option>
+                                <option value="12">1 Tahun</option>
+                            @else
+                                <option value="12">1 Tahun</option>
+                                <option value="24">2 Tahun</option>
+                                <option value="36">3 Tahun</option>
+                            @endif
+                        </select>
+                        @error('durasi_sewa') <span class="text-rose-600 text-xs mt-1.5 block">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+                
+                @if($this->tanggalKeluar)
+                <div class="mt-4 flex items-center justify-between text-sm text-slate-600">
+                    <span>Perkiraan Check-out</span>
+                    <span class="font-semibold text-slate-900">{{ $this->tanggalKeluar }}</span>
+                </div>
+                @endif
+            </section>
+
+            <hr class="border-slate-200">
+
+            {{-- Catatan Opsional --}}
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-semibold text-slate-900">Catatan untuk Pemilik</h2>
+                    <span class="text-sm text-slate-500">Opsional</span>
+                </div>
+                <textarea wire:model="catatan" rows="3" placeholder="Sampaikan pesan tambahan atau pertanyaan ke pemilik..." class="w-full rounded-lg border border-slate-300 bg-white p-4 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow resize-none"></textarea>
+            </section>
+
+            <hr class="border-slate-200">
+
+            {{-- Kebijakan & Aturan --}}
+            <section>
+                <h2 class="text-2xl font-semibold text-slate-900 mb-4">Kebijakan Properti</h2>
+                <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+                    Dengan melanjutkan pembayaran, Anda menyetujui aturan yang telah ditetapkan oleh pemilik. Pelanggaran terhadap aturan dapat dikenakan sanksi sesuai ketentuan pemilik properti.
+                </p>
+                
+                <ul class="space-y-3 mb-8">
+                    @foreach($aturanProperti as $aturan)
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-slate-400 mt-0.5 text-[18px]">rule</span>
+                            <span class="text-sm text-slate-700">{{ $aturan }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+
+                <label class="flex items-start gap-3 cursor-pointer p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                    <div class="relative flex items-center mt-0.5">
+                        <input type="checkbox" wire:model.live="setuju_aturan" class="w-5 h-5 rounded border-slate-300 text-[#1967d2] focus:ring-[#1967d2] cursor-pointer">
+                    </div>
+                    <span class="text-sm text-slate-900 font-medium">
+                        Saya menyetujui Aturan Properti dan Ketentuan Layanan APPKONKOS.
+                    </span>
+                </label>
+                @error('setuju_aturan') <span class="text-rose-600 text-xs mt-2 block">{{ $message }}</span> @enderror
+            </section>
+
+        </div>
+
+        {{-- KOLOM KANAN (Order Summary) --}}
+        <div class="lg:col-span-5 relative">
+            <div class="sticky top-28 w-full max-w-[420px] mx-auto lg:ml-auto">
+                <div class="rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/40 p-6 sm:p-7">
+                    
+                    {{-- Timer Alert --}}
+                    <div x-data="{ timer: 900 }" x-init="setInterval(() => { if(timer > 0) timer-- }, 1000)" class="mb-6 flex items-center gap-3 rounded-lg bg-amber-50 p-3 text-amber-800 border border-amber-200">
+                        <span class="material-symbols-outlined text-[20px]">timer</span>
+                        <div class="flex-1 text-sm">
+                            Selesaikan pembayaran dalam <span class="font-bold" x-text="Math.floor(timer / 60).toString().padStart(2, '0') + ':' + (timer % 60).toString().padStart(2, '0')"></span>
+                        </div>
                     </div>
 
-                    <h2 class="font-bold text-lg text-slate-900 mb-5">Ringkasan Pesanan</h2>
-                    
-                    {{-- Informasi Properti --}}
-                    <div class="flex gap-4 mb-5 pb-5 border-b border-[#e5e7eb]">
-                        <div class="w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-slate-100">
+                    {{-- Property Card Preview --}}
+                    <div class="flex gap-4 mb-6">
+                        <div class="h-28 w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100">
                             @if($fotoUrl)
-                                <img src="{{ $fotoUrl }}" alt="{{ $namaProperti }}" class="w-full h-full object-cover">
+                                <img src="{{ $fotoUrl }}" alt="{{ $namaProperti }}" class="h-full w-full object-cover">
                             @else
-                                <div class="w-full h-full flex items-center justify-center text-slate-400">
+                                <div class="flex h-full w-full items-center justify-center text-slate-400">
                                     <span class="material-symbols-outlined text-[32px]">apartment</span>
                                 </div>
                             @endif
                         </div>
-                        <div class="flex-1 min-w-0 flex flex-col justify-center">
-                            <span class="px-2 py-0.5 inline-block bg-blue-50 text-[#1967d2] text-[10px] font-bold rounded border border-blue-100 mb-1.5 uppercase tracking-wider self-start">
+                        <div class="flex flex-1 flex-col py-1">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                                 {{ $tipeProperti === 'kosan' ? 'Kosan' : 'Kontrakan' }}
                             </span>
-                            <h3 class="font-bold text-base text-slate-900 leading-tight mb-1 truncate">{{ $namaProperti }}</h3>
+                            <h3 class="text-base font-semibold text-slate-900 leading-tight mb-2 line-clamp-2">{{ $namaProperti }}</h3>
                             @if($tipeProperti === 'kosan')
-                                <p class="text-sm text-[#6b7280] truncate">Tipe {{ $namaTipe }} — Kamar {{ $nomorKamar }}</p>
+                                <p class="text-sm text-slate-600">Tipe {{ $namaTipe }} • Kamar {{ $nomorKamar }}</p>
                             @endif
                         </div>
                     </div>
 
-                    {{-- Rincian Pembayaran --}}
-                    <div class="space-y-3 mb-4 text-sm">
-                        <div class="flex justify-between text-slate-600">
-                            <span>Harga Sewa ({{ $durasi_sewa }} {{ $tipeProperti === 'kosan' ? 'Bulan' : 'Bulan' }})</span>
-                            <span class="font-medium text-slate-900">Rp {{ number_format($this->hargaSewa, 0, ',', '.') }}</span>
+                    <hr class="border-slate-200 mb-6">
+
+                    <h3 class="text-lg font-semibold text-slate-900 mb-4">Rincian Harga</h3>
+                    
+                    <div class="space-y-4 mb-6 text-sm text-slate-600">
+                        <div class="flex justify-between items-center">
+                            <span>Harga Sewa ({{ $durasi_sewa }} {{ $tipeProperti === 'kosan' ? 'Bulan' : 'Tahun' }})</span>
+                            <span class="text-slate-900">Rp {{ number_format($this->hargaSewa, 0, ',', '.') }}</span>
                         </div>
-                        <div class="flex justify-between text-slate-600">
-                            <span>Biaya Layanan</span>
-                            <span class="font-medium text-slate-900">Rp {{ number_format($biayaLayanan, 0, ',', '.') }}</span>
+                        <div class="flex justify-between items-center">
+                            <span class="underline decoration-dotted underline-offset-4 cursor-help" title="Biaya pemeliharaan platform APPKONKOS">Biaya Layanan</span>
+                            <span class="text-slate-900">Rp {{ number_format($biayaLayanan, 0, ',', '.') }}</span>
                         </div>
                     </div>
 
-                    <div class="border-t border-dashed border-[#e5e7eb] my-4 pt-4">
-                        <div class="flex justify-between items-end">
-                            <span class="font-bold text-slate-900 text-sm">Total Tagihan</span>
-                            <span class="text-2xl font-bold text-[#1967d2]">Rp {{ number_format($this->totalPembayaran, 0, ',', '.') }}</span>
-                        </div>
+                    <hr class="border-slate-200 mb-6">
+
+                    <div class="flex justify-between items-center mb-8">
+                        <span class="font-bold text-slate-900">Total Pembayaran</span>
+                        <span class="text-2xl font-bold text-[#1967d2]">Rp {{ number_format($this->totalPembayaran, 0, ',', '.') }}</span>
                     </div>
 
-                    {{-- Tombol Bayar --}}
                     <button 
                         wire:click="prosesPembayaran" 
                         wire:loading.attr="disabled"
-                        @disabled(!$setuju_aturan)
-                        class="w-full bg-[#1967d2] hover:bg-[#0f4fb5] text-white font-bold py-3.5 rounded-xl mt-4 shadow-md shadow-blue-500/20 transition-all flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                        @disabled(!$setuju_aturan || !$isDataLengkap)
+                        class="w-full rounded-lg bg-[#1967d2] hover:bg-[#1556b0] py-4 text-base font-semibold text-white shadow-md transition-colors disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none flex items-center justify-center gap-2"
                     >
-                        <span wire:loading.remove wire:target="prosesPembayaran">Bayar Sekarang</span>
+                        <span wire:loading.remove wire:target="prosesPembayaran">Konfirmasi & Bayar</span>
                         <span wire:loading wire:target="prosesPembayaran" class="flex items-center gap-2">
-                            <span class="material-symbols-outlined animate-spin text-[18px]">refresh</span> Memproses...
+                            <span class="material-symbols-outlined animate-spin text-[20px]">refresh</span>
+                            Memproses...
                         </span>
                     </button>
                     
-                    {{-- Informasi Instant Booking --}}
-                    <div class="text-xs text-slate-600 font-medium text-center mt-3 flex items-start gap-1.5 bg-slate-50 border border-slate-100 p-2.5 rounded-lg">
-                        <span class="material-symbols-outlined text-[16px] text-amber-500 shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">bolt</span>
-                        <span class="text-left leading-relaxed"><strong>Instant Booking.</strong> Kamar akan langsung menjadi milik Anda setelah pembayaran berhasil dikonfirmasi.</span>
-                    </div>
-
-                    <div class="mt-4 flex items-center justify-center gap-1.5 text-xs text-slate-500">
-                        <span class="material-symbols-outlined text-[14px]">verified_user</span>
-                        <span>Pembayaran aman & terenkripsi oleh Midtrans</span>
+                    @if(!$isDataLengkap)
+                    <p class="mt-3 text-center text-xs font-semibold text-rose-500">Silakan lengkapi profil Anda terlebih dahulu.</p>
+                    @endif
+                    
+                    <div class="mt-4 flex items-center justify-center gap-2 text-xs font-medium text-slate-500">
+                        <span class="material-symbols-outlined text-[16px]">lock</span>
+                        Pembayaran diproses dengan aman oleh Midtrans
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+    </style>
 </div>
 
 @script

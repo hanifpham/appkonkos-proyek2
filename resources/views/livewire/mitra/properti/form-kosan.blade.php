@@ -92,11 +92,22 @@
                             <label for="peraturan_kos" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Peraturan Kos <span class="text-rose-600">*</span></label>
                             <textarea
                                 id="peraturan_kos"
-                                rows="7"
+                                rows="5"
                                 wire:model.defer="peraturan_kos"
                                 class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
                                 placeholder="Contoh: Tidak menerima tamu menginap, jam malam pukul 22.00, wajib menjaga kebersihan."></textarea>
                             @error('peraturan_kos') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label for="fasilitas_umum" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Fasilitas Umum (Opsional)</label>
+                            <textarea
+                                id="fasilitas_umum"
+                                rows="5"
+                                wire:model.defer="fasilitas_umum"
+                                class="w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+                                placeholder="Pisahkan dengan koma atau baris baru. Contoh: WiFi Cepat, Dapur Bersama, Area Parkir Luas, CCTV 24 Jam"></textarea>
+                            @error('fasilitas_umum') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </section>

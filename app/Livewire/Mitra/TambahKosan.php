@@ -36,6 +36,8 @@ class TambahKosan extends Component
 
     public string $peraturan_kos = '';
 
+    public string $fasilitas_umum = '';
+
     /** @var mixed */
     public $foto_1;
 
@@ -73,6 +75,7 @@ class TambahKosan extends Component
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'peraturan_kos' => ['required', 'string', 'max:5000'],
+            'fasilitas_umum' => ['nullable', 'string', 'max:5000'],
             'foto_1' => $this->editId === null
                 ? ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048']
                 : ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
@@ -94,6 +97,7 @@ class TambahKosan extends Component
             'latitude' => 'Latitude',
             'longitude' => 'Longitude',
             'peraturan_kos' => 'Peraturan Kos',
+            'fasilitas_umum' => 'Fasilitas Umum',
             'foto_1' => 'Foto Utama',
             'foto_2' => 'Foto Samping',
             'foto_3' => 'Foto Dalam',
@@ -139,6 +143,7 @@ class TambahKosan extends Component
             'latitude' => (float) $this->latitude,
             'longitude' => (float) $this->longitude,
             'peraturan_kos' => $this->peraturan_kos,
+            'fasilitas_umum' => $this->fasilitas_umum,
         ];
 
         $uploadedPhotos = array_filter([
@@ -199,7 +204,8 @@ class TambahKosan extends Component
         $this->alamat_lengkap = $kosan->alamat_lengkap;
         $this->latitude = (string) $kosan->latitude;
         $this->longitude = (string) $kosan->longitude;
-        $this->peraturan_kos = $kosan->peraturan_kos;
+        $this->peraturan_kos = $kosan->peraturan_kos ?? '';
+        $this->fasilitas_umum = $kosan->fasilitas_umum ?? '';
         $this->existingPhotoUrls = $kosan->getMediaDisplayUrls('foto_properti');
     }
 

@@ -4,6 +4,8 @@
     <div class="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-blue-50/50 blur-3xl dark:bg-blue-900/10"></div>
     <div class="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-indigo-50/50 blur-3xl dark:bg-indigo-900/10"></div>
 
+    <div class="mx-auto max-w-7xl px-4 pb-12 pt-16 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 gap-12 lg:grid-cols-4 lg:gap-8">
             {{-- Column 1: Logo + Social --}}
             <div>
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
@@ -33,7 +35,6 @@
                     <a href="#" class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition-all hover:bg-[#1967d2] hover:text-white" id="footer-youtube" aria-label="YouTube">
                         <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                     </a>
-                    @endforeach
                 </div>
             </div>
 

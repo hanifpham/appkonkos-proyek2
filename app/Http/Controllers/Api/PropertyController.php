@@ -55,7 +55,7 @@ class PropertyController extends Controller
                     'harga_max' => (int) $item->harga_sewa_tahun,
                     'period'    => 'tahun',
                     'tipe'      => 'Kontrakan',
-                    'foto'      => str_replace('http://localhost', 'http://192.168.1.10:8000', $foto),
+                    'foto'      => str_replace('http://localhost', 'http://:8000', $foto),
                     'rating'    => round($item->ulasan->avg('rating') ?? 0, 1),
                     'lat'       => (float) $item->latitude,
                     'lng'       => (float) $item->longitude,

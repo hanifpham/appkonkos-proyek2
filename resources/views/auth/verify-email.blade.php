@@ -1,0 +1,45 @@
+<x-guest-layout>
+    <x-autentikasi.kartu-autentikasi>
+        <x-slot name="logo">
+            <x-autentikasi.logo-kartu />
+        </x-slot>
+
+        <div class="mb-4 text-sm text-gray-600">
+            {{ __('Sebelum melanjutkan, dapatkah Anda memverifikasi alamat email Anda dengan mengeklik tautan yang baru saja kami kirimkan ke email Anda? Jika Anda tidak menerima email tersebut, kami dengan senang hati akan mengirimkan ulang tautan verifikasi.') }}
+        </div>
+
+        @if (session('status') == 'verification-link-sent')
+            <div class="mb-4 font-medium text-sm text-green-600">
+                {{ __('Tautan verifikasi baru telah dikirimkan ke alamat email yang Anda berikan di pengaturan profil Anda.') }}
+            </div>
+        @endif
+
+        <div class="mt-4 flex items-center justify-between">
+            <form method="POST" action="{{ route('verification.send') }}">
+                @csrf
+
+                <div>
+                    <x-formulir.tombol type="submit">
+                        {{ __('Kirim Ulang Email Verifikasi') }}
+                    </x-formulir.tombol>
+                </div>
+            </form>
+
+            <div>
+                <a
+                    href="{{ route('profile.show') }}"
+                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    {{ __('Edit Profil') }}</a>
+
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+
+                    <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ms-2">
+                        {{ __('Keluar') }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </x-autentikasi.kartu-autentikasi>
+</x-guest-layout>

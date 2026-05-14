@@ -30,7 +30,6 @@
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
-    <script src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
 </head>
 <body class="app-public-theme min-h-screen bg-[#ffffff] font-[Inter] text-[#090a0b] antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
     @include('public.partials.navbar')

@@ -526,8 +526,10 @@
                     wire:target="simpanProfil,foto_ktp,foto_selfie"
                     class="flex items-center gap-2 rounded-lg bg-[#0F4C81] px-8 py-2.5 text-sm font-bold text-white shadow-md transition-all duration-200 hover:bg-[#0d3f6d] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    <span class="material-symbols-outlined text-sm">save</span>
-                    Simpan Perubahan
+                    <span wire:loading.remove wire:target="simpanProfil,foto_ktp,foto_selfie" class="material-symbols-outlined text-sm">save</span>
+                    <span wire:loading wire:target="simpanProfil,foto_ktp,foto_selfie" class="material-symbols-outlined text-sm animate-spin">refresh</span>
+                    <span wire:loading.remove wire:target="simpanProfil,foto_ktp,foto_selfie">Simpan Perubahan</span>
+                    <span wire:loading wire:target="simpanProfil,foto_ktp,foto_selfie">Memproses...</span>
                 </button>
             </div>
         </form>

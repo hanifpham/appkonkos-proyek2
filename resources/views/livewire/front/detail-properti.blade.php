@@ -128,7 +128,7 @@ $durationOptions = $isKosan
             {{-- Main Photo --}}
             <div class="col-span-4 row-span-2 md:col-span-2 relative group cursor-pointer" @click="photos.length && (galleryOpen = true, activePhoto = 0)">
                 @if($mainPhoto)
-                    <img src="{{ $mainPhoto }}" alt="{{ $properti->nama_properti }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    <img src="{{ $mainPhoto }}" alt="{{ $properti->nama_properti }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
                     <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
                 @else
                     <div class="flex h-full w-full items-center justify-center bg-slate-200 text-slate-500">
@@ -143,7 +143,7 @@ $durationOptions = $isKosan
                 @php $photo = $frontPhotos->get($i); @endphp
                 <div class="hidden md:block col-span-1 row-span-1 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = {{ $i + 1 }}">
                     @if($photo)
-                        <img src="{{ $photo }}" alt="Foto {{ $i+2 }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <img src="{{ $photo }}" alt="Foto {{ $i+2 }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
                         <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
                         @if($i === 3 && $photos->count() > 5)
                             <div class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-colors group-hover:bg-black/50">
@@ -177,7 +177,7 @@ $durationOptions = $isKosan
                 {{-- Owner Info & Highlights --}}
                 <div class="flex flex-wrap items-center justify-between gap-6 border-b border-slate-200 pb-8">
                     <div class="flex items-center gap-4">
-                        <img src="{{ $ownerAvatarUrl }}" alt="{{ $ownerName }}" class="h-16 w-16 rounded-full object-cover ring-4 ring-white shadow-md">
+                        <img src="{{ $ownerAvatarUrl }}" alt="{{ $ownerName }}" class="h-16 w-16 rounded-full object-cover ring-4 ring-white shadow-md" loading="lazy">
                         <div>
                             <p class="text-sm font-bold text-slate-500 uppercase tracking-wide">Disewakan Oleh</p>
                             <h3 class="text-xl font-black text-slate-900">{{ $ownerName }}</h3>
@@ -282,7 +282,7 @@ $durationOptions = $isKosan
                             @endif
                             
                             @if($interiorPhoto)
-                            <img src="{{ $interiorPhoto }}" alt="{{ $roomType->nama_tipe }}" class="h-48 w-full object-cover">
+                            <img src="{{ $interiorPhoto }}" alt="{{ $roomType->nama_tipe }}" class="h-48 w-full object-cover" loading="lazy">
                             @endif
                             <div class="flex-1 p-5">
                                 <h3 class="text-lg font-black text-slate-900">{{ $roomType->nama_tipe }}</h3>
@@ -396,7 +396,7 @@ $durationOptions = $isKosan
                         @endphp
                         <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
                             <div class="flex items-center gap-4 mb-4">
-                                <img src="{{ $avatarUrl }}" alt="{{ $reviewerName }}" class="h-12 w-12 rounded-full object-cover ring-2 ring-slate-100">
+                                <img src="{{ $avatarUrl }}" alt="{{ $reviewerName }}" class="h-12 w-12 rounded-full object-cover ring-2 ring-slate-100" loading="lazy">
                                 <div>
                                     <h4 class="font-bold text-slate-900">{{ $reviewerName }}</h4>
                                     <p class="text-xs font-medium text-slate-500">{{ $review->created_at?->translatedFormat('d F Y') }}</p>
@@ -514,11 +514,15 @@ $durationOptions = $isKosan
 
                         @auth
                             @if(!$bookingDisabled)
-                            <button type="submit" class="group relative w-full overflow-hidden rounded-2xl bg-[#1967d2] py-4 text-center font-black text-white shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-[1.02] hover:bg-[#1556b0] hover:shadow-blue-500/40">
+                            <button type="submit" wire:loading.attr="disabled" wire:target="buatBooking" class="group relative w-full overflow-hidden rounded-2xl bg-[#1967d2] py-4 text-center font-black text-white shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-[1.02] hover:bg-[#1556b0] hover:shadow-blue-500/40 disabled:opacity-75 disabled:cursor-not-allowed">
                                 <div class="absolute inset-0 bg-white/20 translate-y-full transition-transform duration-300 group-hover:translate-y-0 ease-out"></div>
-                                <span class="relative flex items-center justify-center gap-2">
+                                <span wire:loading.remove wire:target="buatBooking" class="relative flex items-center justify-center gap-2">
                                     <span class="material-symbols-outlined">payments</span>
                                     Lanjut Pembayaran
+                                </span>
+                                <span wire:loading wire:target="buatBooking" class="relative flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined animate-spin">refresh</span>
+                                    Memproses...
                                 </span>
                             </button>
                             @else

@@ -75,7 +75,7 @@
                     <button type="button" @click="open = ! open" @click.outside="open = false" class="flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300">
                         <span class="flex min-w-0 items-center gap-2">
                             <span class="material-symbols-outlined shrink-0 text-[18px]">filter_list</span>
-                            <span class="truncate">{{ $filterStatusOptions[$filterStatus] ?? 'Semua Status' }}</span>
+                            <span class="truncate">{{ $filterStatusOptions[(string) $filterStatus] ?? 'Semua Status' }}</span>
                         </span>
                         <span class="material-symbols-outlined shrink-0 text-[18px] text-slate-400 dark:text-slate-500">expand_more</span>
                     </button>
@@ -106,7 +106,7 @@
                     </tr>
                 </thead>
 
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tbody wire:loading.remove wire:target="search, filterStatus, gotoPage, nextPage, previousPage" class="divide-y divide-gray-100 dark:divide-gray-700">
                     @forelse($listPencairan as $item)
                         @php
                             $bankName = strtoupper((string) ($item->pemilikProperti?->nama_bank ?? '-'));
@@ -180,8 +180,12 @@
                                             wire:loading.attr="disabled"
                                             class="bg-[#0F4C81] hover:bg-[#0d3f6d] text-white px-3 py-1.5 rounded-md text-[11px] font-bold transition-all shadow-sm flex items-center gap-1"
                                         >
-                                            <span class="material-symbols-outlined text-[14px]">check</span>
-                                            Setuju
+                                            <span wire:loading.remove wire:target="konfirmasiSetuju({{ $item->id }})" class="material-symbols-outlined text-[14px]">check</span>
+                                            <span wire:loading.remove wire:target="konfirmasiSetuju({{ $item->id }})">Setuju</span>
+                                            <span wire:loading wire:target="konfirmasiSetuju({{ $item->id }})" class="flex items-center gap-1">
+                                                <span class="material-symbols-outlined animate-spin text-[14px]">sync</span>
+                                                Memproses...
+                                            </span>
                                         </button>
 
                                         <button
@@ -190,8 +194,12 @@
                                             wire:loading.attr="disabled"
                                             class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-[11px] font-bold transition-all shadow-sm flex items-center gap-1"
                                         >
-                                            <span class="material-symbols-outlined text-[14px]">close</span>
-                                            Tolak
+                                            <span wire:loading.remove wire:target="konfirmasiTolak({{ $item->id }})" class="material-symbols-outlined text-[14px]">close</span>
+                                            <span wire:loading.remove wire:target="konfirmasiTolak({{ $item->id }})">Tolak</span>
+                                            <span wire:loading wire:target="konfirmasiTolak({{ $item->id }})" class="flex items-center gap-1">
+                                                <span class="material-symbols-outlined animate-spin text-[14px]">sync</span>
+                                                Memproses...
+                                            </span>
                                         </button>
                                     </div>
                                 @else
@@ -212,6 +220,7 @@
                         </tr>
                     @endforelse
                 </tbody>
+                <x-skeleton.table wire:loading wire:target="search, filterStatus, gotoPage, nextPage, previousPage" rows="5" cols="6" />
             </table>
         </div>
 

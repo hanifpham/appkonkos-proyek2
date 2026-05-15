@@ -11,12 +11,18 @@
                 </p>
                 <span class="material-symbols-outlined text-2xl text-emerald-600 dark:text-emerald-400">trending_up</span>
             </div>
-            <h3 class="text-2xl font-black text-emerald-600 dark:text-emerald-400">
-                Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
-            </h3>
-            <p class="mt-2 text-[10px] font-medium text-gray-400">
-                Komisi {{ rtrim(rtrim(number_format($komisiPlatformPersen, 2, ',', '.'), '0'), ',') }}% dari settlement Rp {{ number_format($totalNominalSettlement, 0, ',', '.') }}
-            </p>
+            <div wire:loading.remove wire:target="syncMassalPending">
+                <h3 class="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                    Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
+                </h3>
+                <p class="mt-2 text-[10px] font-medium text-gray-400">
+                    Komisi {{ rtrim(rtrim(number_format($komisiPlatformPersen, 2, ',', '.'), '0'), ',') }}% dari settlement Rp {{ number_format($totalNominalSettlement, 0, ',', '.') }}
+                </p>
+            </div>
+            <div wire:loading wire:target="syncMassalPending" class="animate-pulse">
+                <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+            </div>
         </div>
 
         <div class="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-slate-900">
@@ -43,12 +49,18 @@
                     <span class="material-symbols-outlined text-2xl text-blue-600 dark:text-blue-400">check_circle</span>
                 </div>
             </div>
-            <h3 class="text-2xl font-black text-slate-900 dark:text-white">
-                {{ number_format($totalTransaksiSukses, 0, ',', '.') }}
-            </h3>
-            <p class="mt-2 text-[10px] font-medium text-gray-400">
-                Pembayaran Berhasil
-            </p>
+            <div wire:loading.remove wire:target="syncMassalPending">
+                <h3 class="text-2xl font-black text-slate-900 dark:text-white">
+                    {{ number_format($totalTransaksiSukses, 0, ',', '.') }}
+                </h3>
+                <p class="mt-2 text-[10px] font-medium text-gray-400">
+                    Pembayaran Berhasil
+                </p>
+            </div>
+            <div wire:loading wire:target="syncMassalPending" class="animate-pulse">
+                <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+            </div>
         </div>
 
         <div class="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-slate-900">
@@ -58,12 +70,18 @@
                 </p>
                 <span class="material-symbols-outlined text-2xl text-blue-600 dark:text-blue-400">person_pin_circle</span>
             </div>
-            <h3 class="text-2xl font-black text-slate-900 dark:text-white">
-                {{ number_format($mitraAktif, 0, ',', '.') }}
-            </h3>
-            <p class="mt-2 text-[10px] font-medium text-gray-400">
-                Mitra Terverifikasi
-            </p>
+            <div wire:loading.remove wire:target="syncMassalPending">
+                <h3 class="text-2xl font-black text-slate-900 dark:text-white">
+                    {{ number_format($mitraAktif, 0, ',', '.') }}
+                </h3>
+                <p class="mt-2 text-[10px] font-medium text-gray-400">
+                    Mitra Terverifikasi
+                </p>
+            </div>
+            <div wire:loading wire:target="syncMassalPending" class="animate-pulse">
+                <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+            </div>
         </div>
 
         <div class="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-slate-900">
@@ -73,12 +91,18 @@
                 </p>
                 <span class="material-symbols-outlined text-2xl text-amber-600 dark:text-amber-400">hourglass_empty</span>
             </div>
-            <h3 class="text-2xl font-black text-orange-600 dark:text-orange-400">
-                {{ number_format($pencairanTertunda, 0, ',', '.') }} Pengajuan
-            </h3>
-            <p class="mt-2 text-[10px] font-medium text-gray-400">
-                Perlu Persetujuan Segera
-            </p>
+            <div wire:loading.remove wire:target="syncMassalPending">
+                <h3 class="text-2xl font-black text-orange-600 dark:text-orange-400">
+                    {{ number_format($pencairanTertunda, 0, ',', '.') }} Pengajuan
+                </h3>
+                <p class="mt-2 text-[10px] font-medium text-gray-400">
+                    Perlu Persetujuan Segera
+                </p>
+            </div>
+            <div wire:loading wire:target="syncMassalPending" class="animate-pulse">
+                <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+            </div>
         </div>
     </section>
 

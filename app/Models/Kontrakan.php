@@ -58,6 +58,10 @@ class Kontrakan extends Model implements HasMedia
                 color: 'blue',
             ));
         });
+
+        static::deleting(function (Kontrakan $kontrakan): void {
+            // Spatie handles media deletion automatically on deleting event
+        });
     }
 
     /**

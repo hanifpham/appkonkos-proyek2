@@ -168,7 +168,7 @@
                         </div>
 
                         <div class="pt-6 mt-8 border-t border-slate-100 dark:border-slate-800/60 flex justify-end">
-                            <button type="submit" class="bg-[#1967d2] hover:bg-[#0f4fb5] text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md shadow-blue-500/20 dark:shadow-none flex items-center justify-center gap-2 w-full md:w-auto">
+                            <button type="submit" wire:loading.attr="disabled" wire:target="updateProfile" class="bg-[#1967d2] hover:bg-[#0f4fb5] text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md shadow-blue-500/20 dark:shadow-none flex items-center justify-center gap-2 w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed">
                                 <span wire:loading.remove wire:target="updateProfile" class="flex items-center gap-2"><span class="material-symbols-outlined text-[20px]">save</span> Simpan Perubahan</span>
                                 <span wire:loading wire:target="updateProfile" class="flex items-center gap-2"><span class="material-symbols-outlined animate-spin text-[20px]">refresh</span> Menyimpan...</span>
                             </button>
@@ -233,7 +233,7 @@
 
                         <!-- Button Submit -->
                         <div class="pt-2 mt-2">
-                            <button type="submit" class="bg-[#1967d2] hover:bg-[#0f4fb5] text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md shadow-blue-500/20 dark:shadow-none flex items-center justify-center gap-2 w-full md:w-auto">
+                            <button type="submit" wire:loading.attr="disabled" wire:target="updatePassword" class="bg-[#1967d2] hover:bg-[#0f4fb5] text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md shadow-blue-500/20 dark:shadow-none flex items-center justify-center gap-2 w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed">
                                 <span wire:loading.remove wire:target="updatePassword" class="flex items-center gap-2"><span class="material-symbols-outlined text-[20px]">security_update_good</span> Perbarui Kata Sandi</span>
                                 <span wire:loading wire:target="updatePassword" class="flex items-center gap-2"><span class="material-symbols-outlined animate-spin text-[20px]">refresh</span> Memperbarui...</span>
                             </button>

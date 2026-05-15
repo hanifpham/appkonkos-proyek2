@@ -29,6 +29,7 @@
                 word-wrap: normal;
                 direction: ltr;
                 -webkit-font-feature-settings: 'liga';
+                font-feature-settings: 'liga';
                 -webkit-font-smoothing: antialiased;
             }
         </style>
@@ -188,7 +189,7 @@
                         'icon' => 'inbox',
                         'url' => route('mitra.pesanan'),
                         'active' => request()->routeIs('mitra.pesanan*'),
-                        'badge' => $pendingBadgeCount > 0 ? $pendingBadgeCount : null,
+                        'badge' => null,
                     ],
                     [
                         'label' => 'Keuangan',
@@ -338,7 +339,11 @@
                                 {{ $currentTimeLabel }}
                             </div>
 
-                            <livewire:common.notification-bell />
+                            @if(auth()->user()?->role === 'superadmin')
+                                <livewire:superadmin.notification-bell />
+                            @else
+                                <livewire:common.notification-bell />
+                            @endif
 
                             <button
                                 type="button"

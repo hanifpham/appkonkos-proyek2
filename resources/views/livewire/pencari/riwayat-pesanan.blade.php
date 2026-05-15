@@ -46,6 +46,7 @@
             </div>
 
             {{-- Booking Cards --}}
+            <div wire:loading.remove wire:target="setFilter, gotoPage, batalkanPesanan, hapusPesanan" class="w-full">
             @forelse($bookings as $booking)
             @php
             $status = $this->getDisplayStatus($booking);
@@ -107,7 +108,7 @@
                 <div class="flex gap-4">
                     <div class="shrink-0">
                         @if($fotoUrl)
-                        <img src="{{ $fotoUrl }}" alt="{{ $namaProperti }}" class="w-24 h-24 rounded-lg object-cover border border-slate-100 dark:border-slate-700">
+                        <img src="{{ $fotoUrl }}" alt="{{ $namaProperti }}" class="w-24 h-24 rounded-lg object-cover border border-slate-100 dark:border-slate-700" loading="lazy">
                         @else
                         <div class="w-24 h-24 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
                             <span class="material-symbols-outlined text-[32px]">apartment</span>
@@ -213,6 +214,37 @@
                 <p class="text-gray-500 dark:text-slate-400 font-medium">Belum ada pesanan di sini.</p>
             </div>
             @endforelse
+            </div>
+
+            {{-- Skeleton Loading --}}
+            <div wire:loading.flex wire:target="setFilter, gotoPage, batalkanPesanan, hapusPesanan" class="flex-col gap-4 w-full">
+                @for($i=0; $i<3; $i++)
+                <div class="bg-white dark:bg-slate-900 border border-[#e5e7eb] dark:border-slate-800 rounded-2xl shadow-sm p-5 transition-all w-full animate-pulse">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                        <div class="flex gap-2 items-center">
+                            <div class="h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                            <div class="h-3 w-24 bg-slate-200 dark:bg-slate-700 rounded ml-2"></div>
+                        </div>
+                        <div class="h-6 w-28 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-24 h-24 rounded-lg bg-slate-200 dark:bg-slate-700 shrink-0"></div>
+                        <div class="min-w-0 flex-1 space-y-3 py-1">
+                            <div class="h-5 w-3/4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                            <div class="h-4 w-1/2 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                            <div class="h-4 w-1/3 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-[#e5e7eb] dark:border-slate-800 mt-4 pt-4">
+                        <div class="space-y-2">
+                            <div class="h-3 w-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                            <div class="h-5 w-32 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                        </div>
+                        <div class="h-10 w-36 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+                    </div>
+                </div>
+                @endfor
+            </div>
 
             {{-- Paginasi --}}
             <div class="mt-6">

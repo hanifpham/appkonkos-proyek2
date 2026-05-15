@@ -93,7 +93,7 @@
                         <button type="button" @click="open = ! open" @click.outside="open = false" class="flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300">
                             <span class="flex min-w-0 items-center gap-2">
                                 <span class="material-symbols-outlined shrink-0 text-[18px]">manage_accounts</span>
-                                <span class="truncate">{{ $filterPeranOptions[$filterPeran] ?? 'Semua Peran' }}</span>
+                                <span class="truncate">{{ $filterPeranOptions[(string) $filterPeran] ?? 'Semua Peran' }}</span>
                             </span>
                             <span class="material-symbols-outlined shrink-0 text-[18px] text-slate-400 dark:text-slate-500">expand_more</span>
                         </button>
@@ -113,7 +113,7 @@
                         <button type="button" @click="open = ! open" @click.outside="open = false" class="flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300">
                             <span class="flex min-w-0 items-center gap-2">
                                 <span class="material-symbols-outlined shrink-0 text-[18px]">filter_list</span>
-                                <span class="truncate">{{ $filterStatusOptions[$filterStatus] ?? 'Semua Status' }}</span>
+                                <span class="truncate">{{ $filterStatusOptions[(string) $filterStatus] ?? 'Semua Status' }}</span>
                             </span>
                             <span class="material-symbols-outlined shrink-0 text-[18px] text-slate-400 dark:text-slate-500">expand_more</span>
                         </button>
@@ -138,70 +138,70 @@
                 <thead
                     class="bg-gray-50 text-[11px] font-bold uppercase tracking-widest text-gray-600 dark:bg-slate-800 dark:text-gray-300">
                     <tr>
-                        <th class="px-8 py-5">Informasi Pengguna</th>
-                        <th class="px-6 py-5">Peran</th>
-                        <th class="px-6 py-5">Kontak</th>
-                        <th class="px-6 py-5">Status Akun</th>
-                        <th class="px-8 py-5 text-center">Aksi Manajemen</th>
+                        <th class="px-6 py-4">Informasi Pengguna</th>
+                        <th class="px-6 py-4">Peran</th>
+                        <th class="px-6 py-4">Kontak</th>
+                        <th class="px-6 py-4">Status Akun</th>
+                        <th class="px-6 py-4 text-center">Aksi Manajemen</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tbody wire:loading.remove wire:target="search, filterPeran, filterStatus, gotoPage, nextPage, previousPage" class="divide-y divide-gray-100 dark:divide-gray-700">
                     @forelse ($users as $user)
                         <tr wire:key="user-{{ $user->id }}">
-                            <td class="px-8 py-6">
+                            <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div
-                                        class="{{ $this->getAvatarClasses($user) }} flex h-11 w-11 items-center justify-center rounded-xl font-bold">
+                                        class="{{ $this->getAvatarClasses($user) }} flex h-10 w-10 items-center justify-center rounded-xl font-bold text-xs">
                                         {{ strtoupper(substr($user->name, 0, 2)) }}
                                     </div>
                                     <div class="flex flex-col">
                                         <span
-                                            class="text-base font-bold text-gray-900 dark:text-gray-100">{{ $user->name }}</span>
-                                        <span class="text-xs font-medium text-gray-400">ID: {{ $user->id }} |
+                                            class="text-[14px] font-bold text-gray-900 dark:text-gray-100 leading-tight">{{ $user->name }}</span>
+                                        <span class="text-[10px] font-medium text-gray-400 mt-0.5">ID: {{ $user->id }} |
                                             {{ $user->created_at?->format('d M Y') }}</span>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-6">
+                            <td class="px-6 py-4">
                                 <span
-                                    class="{{ $this->getRoleBadgeClasses($user) }} rounded-lg px-3 py-1 text-[10px] font-bold uppercase tracking-wide">
+                                    class="{{ $this->getRoleBadgeClasses($user) }} rounded-lg px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide whitespace-nowrap">
                                     {{ $this->getRoleLabel($user) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-6 text-gray-500">
-                                <div class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ $user->email }}</div>
-                                <div class="text-xs">{{ $user->no_telepon }}</div>
+                            <td class="px-6 py-4 text-gray-500">
+                                <div class="text-[13px] font-medium text-gray-700 dark:text-gray-300">{{ $user->email }}</div>
+                                <div class="text-[11px] mt-0.5">{{ $user->no_telepon }}</div>
                             </td>
-                            <td class="px-6 py-6">
+                            <td class="px-6 py-4">
                                 <span
-                                    class="{{ $this->getStatusBadgeClasses($user) }} inline-flex items-center rounded-full px-4 py-1.5 text-[10px] font-black uppercase">
+                                    class="{{ $this->getStatusBadgeClasses($user) }} inline-flex items-center rounded-full px-3 py-1 text-[9px] font-black uppercase">
                                     {{ $this->getStatusLabel($user) }}
                                 </span>
                             </td>
-                            <td class="px-8 py-6">
-                                <div class="flex items-center justify-center gap-2">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center justify-center gap-1.5">
                                     @if ($user->status === 'diblokir')
                                         <button type="button" wire:click="bukaBlokir({{ $user->id }})"
-                                            class="flex h-10 w-[148px] items-center justify-center gap-2 rounded-lg bg-red-600 px-3 text-xs font-bold text-white transition-all hover:bg-red-700">
-                                            <span class="material-symbols-outlined text-[18px]">lock_open</span>
+                                            class="flex h-8 w-[120px] items-center justify-center gap-1.5 rounded-lg bg-red-600 px-2 text-[11px] font-bold text-white transition-all hover:bg-red-700">
+                                            <span class="material-symbols-outlined text-[16px]">lock_open</span>
                                             Buka Blokir
                                         </button>
                                     @elseif ($user->role === 'pemilik' && $user->pemilikProperti?->status_verifikasi === 'pending')
                                         <button type="button" wire:click="validasiAkun({{ $user->id }})"
-                                            class="flex h-10 w-[148px] items-center justify-center gap-2 rounded-lg bg-[#0F4C81] px-3 text-xs font-bold text-white transition-all hover:bg-[#0d3f6d]">
-                                            <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+                                            class="flex h-8 w-[120px] items-center justify-center gap-1.5 rounded-lg bg-[#0F4C81] px-2 text-[11px] font-bold text-white transition-all hover:bg-[#0d3f6d]">
+                                            <span class="material-symbols-outlined text-[16px]">how_to_reg</span>
                                             Validasi Akun
                                         </button>
                                     @else
                                         <button type="button" wire:click="blokirAkun({{ $user->id }})"
-                                            class="flex h-10 w-[148px] items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 text-xs font-bold text-red-600 transition-all hover:bg-red-100">
-                                            <span class="material-symbols-outlined text-[18px]">block</span>
+                                            class="flex h-8 w-[120px] items-center justify-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-2 text-[11px] font-bold text-red-600 transition-all hover:bg-red-100">
+                                            <span class="material-symbols-outlined text-[16px]">block</span>
                                             Blokir Akun
                                         </button>
                                     @endif
-
+ 
                                     <button type="button" wire:click="bukaDetail({{ $user->id }})"
-                                        class="flex h-10 w-[148px] items-center justify-center rounded-lg border border-gray-300 bg-white px-3 text-xs font-bold text-gray-700 transition-all hover:bg-gray-50">
+                                        class="flex h-8 w-[80px] items-center justify-center rounded-lg border border-gray-300 bg-white px-2 text-[11px] font-bold text-gray-700 transition-all hover:bg-gray-50">
                                         Detail
                                     </button>
                                 </div>
@@ -215,6 +215,7 @@
                         </tr>
                     @endforelse
                 </tbody>
+                <x-skeleton.table wire:loading wire:target="search, filterPeran, filterStatus, gotoPage, nextPage, previousPage" rows="5" cols="5" />
             </table>
         </div>
 

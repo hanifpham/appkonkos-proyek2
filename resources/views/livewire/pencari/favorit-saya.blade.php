@@ -40,8 +40,9 @@
                     </a>
                 </div>
             @else
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                    @foreach($favorits as $favorit)
+                <div wire:loading.remove wire:target="hapusFavorit, gotoPage" class="w-full">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                        @foreach($favorits as $favorit)
                         @php
                             $properti = $favorit->favoritable;
                             if (!$properti) continue;
@@ -127,7 +128,30 @@
                                 </div>
                             </a>
                         </div>
-                    @endforeach
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Skeleton Grid -->
+                <div wire:loading.flex wire:target="hapusFavorit, gotoPage" class="w-full">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
+                        @for($i=0; $i<6; $i++)
+                        <div class="flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm animate-pulse">
+                            <div class="aspect-[4/3] w-full bg-slate-200 dark:bg-slate-700"></div>
+                            <div class="flex flex-1 flex-col p-5 space-y-4">
+                                <div class="h-5 w-3/4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                <div class="h-4 w-full bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                <div class="mt-auto pt-5 border-t border-slate-50 dark:border-slate-800 flex justify-between items-end">
+                                    <div class="space-y-2">
+                                        <div class="h-3 w-16 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                        <div class="h-5 w-24 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                    </div>
+                                    <div class="h-8 w-8 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                        @endfor
+                    </div>
                 </div>
 
                 <div class="mt-8">

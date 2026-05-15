@@ -253,8 +253,12 @@
                             wire:target="simpanProfil"
                             class="flex items-center gap-2 rounded-lg bg-[#0F4C81] px-8 py-2.5 text-sm font-bold text-white shadow-md transition-all duration-200 hover:bg-[#0d3f6d] disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                            <span class="material-symbols-outlined text-sm">save</span>
-                            Simpan Perubahan
+                            <span wire:loading.remove wire:target="simpanProfil" class="material-symbols-outlined text-sm">save</span>
+                            <span wire:loading.remove wire:target="simpanProfil">Simpan Perubahan</span>
+                            <span wire:loading wire:target="simpanProfil" class="flex items-center gap-2">
+                                <span class="material-symbols-outlined animate-spin text-sm">sync</span>
+                                Menyimpan data...
+                            </span>
                         </button>
                     </div>
                 </form>
@@ -416,8 +420,12 @@
                             wire:target="simpanPengaturanSistem"
                             class="flex items-center gap-2 rounded-lg bg-[#0F4C81] px-8 py-2.5 text-sm font-bold text-white shadow-md transition-all duration-200 hover:bg-[#0d3f6d] disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                            <span class="material-symbols-outlined text-sm">save</span>
-                            Simpan Pengaturan
+                            <span wire:loading.remove wire:target="simpanPengaturanSistem" class="material-symbols-outlined text-sm">save</span>
+                            <span wire:loading.remove wire:target="simpanPengaturanSistem">Simpan Pengaturan</span>
+                            <span wire:loading wire:target="simpanPengaturanSistem" class="flex items-center gap-2">
+                                <span class="material-symbols-outlined animate-spin text-sm">sync</span>
+                                Menyimpan data...
+                            </span>
                         </button>
                     </div>
                 </form>

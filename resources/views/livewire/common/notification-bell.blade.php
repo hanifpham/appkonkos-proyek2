@@ -29,15 +29,25 @@
                     <p class="text-xs text-slate-500 dark:text-slate-400">{{ $subtitle }}</p>
                 </div>
 
-                @if ($unreadCount > 0)
+                <div class="flex items-center gap-3">
+                    @if ($unreadCount > 0)
+                        <button
+                            type="button"
+                            wire:click="markAllAsRead"
+                            class="text-xs font-semibold text-[#0F4C81] transition hover:underline dark:text-blue-400"
+                        >
+                            Tandai semua
+                        </button>
+                    @endif
                     <button
                         type="button"
-                        wire:click="markAllAsRead"
-                        class="text-xs font-semibold text-[#0F4C81] transition hover:underline dark:text-blue-400"
+                        wire:click="deleteAllNotifications"
+                        wire:confirm="Hapus semua notifikasi?"
+                        class="text-xs font-semibold text-red-600 transition hover:underline dark:text-red-400"
                     >
-                        Tandai semua
+                        Hapus semua
                     </button>
-                @endif
+                </div>
             </div>
         </div>
 
@@ -60,13 +70,23 @@
                                 <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">
                                     {{ $this->getNotificationTitle($notification) }}
                                 </p>
-                                <button
-                                    type="button"
-                                    wire:click="markAsRead('{{ $notification->id }}')"
-                                    class="text-[11px] font-medium text-slate-400 transition hover:text-[#0F4C81] dark:text-slate-500 dark:hover:text-blue-400"
-                                >
-                                    Baca
-                                </button>
+                                <div class="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        wire:click="markAsRead('{{ $notification->id }}')"
+                                        class="text-[11px] font-medium text-slate-400 transition hover:text-[#0F4C81] dark:text-slate-500 dark:hover:text-blue-400"
+                                    >
+                                        Baca
+                                    </button>
+                                    <button
+                                        type="button"
+                                        wire:click="deleteNotification('{{ $notification->id }}')"
+                                        class="text-slate-400 transition hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400"
+                                        title="Hapus"
+                                    >
+                                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                                    </button>
+                                </div>
                             </div>
 
                             <p class="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">

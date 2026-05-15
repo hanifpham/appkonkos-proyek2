@@ -87,13 +87,13 @@
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Tambahkan properti baru untuk mulai mengelola listing Anda.</p>
             </div>
         @else
-            <div class="space-y-6">
+            <div wire:loading.remove wire:target="setFilter" class="space-y-6">
                 @foreach ($propertyCards as $property)
                     <article wire:key="{{ $property['type'] }}-{{ $property['id'] }}" class="group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-xl dark:border-gray-800 dark:bg-slate-900">
                         <div class="flex flex-col md:flex-row">
                             <div class="relative h-[240px] w-full shrink-0 overflow-hidden md:w-[380px]">
                                 @if ($property['image_url'] !== '')
-                                    <img alt="{{ $property['name'] }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $property['image_url'] }}">
+                                    <img alt="{{ $property['name'] }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $property['image_url'] }}" loading="lazy">
                                 @else
                                     <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-sm font-semibold text-slate-500 dark:from-slate-800 dark:to-slate-700 dark:text-slate-300">
                                         APPKONKOS
@@ -149,9 +149,12 @@
                                                 type="button"
                                                 wire:click="{{ $property['delete_action'] }}({{ $property['id'] }})"
                                                 wire:confirm="{{ $property['delete_confirm'] }}"
-                                                class="rounded-xl border border-gray-100 p-2.5 text-gray-400 transition-all hover:bg-red-50 hover:text-red-500 dark:border-gray-700 dark:hover:bg-slate-800"
+                                                wire:loading.attr="disabled"
+                                                wire:target="{{ $property['delete_action'] }}({{ $property['id'] }})"
+                                                class="rounded-xl border border-gray-100 p-2.5 text-gray-400 transition-all hover:bg-red-50 hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-700 dark:hover:bg-slate-800"
                                             >
-                                                <span class="material-symbols-outlined">delete</span>
+                                                <span wire:loading.remove wire:target="{{ $property['delete_action'] }}({{ $property['id'] }})" class="material-symbols-outlined">delete</span>
+                                                <span wire:loading wire:target="{{ $property['delete_action'] }}({{ $property['id'] }})" class="material-symbols-outlined animate-spin">refresh</span>
                                             </button>
                                         </div>
                                     </div>
@@ -191,6 +194,35 @@
                         </div>
                     </article>
                 @endforeach
+            </div>
+
+            {{-- Skeleton Loading Grid --}}
+            <div wire:loading.flex wire:target="setFilter" class="flex-col gap-6 w-full">
+                @for ($i = 0; $i < 3; $i++)
+                <article class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-slate-900 animate-pulse">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="h-[240px] w-full shrink-0 bg-slate-200 dark:bg-slate-700 md:w-[380px]"></div>
+                        <div class="flex flex-1 flex-col justify-between p-6">
+                            <div>
+                                <div class="mb-4 h-6 w-3/4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                <div class="mb-4 flex gap-2">
+                                    <div class="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                                    <div class="h-6 w-24 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                                </div>
+                                <div class="mb-6 grid gap-4 md:grid-cols-3">
+                                    <div class="h-20 bg-slate-200 dark:bg-slate-700 rounded-2xl"></div>
+                                    <div class="h-20 bg-slate-200 dark:bg-slate-700 rounded-2xl"></div>
+                                    <div class="h-20 bg-slate-200 dark:bg-slate-700 rounded-2xl"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-800">
+                                <div class="h-8 w-32 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                <div class="h-10 w-32 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                @endfor
             </div>
         @endif
     </div>

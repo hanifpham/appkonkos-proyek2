@@ -15,7 +15,7 @@
             </div>
         @endif
 
-        <section class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <section wire:loading.remove class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
             <div class="group relative overflow-hidden rounded-[18px] border border-[#edf0f4] bg-white p-6 shadow-[0_6px_18px_rgba(15,23,42,0.05)] transition-colors dark:border-slate-700 dark:bg-slate-900">
                 <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-blue-50 dark:bg-blue-500/10"></div>
                 <div class="relative z-10">
@@ -72,6 +72,24 @@
                     </div>
                 </div>
             </div>
+        </section>
+
+        {{-- Skeleton Loading Statistik --}}
+        <section wire:loading class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4 w-full">
+            @for ($i = 0; $i < 4; $i++)
+            <div class="rounded-[18px] border border-[#edf0f4] bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900 animate-pulse">
+                <div class="flex flex-col h-full justify-between">
+                    <div>
+                        <div class="h-4 w-24 bg-gray-200 dark:bg-slate-700 rounded mb-4"></div>
+                        <div class="h-8 w-32 bg-gray-200 dark:bg-slate-700 rounded mb-2"></div>
+                    </div>
+                    <div class="mt-6 flex items-center gap-2">
+                        <div class="h-4 w-4 bg-gray-200 dark:bg-slate-700 rounded-full"></div>
+                        <div class="h-3 w-40 bg-gray-200 dark:bg-slate-700 rounded"></div>
+                    </div>
+                </div>
+            </div>
+            @endfor
         </section>
 
         <section class="overflow-hidden rounded-[20px] border border-[#edf0f4] bg-white shadow-[0_6px_18px_rgba(15,23,42,0.05)] dark:border-slate-700 dark:bg-slate-900">

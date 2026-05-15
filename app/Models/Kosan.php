@@ -58,6 +58,11 @@ class Kosan extends Model implements HasMedia
                 color: 'blue',
             ));
         });
+
+        static::deleting(function (Kosan $kosan): void {
+            // Delete related TipeKamar to trigger their own media/child deletion
+            $kosan->tipeKamar()->get()->each->delete();
+        });
     }
 
     /**

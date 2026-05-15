@@ -95,7 +95,7 @@
                     <button type="button" @click="open = ! open" @click.outside="open = false" class="flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300">
                         <span class="flex min-w-0 items-center gap-2">
                             <span class="material-symbols-outlined shrink-0 text-[18px]">home_work</span>
-                            <span class="truncate">{{ $filterTipeOptions[$filterTipe] ?? 'Semua Tipe' }}</span>
+                            <span class="truncate">{{ $filterTipeOptions[(string) $filterTipe] ?? 'Semua Tipe' }}</span>
                         </span>
                         <span class="material-symbols-outlined shrink-0 text-[18px] text-slate-400 dark:text-slate-500">expand_more</span>
                     </button>
@@ -115,7 +115,7 @@
                     <button type="button" @click="open = ! open" @click.outside="open = false" class="flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300">
                         <span class="flex min-w-0 items-center gap-2">
                             <span class="material-symbols-outlined shrink-0 text-[18px]">filter_list</span>
-                            <span class="truncate">{{ $filterStatusOptions[$filterStatus] ?? 'Semua Status' }}</span>
+                            <span class="truncate">{{ $filterStatusOptions[(string) $filterStatus] ?? 'Semua Status' }}</span>
                         </span>
                         <span class="material-symbols-outlined shrink-0 text-[18px] text-slate-400 dark:text-slate-500">expand_more</span>
                     </button>
@@ -148,7 +148,7 @@
                         <th class="border-b border-gray-100 px-6 py-4 text-center dark:border-gray-700">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tbody wire:loading.remove wire:target="search, filterTipe, filterStatus, gotoPage, nextPage, previousPage" class="divide-y divide-gray-100 dark:divide-gray-700">
                     @if ($listProperti->count())
                         @foreach($listProperti as $properti)
                             <tr class="transition-colors hover:bg-blue-50/40 dark:hover:bg-slate-800/60" wire:key="properti-{{ $properti->tipe }}-{{ $properti->id }}">
@@ -171,7 +171,7 @@
                                     <div class="flex items-center gap-3">
                                         <div
                                             class="h-8 w-8 overflow-hidden rounded-full bg-blue-100 text-[10px] font-bold text-[#113C7A]">
-                                            <img src="{{ $this->getPemilikPhotoUrl($properti) }}" alt="{{ $properti->nama_pemilik ?: 'User' }}" class="h-full w-full object-cover">
+                                            <img src="{{ $this->getPemilikPhotoUrl($properti) }}" alt="{{ $properti->nama_pemilik ?: 'User' }}" class="h-full w-full object-cover" loading="lazy">
                                         </div>
                                         <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">
                                             {{ $properti->nama_pemilik ?: '-' }}
@@ -238,6 +238,7 @@
                         </tr>
                     @endif
                 </tbody>
+                <x-skeleton.table wire:loading wire:target="search, filterTipe, filterStatus, gotoPage, nextPage, previousPage" rows="5" cols="7" />
             </table>
         </div>
 

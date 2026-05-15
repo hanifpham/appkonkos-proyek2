@@ -102,7 +102,7 @@
                         <th class="px-6 py-4 text-right font-semibold">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody wire:loading.remove wire:target="search, statusFilter, gotoPage, nextPage, previousPage" class="divide-y divide-slate-100 dark:divide-slate-800">
                     @forelse ($bookings as $booking)
                         @php
                             $penyewa = $booking->pencariKos?->user;
@@ -124,7 +124,7 @@
                             <td class="px-6 py-5">
                                 <div class="flex items-center gap-3">
                                     @if ($propertyImageUrl !== '')
-                                        <img src="{{ $propertyImageUrl }}" alt="{{ $this->getPropertyName($booking) }}" class="h-12 w-12 rounded-xl object-cover">
+                                        <img src="{{ $propertyImageUrl }}" alt="{{ $this->getPropertyName($booking) }}" class="h-12 w-12 rounded-xl object-cover" loading="lazy">
                                     @else
                                         <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 text-[10px] font-bold text-slate-500 dark:from-slate-800 dark:to-slate-700 dark:text-slate-300">
                                             APK
@@ -166,8 +166,10 @@
                                         wire:target="syncMidtrans"
                                         class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#0F4C81] hover:text-[#0F4C81] disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300"
                                     >
-                                        <span class="material-symbols-outlined text-[16px]">sync</span>
-                                        Sync Midtrans
+                                        <span wire:loading.remove wire:target="syncMidtrans('{{ $booking->id }}')" class="material-symbols-outlined text-[16px]">sync</span>
+                                        <span wire:loading wire:target="syncMidtrans('{{ $booking->id }}')" class="material-symbols-outlined text-[16px] animate-spin">refresh</span>
+                                        <span wire:loading.remove wire:target="syncMidtrans('{{ $booking->id }}')">Sync Midtrans</span>
+                                        <span wire:loading wire:target="syncMidtrans('{{ $booking->id }}')">Memproses...</span>
                                     </button>
                                 @else
                                     <span class="text-xs text-slate-400 dark:text-slate-500">
@@ -183,6 +185,44 @@
                             </td>
                         </tr>
                     @endforelse
+                </tbody>
+
+                {{-- Skeleton Rows --}}
+                <tbody wire:loading.class.remove="hidden" class="hidden divide-y divide-slate-100 dark:divide-slate-800" wire:target="search, statusFilter, gotoPage, nextPage, previousPage">
+                    @for ($i = 0; $i < 4; $i++)
+                        <tr class="animate-pulse align-top">
+                            <td class="px-6 py-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-11 w-11 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+                                    <div class="w-full">
+                                        <div class="h-4 w-24 rounded bg-slate-200 dark:bg-slate-700 mb-2"></div>
+                                        <div class="h-3 w-16 rounded bg-slate-200 dark:bg-slate-700"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-12 w-12 rounded-xl bg-slate-200 dark:bg-slate-700"></div>
+                                    <div class="w-full">
+                                        <div class="h-4 w-32 rounded bg-slate-200 dark:bg-slate-700 mb-2"></div>
+                                        <div class="h-3 w-20 rounded bg-slate-200 dark:bg-slate-700"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <div class="h-4 w-24 rounded bg-slate-200 dark:bg-slate-700"></div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <div class="h-5 w-24 rounded bg-slate-200 dark:bg-slate-700"></div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <div class="h-6 w-20 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+                            </td>
+                            <td class="px-6 py-5 text-right">
+                                <div class="ml-auto h-8 w-28 rounded-xl bg-slate-200 dark:bg-slate-700"></div>
+                            </td>
+                        </tr>
+                    @endfor
                 </tbody>
             </table>
         </div>

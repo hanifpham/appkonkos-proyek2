@@ -12,7 +12,9 @@ class NotificationBell extends Component
 {
     public function markAsRead(string $id): void
     {
-        $notification = auth()->user()?->unreadNotifications()->find($id);
+        /** @var \App\Models\User|null $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $notification = $user?->unreadNotifications()->find($id);
 
         if ($notification !== null) {
             $notification->markAsRead();
@@ -21,9 +23,29 @@ class NotificationBell extends Component
 
     public function markAllAsRead(): void
     {
-        auth()->user()?->unreadNotifications()->update([
+        /** @var \App\Models\User|null $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $user?->unreadNotifications()->update([
             'read_at' => now(),
         ]);
+    }
+
+    public function deleteNotification(string $id): void
+    {
+        /** @var \App\Models\User|null $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $notification = $user?->notifications()->find($id);
+
+        if ($notification !== null) {
+            $notification->delete();
+        }
+    }
+
+    public function deleteAllNotifications(): void
+    {
+        /** @var \App\Models\User|null $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $user?->notifications()->delete();
     }
 
     public function getNotificationTitle(DatabaseNotification $notification): string
@@ -92,7 +114,8 @@ class NotificationBell extends Component
 
     public function getNotificationListUrl(): ?string
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
 
         if ($user?->role === 'pemilik') {
             return route('mitra.notifikasi');
@@ -103,7 +126,8 @@ class NotificationBell extends Component
 
     public function render(): View
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         $unreadCount = $user?->unreadNotifications()->count() ?? 0;
         $notifications = $user?->unreadNotifications()->latest()->limit(5)->get() ?? collect();
 

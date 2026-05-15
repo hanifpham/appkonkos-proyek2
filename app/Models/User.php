@@ -14,6 +14,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -25,6 +26,26 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
+
+    protected static function booted(): void
+    {
+        static::deleting(function (User $user): void {
+            // Delete profile photo on user deletion
+            if ($user->profile_photo_path) {
+                Storage::disk($user->profilePhotoDisk())->delete($user->profile_photo_path);
+            }
+        });
+
+        static::updating(function (User $user): void {
+            // Delete old profile photo if updated
+            if ($user->isDirty('profile_photo_path')) {
+                $oldPath = $user->getOriginal('profile_photo_path');
+                if ($oldPath) {
+                    Storage::disk($user->profilePhotoDisk())->delete($oldPath);
+                }
+            }
+        });
+    }
 
     /**
      * The attributes that are mass assignable.

@@ -130,7 +130,7 @@
                     </tr>
                 </thead>
 
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tbody wire:loading.remove wire:target="search, filterStatus, gotoPage, nextPage, previousPage" class="divide-y divide-gray-100 dark:divide-gray-700">
                     @forelse($listRefund as $refund)
                         <tr wire:key="refund-row-{{ $refund->id }}" class="transition hover:bg-blue-50/30 dark:hover:bg-slate-800/50">
                             <td class="px-8 py-5">
@@ -180,14 +180,22 @@
 
                                         @if(in_array($metode, $metodeManual))
                                             <button wire:click="tandaiSudahDitransfer({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition shadow-sm">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                Tandai Ditransfer
+                                                <svg wire:loading.remove wire:target="tandaiSudahDitransfer({{ $refund->id }})" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                <span wire:loading.remove wire:target="tandaiSudahDitransfer({{ $refund->id }})">Tandai Ditransfer</span>
+                                                <span wire:loading wire:target="tandaiSudahDitransfer({{ $refund->id }})" class="flex items-center gap-1">
+                                                    <span class="material-symbols-outlined animate-spin text-[14px]">sync</span>
+                                                    Memproses...
+                                                </span>
                                             </button>
                                             <span class="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-semibold rounded-md border border-amber-200">Transfer Manual</span>
                                         @else
                                             <button wire:click="prosesRefund({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-[#1967d2] hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                                Refund Otomatis
+                                                <svg wire:loading.remove wire:target="prosesRefund({{ $refund->id }})" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                                <span wire:loading.remove wire:target="prosesRefund({{ $refund->id }})">Refund Otomatis</span>
+                                                <span wire:loading wire:target="prosesRefund({{ $refund->id }})" class="flex items-center gap-1">
+                                                    <span class="material-symbols-outlined animate-spin text-[14px]">sync</span>
+                                                    Memproses...
+                                                </span>
                                             </button>
                                         @endif
                                         
@@ -210,6 +218,7 @@
                         </tr>
                     @endforelse
                 </tbody>
+                <x-skeleton.table wire:loading wire:target="search, filterStatus, gotoPage, nextPage, previousPage" rows="5" cols="6" />
             </table>
         </div>
 
@@ -397,7 +406,11 @@
                         wire:loading.attr="disabled"
                         class="rounded-lg bg-[#113C7A] px-5 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#0d2f60] disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        Konfirmasi &amp; Proses Refund
+                        <span wire:loading.remove wire:target="prosesRefund">Konfirmasi &amp; Proses Refund</span>
+                        <span wire:loading wire:target="prosesRefund" class="flex items-center gap-2">
+                            <span class="material-symbols-outlined animate-spin text-[16px]">sync</span>
+                            Sedang Memproses Refund...
+                        </span>
                     </button>
                 </div>
             </div>

@@ -21,6 +21,14 @@ class TipeKamar extends Model implements HasMedia
 
     protected $table = 'tipe_kamar';
 
+    protected static function booted(): void
+    {
+        static::deleting(function (TipeKamar $tipeKamar): void {
+            // Delete related Kamar
+            $tipeKamar->kamar()->delete();
+        });
+    }
+
     /**
      * @var list<string>
      */

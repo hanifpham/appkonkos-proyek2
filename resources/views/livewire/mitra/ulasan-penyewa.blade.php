@@ -122,7 +122,7 @@ $activeFilterLabel = in_array($filter, $filterOptions, true) ? $filter : 'Terbar
         </div>
     </div>
 
-    <div class="flex flex-col gap-6">
+    <div wire:loading.remove wire:target="search, filter, gotoPage, nextPage, previousPage" class="flex flex-col gap-6">
         @forelse ($ulasanList as $ulasan)
         @php
         $penyewa = $ulasan->booking?->pencariKos?->user;
@@ -230,6 +230,34 @@ $activeFilterLabel = in_array($filter, $filterOptions, true) ? $filter : 'Terbar
             Belum ada ulasan yang sesuai dengan pencarian atau filter saat ini.
         </div>
         @endforelse
+    </div>
+
+    {{-- Skeleton Ulasan --}}
+    <div wire:loading.flex wire:target="search, filter, gotoPage, nextPage, previousPage" class="flex-col gap-6 w-full">
+        @for ($i = 0; $i < 3; $i++)
+        <div class="group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-slate-900 animate-pulse">
+            <div class="flex-1 p-6">
+                <div class="mb-4 flex items-start justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="h-12 w-12 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+                        <div class="flex flex-col gap-2">
+                            <div class="h-4 w-32 rounded bg-slate-200 dark:bg-slate-700"></div>
+                            <div class="h-3 w-24 rounded bg-slate-200 dark:bg-slate-700"></div>
+                        </div>
+                    </div>
+                    <div class="h-6 w-20 rounded bg-slate-200 dark:bg-slate-700"></div>
+                </div>
+                <div class="mb-3 h-4 w-40 rounded bg-slate-200 dark:bg-slate-700"></div>
+                <div class="mb-4 space-y-2">
+                    <div class="h-3 w-full rounded bg-slate-200 dark:bg-slate-700"></div>
+                    <div class="h-3 w-5/6 rounded bg-slate-200 dark:bg-slate-700"></div>
+                </div>
+            </div>
+            <div class="flex justify-end border-t border-gray-100 bg-gray-50 px-6 py-4 dark:border-gray-700 dark:bg-slate-800/50">
+                <div class="h-10 w-32 rounded-lg bg-slate-200 dark:bg-slate-700"></div>
+            </div>
+        </div>
+        @endfor
     </div>
 
     <div class="flex justify-center pb-12 pt-4">

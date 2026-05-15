@@ -10,6 +10,7 @@ use App\Models\Kontrakan;
 use App\Services\MidtransService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\Attributes\Computed;
@@ -149,21 +150,37 @@ class Checkout extends Component
         $tglMulai = Carbon::parse($this->tanggal_masuk);
         $tglSelesai = $tglMulai->copy()->addMonths($this->durasi_sewa);
 
-        $booking = Booking::create([
-            'id' => (string) Str::uuid(),
-            'pencari_kos_id' => $pencariKos->id,
-            'kamar_id' => $this->kamar_id,
-            'kontrakan_id' => $this->kontrakan_id,
-            'tgl_mulai_sewa' => $tglMulai,
-            'tgl_selesai_sewa' => $tglSelesai,
-            'total_biaya' => $this->totalPembayaran,
-            'status_booking' => 'pending', // 'menunggu_pembayaran' will be derived from pembayaran status
-        ]);
-
-        // Simpan catatan jika diperlukan di masa depan (saat ini tabel booking tidak punya kolom catatan)
-        // Kita bisa menambahkannya ke kolom notes jika ada, atau abaikan.
-
         try {
+            $booking = DB::transaction(function () use ($pencariKos, $tglMulai, $tglSelesai) {
+                // 1. Kunci baris data secara spesifik (Pessimistic Lock) & Validasi Ketersediaan
+                if ($this->tipeProperti === 'kosan') {
+                    $kamar = Kamar::where('id', $this->kamar_id)->lockForUpdate()->first();
+                    
+                    if (!$kamar || $kamar->status_kamar !== 'tersedia') {
+                        throw new \Exception('Kamar ini baru saja disewa oleh orang lain. Kamar tidak tersedia!');
+                    }
+                } elseif ($this->tipeProperti === 'kontrakan') {
+                    $kontrakan = Kontrakan::where('id', $this->kontrakan_id)->lockForUpdate()->first();
+                    
+                    if (!$kontrakan || $kontrakan->sisa_kamar <= 0 || $kontrakan->status !== 'aktif') {
+                        throw new \Exception('Kontrakan ini baru saja disewa oleh orang lain. Stok habis!');
+                    }
+                }
+
+                // 2. Buat Data Transaksi Baru
+                return Booking::create([
+                    'id' => (string) Str::uuid(),
+                    'pencari_kos_id' => $pencariKos->id,
+                    'kamar_id' => $this->kamar_id,
+                    'kontrakan_id' => $this->kontrakan_id,
+                    'tgl_mulai_sewa' => $tglMulai,
+                    'tgl_selesai_sewa' => $tglSelesai,
+                    'total_biaya' => $this->totalPembayaran,
+                    'status_booking' => 'pending', // 'menunggu_pembayaran' will be derived from pembayaran status
+                ]);
+            });
+
+            // 3. Lanjutkan ke Logika Midtrans Snap Token
             $payment = $midtrans->createOrRefreshTransaction($booking);
 
             if ($payment && $payment->snap_token) {
@@ -171,8 +188,15 @@ class Checkout extends Component
             } else {
                 session()->flash('error', 'Token pembayaran gagal dibuat.');
             }
+
         } catch (\Exception $e) {
-            session()->flash('error', 'Terjadi kesalahan sistem pembayaran: ' . $e->getMessage());
+            // Tangkap pesan error dari DB Transaction (Pessimistic Lock / lainnya) dan tampilkan via SweetAlert
+            $this->dispatch('swal:gender-error', [
+                'title' => 'Gagal Booking!',
+                'text' => $e->getMessage(),
+            ]);
+            
+            return;
         }
     }
 

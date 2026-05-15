@@ -82,7 +82,7 @@
                 <div class="flex justify-between items-start mb-8 pb-6 border-b border-slate-100">
                     <div class="flex items-center gap-4">
                         <div class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white shadow-md shadow-blue-500/15 ring-2 ring-[#1967d2]/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-blue-500/30 group-hover:ring-[#1967d2]/40">
-                            <img src="{{ asset('images/appkonkos.png') }}" alt="{{ config('app.name', 'APPKONKOS') }}" class="h-9 w-9 object-contain">
+                            <img src="{{ asset('images/appkonkos.png') }}" alt="{{ config('app.name', 'APPKONKOS') }}" class="h-9 w-9 object-contain" loading="lazy">
                         </div>
                         <div>
                             <div class="text-x2 font-black text-slate-900  leading-none">APPKONKOS</div>
@@ -216,7 +216,7 @@
                 @endphp
                 <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 mb-6 print-exact inline-block group hover:shadow-md transition-shadow">
                     @if($qrDataUri)
-                    <img src="{{ $qrDataUri }}" alt="QR Code" class="w-28 h-28 object-contain group-hover:scale-105 transition-transform duration-300">
+                    <img src="{{ $qrDataUri }}" alt="QR Code" class="w-28 h-28 object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy">
                     @else
                     <div class="w-28 h-28 flex items-center justify-center bg-slate-50 text-slate-400 text-[10px] text-center border border-dashed border-slate-300">QR Error</div>
                     @endif

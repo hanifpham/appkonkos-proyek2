@@ -113,9 +113,9 @@
 
                     <!-- Tombol Aksi -->
                     <div class="flex flex-col sm:flex-row gap-3 pt-2">
-                        <button type="submit" class="flex-1 bg-[#1967d2] hover:bg-[#0f4fb5] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined text-[20px]">send</span>
-                            Kirim Ulasan Sekarang
+                        <button type="submit" wire:loading.attr="disabled" wire:target="simpanUlasan" class="flex-1 bg-[#1967d2] hover:bg-[#0f4fb5] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 disabled:opacity-50">
+                            <span wire:loading.remove wire:target="simpanUlasan" class="flex items-center gap-2"><span class="material-symbols-outlined text-[20px]">send</span> Kirim Ulasan Sekarang</span>
+                            <span wire:loading wire:target="simpanUlasan" class="flex items-center gap-2"><span class="material-symbols-outlined animate-spin text-[20px]">refresh</span> Mengirim...</span>
                         </button>
                         <button type="button" wire:click="$set('selectedBookingId', null)" class="sm:w-auto w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-3 px-6 rounded-xl transition-all">
                             Batal

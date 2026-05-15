@@ -203,7 +203,7 @@
                     <div class="flex gap-4 mb-6">
                         <div class="h-28 w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100">
                             @if($fotoUrl)
-                                <img src="{{ $fotoUrl }}" alt="{{ $namaProperti }}" class="h-full w-full object-cover">
+                                <img src="{{ $fotoUrl }}" alt="{{ $namaProperti }}" class="h-full w-full object-cover" loading="lazy">
                             @else
                                 <div class="flex h-full w-full items-center justify-center text-slate-400">
                                     <span class="material-symbols-outlined text-[32px]">apartment</span>

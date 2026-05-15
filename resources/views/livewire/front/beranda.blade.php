@@ -28,17 +28,25 @@
                             {{-- Favorit Button --}}
                             <button 
                                 wire:click.prevent="toggleFavorit({{ $kos->id }}, 'kosan')" 
-                                class="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 z-10"
+                                class="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 z-10 overflow-hidden"
                             >
-                                @if(in_array($kos->id, $favoritIds))
-                                    <svg class="w-5 h-5 text-[#1967d2]" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                                <div wire:loading.remove wire:target="toggleFavorit({{ $kos->id }}, 'kosan')">
+                                    @if(in_array($kos->id, $favoritIds))
+                                        <svg class="w-5 h-5 text-[#1967d2]" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    @else
+                                        <svg class="w-5 h-5 text-gray-500 hover:text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        </svg>
+                                    @endif
+                                </div>
+                                <div wire:loading wire:target="toggleFavorit({{ $kos->id }}, 'kosan')">
+                                    <svg class="w-5 h-5 animate-spin text-gray-400" viewBox="0 0 24 24" fill="none">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                @else
-                                    <svg class="w-5 h-5 text-gray-500 hover:text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                    </svg>
-                                @endif
+                                </div>
                             </button>
 
                             <a href="{{ route('properti.detail', ['tipe' => 'kosan', 'id' => $kos->id]) }}">
@@ -134,17 +142,25 @@
                             {{-- Favorit Button --}}
                             <button 
                                 wire:click.prevent="toggleFavorit({{ $kontrakan->id }}, 'kontrakan')" 
-                                class="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 z-10"
+                                class="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 z-10 overflow-hidden"
                             >
-                                @if(in_array($kontrakan->id, $favoritIds))
-                                    <svg class="w-5 h-5 text-[#1967d2]" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                                <div wire:loading.remove wire:target="toggleFavorit({{ $kontrakan->id }}, 'kontrakan')">
+                                    @if(in_array($kontrakan->id, $favoritIds))
+                                        <svg class="w-5 h-5 text-[#1967d2]" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    @else
+                                        <svg class="w-5 h-5 text-gray-500 hover:text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        </svg>
+                                    @endif
+                                </div>
+                                <div wire:loading wire:target="toggleFavorit({{ $kontrakan->id }}, 'kontrakan')">
+                                    <svg class="w-5 h-5 animate-spin text-gray-400" viewBox="0 0 24 24" fill="none">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                @else
-                                    <svg class="w-5 h-5 text-gray-500 hover:text-[#1967d2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                    </svg>
-                                @endif
+                                </div>
                             </button>
 
                             <a href="{{ route('properti.detail', ['tipe' => 'kontrakan', 'id' => $kontrakan->id]) }}">

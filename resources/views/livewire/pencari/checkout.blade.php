@@ -284,6 +284,46 @@
 @script
 <script>
     document.addEventListener('livewire:initialized', () => {
+        Livewire.on('swal:gender-error', (data) => {
+            Swal.fire({
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown animate__faster'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp animate__faster'
+                },
+                html: `
+                    <div class="flex flex-col items-center pt-2">
+                        <div class="relative w-32 h-32 mb-4">
+                            <div class="absolute inset-0 bg-rose-100 rounded-full animate-pulse opacity-50 scale-110"></div>
+                            <lottie-player 
+                                src="https://assets5.lottiefiles.com/packages/lf20_bdnjxekx.json" 
+                                background="transparent" 
+                                speed="1" 
+                                class="relative z-10 w-full h-full"
+                                loop 
+                                autoplay>
+                            </lottie-player>
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight mb-2">${data[0].title}</h2>
+                        <p class="text-slate-500 text-sm leading-relaxed px-2 text-center font-medium">${data[0].text}</p>
+                    </div>
+                `,
+                showConfirmButton: true,
+                confirmButtonText: 'Baik, Saya Mengerti',
+                buttonsStyling: false,
+                background: '#ffffff',
+                backdrop: `rgba(15, 23, 42, 0.6) backdrop-filter blur(5px)`,
+                customClass: {
+                    popup: '!rounded-3xl !shadow-2xl border border-slate-100/50 !p-6',
+                    confirmButton: 'mt-6 w-full bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-2xl px-6 py-3.5 transition-all duration-300 shadow-lg shadow-rose-600/30 active:scale-[0.98]',
+                    htmlContainer: '!m-0 !p-0'
+                },
+                width: '24rem',
+                padding: '1.5rem'
+            });
+        });
+
         Livewire.on('pay-midtrans', (event) => {
             const token = event[0]?.token || event.token || event;
             if (!token || typeof window.snap === 'undefined') {

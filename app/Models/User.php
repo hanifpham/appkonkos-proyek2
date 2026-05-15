@@ -35,6 +35,7 @@ class User extends Authenticatable
         'name',
         'email',
         'no_telepon',
+        'jenis_kelamin',
         'role',
         'status',
         'status_akun',

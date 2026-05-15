@@ -103,6 +103,32 @@ class Checkout extends Component
 
     public function prosesPembayaran(MidtransService $midtrans)
     {
+        $user = Auth::user();
+        $pencari = $user->pencariKos;
+        
+        $jenisKelamin = $user->jenis_kelamin ?? $pencari?->jenis_kelamin;
+        
+        if (!$jenisKelamin) {
+            session()->flash('error', 'Silakan lengkapi profil Anda (Jenis Kelamin) terlebih dahulu sebelum menyewa.');
+            return;
+        }
+
+        if ($this->tipeProperti === 'kosan') {
+            $kamar = Kamar::with('tipeKamar.kosan')->find($this->kamar_id);
+            if ($kamar && $kamar->tipeKamar && $kamar->tipeKamar->kosan) {
+                $jenisKos = strtolower(trim($kamar->tipeKamar->kosan->jenis_kos ?? ''));
+                $jkUser = in_array(strtolower($jenisKelamin), ['l', 'laki-laki']) ? 'l' : 'p';
+                
+                if (($jenisKos === 'putra' && $jkUser === 'p') || ($jenisKos === 'putri' && $jkUser === 'l')) {
+                    $this->dispatch('swal:gender-error', [
+                        'title' => 'Oops! Salah Kamar!',
+                        'text' => "Maaf, kosan ini hanya untuk " . ucfirst($jenisKos) . ". Harap cari kosan yang sesuai dengan jenis kelamin Anda."
+                    ]);
+                    return;
+                }
+            }
+        }
+
         $this->validate([
             'tanggal_masuk' => 'required|date|after_or_equal:today',
             'durasi_sewa' => 'required|integer|min:1',

@@ -62,7 +62,7 @@
                 @endphp
                 <article wire:key="mitra-notification-{{ $notification->id }}" class="px-6 py-5">
                     <div class="flex items-start gap-4">
-                        <div class="{{ $palette['wrapper'] }} flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl">
+                        <div class="{{ $palette['wrapper'] }} flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full">
                             <span class="material-symbols-outlined text-[20px] {{ $palette['icon'] }}">{{ $this->getNotificationIcon($notification) }}</span>
                         </div>
 
@@ -126,7 +126,7 @@
             @for ($i = 0; $i < 3; $i++)
             <article class="px-6 py-5 animate-pulse">
                 <div class="flex items-start gap-4">
-                    <div class="bg-slate-200 dark:bg-slate-700 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl"></div>
+                    <div class="bg-slate-200 dark:bg-slate-700 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full"></div>
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                             <div class="w-full">

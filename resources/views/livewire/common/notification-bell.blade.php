@@ -6,7 +6,7 @@
     <button
         type="button"
         @click="open = !open"
-        class="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-transparent text-slate-500 transition hover:bg-slate-100 hover:text-[#0F4C81] dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white"
+        class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent text-slate-500 transition hover:bg-slate-100 hover:text-[#0F4C81] dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white"
         aria-label="Notifikasi"
     >
         <span class="material-symbols-outlined text-[22px]">notifications</span>
@@ -61,7 +61,7 @@
 
                 <div wire:key="notification-{{ $notification->id }}" class="border-b border-slate-100 px-4 py-3 last:border-b-0 dark:border-slate-800">
                     <div class="flex items-start gap-3">
-                        <div class="{{ $palette['wrapper'] }} flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl">
+                        <div class="{{ $palette['wrapper'] }} flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full">
                             <span class="material-symbols-outlined text-[18px] {{ $palette['icon'] }}">{{ $this->getNotificationIcon($notification) }}</span>
                         </div>
 

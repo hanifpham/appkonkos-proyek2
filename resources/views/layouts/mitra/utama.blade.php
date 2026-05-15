@@ -232,8 +232,8 @@
                 ? 'text-[10px]'
                 : 'text-[11px]';
             $sidebarLogoutButtonClass = $user?->role === 'superadmin'
-                ? 'gap-1.5 rounded-[9px] py-2 text-[13px]'
-                : 'gap-2 rounded-[10px] py-2.5 text-sm';
+                ? 'gap-1.5 rounded-full py-2 text-[13px]'
+                : 'gap-2 rounded-full py-2.5 text-sm';
             $sidebarLogoutIconClass = $user?->role === 'superadmin'
                 ? 'text-[16px]'
                 : 'text-[18px]';
@@ -249,18 +249,8 @@
         @endphp
 
         <div class="flex h-screen w-full overflow-hidden bg-[#f5f7fb] dark:bg-[#10192d]">
-            <div
-                class="fixed inset-0 z-40 bg-slate-950/45 backdrop-blur-sm lg:hidden"
-                x-cloak
-                x-show="mobileSidebarOpen"
-                x-transition.opacity
-                @click="mobileSidebarOpen = false"
-            ></div>
-
-            <aside
-                class="fixed inset-y-0 left-0 z-50 flex {{ $sidebarWidthClass }} flex-col bg-[#163f7a] transition-transform duration-300 dark:bg-[#0a1224] lg:translate-x-0"
-                :class="mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-            >
+            <!-- Desktop Sidebar -->
+            <aside class="fixed inset-y-0 left-0 z-40 hidden {{ $sidebarWidthClass }} flex-col bg-[#163f7a] dark:bg-[#0a1224] lg:flex lg:translate-x-0">
                 <div class="flex min-h-[100px] shrink-0 items-center border-b border-white px-6">
                     <div class="flex items-center gap-3">
                         <div class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white shadow-lg shadow-black/10">
@@ -273,13 +263,12 @@
                     </div>
                 </div>
 
-                <nav class="flex flex-1 flex-col gap-3 px-4 py-7">
+                <nav class="flex flex-1 flex-col gap-3 px-4 py-7 overflow-y-auto">
                     @foreach ($sidebarItems as $item)
                         <a
                             href="{{ $item['url'] }}"
-                            @click="mobileSidebarOpen = false"
                             @class([
-                                'flex items-start rounded-xl px-4 py-3.5 text-[14px] leading-5 transition-colors',
+                                'flex items-start rounded-full px-4 py-3.5 text-[14px] leading-5 transition-colors',
                                 'border border-white/10 bg-[#335b94] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:bg-[#3a659f]' => $item['active'],
                                 'text-blue-100 hover:bg-white/10 hover:text-white' => ! $item['active'],
                             ])
@@ -315,13 +304,83 @@
                 </div>
             </aside>
 
+            <!-- Mobile Menu Drawer (Left - matches desktop sidebar) -->
+            <div class="fixed inset-0 z-[100] lg:hidden"
+                 :class="mobileSidebarOpen ? 'pointer-events-auto' : 'pointer-events-none'">
+
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-black/50 transition-opacity duration-300"
+                     :class="mobileSidebarOpen ? 'opacity-100' : 'opacity-0'"
+                     @click="mobileSidebarOpen = false"></div>
+
+                <!-- Drawer Panel (slides from LEFT) -->
+                <aside class="absolute top-0 left-0 h-full w-[280px] max-w-[85vw] bg-[#163f7a] shadow-2xl flex flex-col transition-transform duration-300 ease-in-out rounded-r-3xl dark:bg-[#0a1224]"
+                       :class="mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+
+                    <!-- Brand Header (same as desktop) -->
+                    <div class="flex items-center justify-between border-b border-white/10 px-6 py-5">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white shadow-lg shadow-black/10">
+                                <img class="h-10 w-10 object-contain" src="{{ asset('images/appkonkos.png') }}" alt="Logo">
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[18px] font-bold leading-tight tracking-wide text-white">APPKONKOS</span>
+                                <span class="text-[10px] font-light text-blue-200">Pemesanan Kos &amp; Kontrakan</span>
+                            </div>
+                        </div>
+                        <button @click="mobileSidebarOpen = false" class="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/60 transition hover:bg-white/20 hover:text-white">
+                            <span class="material-symbols-outlined text-[18px]">close</span>
+                        </button>
+                    </div>
+
+                    <!-- Navigation (same style as desktop sidebar) -->
+                    <nav class="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-5">
+                        @foreach ($sidebarItems as $item)
+                            <a href="{{ $item['url'] }}"
+                               @click="mobileSidebarOpen = false"
+                               @class([
+                                   'flex items-start rounded-full px-4 py-3.5 text-[14px] leading-5 transition-colors',
+                                   'border border-white/10 bg-[#335b94] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:bg-[#3a659f]' => $item['active'],
+                                   'text-blue-100 hover:bg-white/10 hover:text-white' => !$item['active'],
+                               ])>
+                                <div class="flex min-w-0 flex-1 items-start gap-3">
+                                    <span class="material-symbols-outlined mt-0.5 shrink-0 text-[20px]">{{ $item['icon'] }}</span>
+                                    <span class="min-w-0 break-words pr-3">{{ $item['label'] }}</span>
+                                </div>
+                                @if ($item['badge'] !== null)
+                                    <span class="ml-2 mt-0.5 shrink-0 rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white">{{ $item['badge'] }}</span>
+                                @endif
+                            </a>
+                        @endforeach
+                    </nav>
+
+                    <!-- Footer: Profile (same as desktop sidebar) -->
+                    <div class="shrink-0 border-t border-white/10 bg-[#14366a] p-5 rounded-br-3xl dark:bg-black/20">
+                        <div class="mb-3 flex items-center gap-3">
+                            <img alt="{{ $user?->name }}" class="h-10 w-10 rounded-full border-2 border-white/30 object-cover shadow-sm" src="{{ $profilePhotoUrl }}" data-appkonkos-profile-photo onerror="this.onerror=null;this.src='{{ $profilePhotoFallbackUrl }}';">
+                            <div class="min-w-0 flex-1">
+                                <span class="block truncate text-sm font-semibold text-white">{{ $user?->name }}</span>
+                                <span class="block truncate text-[11px] text-blue-300">{{ $user?->email }}</span>
+                            </div>
+                        </div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-full bg-red-600 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-red-700">
+                                <span class="material-symbols-outlined text-[18px]">logout</span>
+                                Keluar
+                            </button>
+                        </form>
+                    </div>
+                </aside>
+            </div>
+
             <main class="flex min-w-0 flex-1 flex-col overflow-hidden {{ $mainPaddingClass }}">
                 <header class="sticky top-0 z-30 shrink-0 border-b border-slate-200 bg-white dark:border-white dark:bg-[#10192c]">
                     <div class="flex min-h-[100px] items-center justify-between gap-4 px-4 py-4 sm:px-6 xl:px-8">
                         <div class="flex min-w-0 items-start gap-3">
                             <button
                                 type="button"
-                                class="mt-1 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 lg:hidden"
+                                class="mt-1 inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-[#0F4C81] hover:text-[#0F4C81] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 lg:hidden"
                                 @click="mobileSidebarOpen = true"
                             >
                                 <span class="material-symbols-outlined">menu</span>
@@ -334,7 +393,7 @@
                         </div>
 
                         <div class="relative flex shrink-0 items-center gap-2 sm:gap-3">
-                            <div class="hidden items-center rounded-xl border border-slate-200 bg-[#f6f7fb] px-4 py-2.5 text-sm font-medium text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 lg:flex">
+                            <div class="hidden items-center rounded-full border border-slate-200 bg-[#f6f7fb] px-4 py-2.5 text-sm font-medium text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 lg:flex">
                                 <span class="material-symbols-outlined mr-2 text-[18px]">calendar_today</span>
                                 {{ $currentTimeLabel }}
                             </div>
@@ -348,7 +407,7 @@
                             <button
                                 type="button"
                                 @click="toggleDarkMode()"
-                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-transparent text-slate-500 transition hover:bg-slate-100 hover:text-[#0F4C81] dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white"
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent text-slate-500 transition hover:bg-slate-100 hover:text-[#0F4C81] dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white"
                             >
                                 <span class="material-symbols-outlined text-[22px]" x-show="!darkMode">dark_mode</span>
                                 <span class="material-symbols-outlined text-[22px]" x-show="darkMode" x-cloak>light_mode</span>

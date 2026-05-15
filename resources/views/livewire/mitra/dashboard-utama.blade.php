@@ -196,7 +196,7 @@
                         @if ($properti['image_url'] !== '')
                             <img alt="{{ $properti['nama_properti'] }}" class="h-28 w-full rounded-[14px] object-cover sm:w-28" src="{{ $properti['image_url'] }}">
                         @else
-                            <div class="flex h-28 w-full items-center justify-center rounded-[14px] bg-gradient-to-br from-slate-100 to-slate-200 text-sm font-semibold text-slate-500 sm:w-28 dark:from-slate-800 dark:to-slate-700 dark:text-slate-300">
+                            <div class="flex h-28 w-full items-center justify-center rounded-full bg-gradient-to-br from-slate-100 to-slate-200 text-sm font-semibold text-slate-500 sm:w-28 dark:from-slate-800 dark:to-slate-700 dark:text-slate-300">
                                 APPKONKOS
                             </div>
                         @endif
@@ -212,7 +212,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                <a href="{{ $properti['edit_url'] }}" class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-50 text-slate-400 transition hover:bg-slate-100 hover:text-[#0F4C81] dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800">
+                                <a href="{{ $properti['edit_url'] }}" class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition hover:bg-slate-100 hover:text-[#0F4C81] dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800">
                                     <span class="material-symbols-outlined text-[18px]">edit</span>
                                 </a>
                             </div>

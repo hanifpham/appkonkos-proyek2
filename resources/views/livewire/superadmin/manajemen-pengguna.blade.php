@@ -151,7 +151,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div
-                                        class="{{ $this->getAvatarClasses($user) }} flex h-10 w-10 items-center justify-center rounded-xl font-bold text-xs">
+                                        class="{{ $this->getAvatarClasses($user) }} flex h-10 w-10 items-center justify-center rounded-full font-bold text-xs">
                                         {{ strtoupper(substr($user->name, 0, 2)) }}
                                     </div>
                                     <div class="flex flex-col">

@@ -153,7 +153,7 @@
 
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="w-8 h-8 rounded-lg {{ $bankWrapperClass }} flex items-center justify-center border">
+                                    <div class="w-8 h-8 rounded-full {{ $bankWrapperClass }} flex items-center justify-center border">
                                         <span class="material-symbols-outlined text-[18px] {{ $bankIconClass }}">account_balance</span>
                                     </div>
                                     <div class="flex flex-col">

@@ -155,7 +155,7 @@
                                             @elseif(isset($existingPhotoUrls[0]))
                                                 <img src="{{ $existingPhotoUrls[0] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
                                             @else
-                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-full border border-dashed border-slate-300 bg-white text-slate-400">
                                                     <span class="material-symbols-outlined text-[18px]">image</span>
                                                 </div>
                                             @endif
@@ -189,7 +189,7 @@
                                             @elseif(isset($existingPhotoUrls[1]))
                                                 <img src="{{ $existingPhotoUrls[1] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
                                             @else
-                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-full border border-dashed border-slate-300 bg-white text-slate-400">
                                                     <span class="material-symbols-outlined text-[18px]">image</span>
                                                 </div>
                                             @endif
@@ -223,7 +223,7 @@
                                             @elseif(isset($existingPhotoUrls[2]))
                                                 <img src="{{ $existingPhotoUrls[2] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
                                             @else
-                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-full border border-dashed border-slate-300 bg-white text-slate-400">
                                                     <span class="material-symbols-outlined text-[18px]">image</span>
                                                 </div>
                                             @endif
@@ -257,7 +257,7 @@
                                             @elseif(isset($existingPhotoUrls[3]))
                                                 <img src="{{ $existingPhotoUrls[3] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
                                             @else
-                                                <div class="flex h-12 w-16 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-slate-400">
+                                                <div class="flex h-12 w-16 items-center justify-center rounded-full border border-dashed border-slate-300 bg-white text-slate-400">
                                                     <span class="material-symbols-outlined text-[18px]">image</span>
                                                 </div>
                                             @endif

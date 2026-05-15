@@ -2,7 +2,7 @@
     <button
         type="button"
         @click="open = !open"
-        class="relative flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition-all hover:bg-slate-100 hover:text-[#113C7A] dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-blue-400"
+        class="relative flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-all hover:bg-slate-100 hover:text-[#113C7A] dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-blue-400"
     >
         <span class="material-symbols-outlined text-[24px]">notifications</span>
         @if ($unreadCount > 0)
@@ -54,7 +54,7 @@
                     @click="open = false"
                     class="group relative flex cursor-pointer gap-3 border-b border-gray-50 p-4 transition hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50"
                 >
-                    <div @click.stop="$wire.markAsRead('{{ $notification->id }}')" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-{{ $notification->data['color'] ?? 'blue' }}-50 text-{{ $notification->data['color'] ?? 'blue' }}-600 dark:bg-{{ $notification->data['color'] ?? 'blue' }}-900/30 dark:text-{{ $notification->data['color'] ?? 'blue' }}-400">
+                    <div @click.stop="$wire.markAsRead('{{ $notification->id }}')" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-{{ $notification->data['color'] ?? 'blue' }}-50 text-{{ $notification->data['color'] ?? 'blue' }}-600 dark:bg-{{ $notification->data['color'] ?? 'blue' }}-900/30 dark:text-{{ $notification->data['color'] ?? 'blue' }}-400">
                         <span class="material-symbols-outlined text-[20px]">{{ $notification->data['icon'] ?? 'notifications' }}</span>
                     </div>
 

@@ -126,7 +126,7 @@
                                     @if ($propertyImageUrl !== '')
                                         <img src="{{ $propertyImageUrl }}" alt="{{ $this->getPropertyName($booking) }}" class="h-12 w-12 rounded-xl object-cover" loading="lazy">
                                     @else
-                                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 text-[10px] font-bold text-slate-500 dark:from-slate-800 dark:to-slate-700 dark:text-slate-300">
+                                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-slate-100 to-slate-200 text-[10px] font-bold text-slate-500 dark:from-slate-800 dark:to-slate-700 dark:text-slate-300">
                                             APK
                                         </div>
                                     @endif

@@ -89,8 +89,8 @@ $durationOptions = $isKosan
      x-on:keydown.escape.window="galleryOpen = false">
 
     {{-- Header / Title Section --}}
-    <div class="mx-auto max-w-7xl px-4 pt-8 pb-6 sm:px-6 lg:px-8 animate-fade-in-up">
-        <nav class="mb-4 flex items-center gap-2 text-sm font-medium text-slate-500">
+    <div class="mx-auto max-w-7xl px-4 pt-6 pb-4 sm:pt-8 sm:pb-6 sm:px-6 lg:px-8 animate-fade-in-up">
+        <nav class="mb-3 sm:mb-4 flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-slate-500">
             <a href="{{ route('home') }}" class="transition-colors hover:text-[#1967d2]">Beranda</a>
             <span class="material-symbols-outlined text-sm">chevron_right</span>
             <a href="{{ route('cari') }}" class="transition-colors hover:text-[#1967d2]">Cari Properti</a>
@@ -107,8 +107,8 @@ $durationOptions = $isKosan
                         {{ number_format($ratingAverage, 1) }} <span class="font-medium text-amber-600/80">({{ $reviewCount }} Ulasan)</span>
                     </div>
                 </div>
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900">{{ $properti->nama_properti }}</h1>
-                <p class="mt-4 flex items-start gap-2 text-base text-slate-600">
+                <h1 class="text-xl sm:text-3xl lg:text-5xl font-black tracking-tight text-slate-900">{{ $properti->nama_properti }}</h1>
+                <p class="mt-2 sm:mt-4 flex items-start gap-2 text-sm sm:text-base text-slate-600">
                     <span class="material-symbols-outlined shrink-0 text-[#1967d2]">location_on</span>
                     <span class="leading-relaxed">{{ $properti->alamat_lengkap }}</span>
                 </p>
@@ -124,7 +124,7 @@ $durationOptions = $isKosan
 
     {{-- Gallery Hero --}}
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-12 animate-fade-in-up" style="animation-delay: 100ms;">
-        <div class="relative grid h-[350px] sm:h-[450px] lg:h-[500px] grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-[2rem]">
+        <div class="relative grid h-[250px] sm:h-[400px] lg:h-[500px] grid-cols-4 grid-rows-2 gap-1.5 sm:gap-2 overflow-hidden rounded-2xl sm:rounded-[2rem]">
             {{-- Main Photo --}}
             <div class="col-span-4 row-span-2 md:col-span-2 relative group cursor-pointer" @click="photos.length && (galleryOpen = true, activePhoto = 0)">
                 @if($mainPhoto)
@@ -169,13 +169,13 @@ $durationOptions = $isKosan
 
     {{-- Main Content & Sidebar --}}
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row gap-12">
+        <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
             
             {{-- Left Content --}}
             <div class="w-full lg:w-[65%] space-y-12 animate-fade-in-up" style="animation-delay: 200ms;">
                 
                 {{-- Owner Info & Highlights --}}
-                <div class="flex flex-wrap items-center justify-between gap-6 border-b border-slate-200 pb-8">
+                <div class="flex flex-wrap items-center justify-between gap-4 sm:gap-6 border-b border-slate-200 pb-6 sm:pb-8">
                     <div class="flex items-center gap-4">
                         <img src="{{ $ownerAvatarUrl }}" alt="{{ $ownerName }}" class="h-16 w-16 rounded-full object-cover ring-4 ring-white shadow-md" loading="lazy">
                         <div>
@@ -193,7 +193,7 @@ $durationOptions = $isKosan
 
                 {{-- Facilities --}}
                 <section class="border-t border-slate-200 pt-10">
-                    <h2 class="text-2xl font-black text-slate-900 mb-8">Fasilitas Properti</h2>
+                    <h2 class="text-lg sm:text-2xl font-black text-slate-900 mb-5 sm:mb-8">Fasilitas Properti</h2>
 
                     <div class="space-y-6">
                         {{-- Fasilitas Umum --}}
@@ -430,12 +430,12 @@ $durationOptions = $isKosan
 
             {{-- Right Sidebar (Booking Card) --}}
             <div class="w-full lg:w-[35%] relative animate-fade-in-up" style="animation-delay: 300ms;">
-                <div class="sticky top-28 rounded-[2rem] bg-white p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.08)] ring-1 ring-slate-100">
+                <div class="sticky top-28 rounded-2xl sm:rounded-[2rem] bg-white p-5 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.08)] ring-1 ring-slate-100">
                     <div class="mb-6">
                         <p class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-1">Harga Sewa</p>
                         @if($currentPrice > 0)
-                        <div class="flex items-end gap-1">
-                            <span class="text-3xl font-black text-[#1967d2]">Rp {{ number_format($currentPrice, 0, ',', '.') }}</span>
+                        <div class="flex items-end gap-1 flex-wrap">
+                            <span class="text-2xl sm:text-3xl font-black text-[#1967d2]">Rp {{ number_format($currentPrice, 0, ',', '.') }}</span>
                             <span class="text-sm font-bold text-slate-500 pb-1">/{{ $isKosan ? 'bln' : 'thn' }}</span>
                         </div>
                         @else

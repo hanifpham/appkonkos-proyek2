@@ -32,6 +32,20 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_unverified_users_are_sent_to_verify_email_after_login(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        $response = $this->followingRedirects()->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertOk();
+        $response->assertSee('Verifikasi Email');
+    }
+
     public function test_pemilik_users_are_redirected_to_mitra_dashboard_after_login(): void
     {
         $user = User::factory()->create([
@@ -39,7 +53,7 @@ class AuthenticationTest extends TestCase
             'email' => 'pemilik-test@example.com',
         ]);
 
-        $response = $this->post('/login', [
+        $response = $this->withSession(['login_portal' => 'pemilik'])->post('/login', [
             'email' => $user->email,
             'password' => 'password',
         ]);
@@ -55,7 +69,7 @@ class AuthenticationTest extends TestCase
             'email' => 'superadmin-test@example.com',
         ]);
 
-        $response = $this->post('/login', [
+        $response = $this->withSession(['login_portal' => 'superadmin'])->post('/login', [
             'email' => $user->email,
             'password' => 'password',
         ]);

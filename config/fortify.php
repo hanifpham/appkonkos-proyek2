@@ -103,6 +103,12 @@ return [
 
     'middleware' => ['web'],
 
+    'paths' => [
+        'verification' => [
+            'notice' => '/verify-email',
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Rate Limiting
@@ -146,7 +152,7 @@ return [
     'features' => [
         Features::registration(),
         Features::resetPasswords(),
-        // Features::emailVerification(),
+        Features::emailVerification(),
         Features::updateProfileInformation(),
         Features::updatePasswords(),
         Features::twoFactorAuthentication([

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\RedirectUnverifiedUsers;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,7 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
+            'redirect.unverified' => RedirectUnverifiedUsers::class,
             'role' => RoleMiddleware::class,
         ]);
 
@@ -23,7 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return match ($role) {
                 'superadmin' => route('superadmin.dashboard', absolute: false),
                 'pemilik' => route('mitra.dashboard', absolute: false),
-                default => route('home', absolute: false),
+                default => route('dashboard', absolute: false),
             };
         });
     })

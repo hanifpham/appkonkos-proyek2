@@ -35,8 +35,8 @@ class RoleRegisterResponse implements RegisterResponseContract
         return match ($role) {
             'superadmin' => '/superadmin/dashboard',
             'pemilik'    => '/mitra/dashboard',
-            'pencari'    => '/',
-            default      => '/',
+            'pencari'    => '/dashboard',
+            default      => '/dashboard',
         };
     }
 }

@@ -22,9 +22,32 @@ class EmailVerificationTest extends TestCase
 
         $user = User::factory()->withPersonalTeam()->unverified()->create();
 
-        $response = $this->actingAs($user)->get('/email/verify');
+        $response = $this->actingAs($user)->get('/verify-email');
 
         $response->assertStatus(200);
+    }
+
+    public function test_unverified_users_are_redirected_to_verify_email_from_dashboards(): void
+    {
+        if (! Features::enabled(Features::emailVerification())) {
+            $this->markTestSkipped('Email verification not enabled.');
+        }
+
+        $dashboards = [
+            ['role' => 'pencari', 'path' => '/dashboard'],
+            ['role' => 'pemilik', 'path' => '/mitra/dashboard'],
+            ['role' => 'superadmin', 'path' => '/superadmin/dashboard'],
+        ];
+
+        foreach ($dashboards as $dashboard) {
+            $user = User::factory()
+                ->unverified()
+                ->create(['role' => $dashboard['role']]);
+
+            $this->actingAs($user)
+                ->get($dashboard['path'])
+                ->assertRedirect('/verify-email');
+        }
     }
 
     public function test_email_can_be_verified(): void
@@ -48,7 +71,7 @@ class EmailVerificationTest extends TestCase
         Event::assertDispatched(Verified::class);
 
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
-        $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+        $response->assertRedirect(route('home', absolute: false));
     }
 
     public function test_email_can_not_verified_with_invalid_hash(): void

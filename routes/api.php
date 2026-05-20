@@ -10,9 +10,10 @@ use App\Http\Controllers\Api\BookingController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+})->middleware(['auth:sanctum', 'verified']);
 
 Route::post('/midtrans/notifications', MidtransNotificationController::class)->name('api.midtrans.notifications');
+Route::post('/midtrans/callback', MidtransNotificationController::class)->name('api.midtrans.callback');
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -25,7 +26,7 @@ Route::prefix('auth')->group(function () {
 
 Route::get('/all-properties', [PropertyController::class, 'index']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::post('/profile/update', [ProfileController::class, 'update']);
      Route::get('/bookings', [BookingController::class, 'index']);          

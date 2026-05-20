@@ -18,7 +18,7 @@
         x-transition:leave-end="opacity-0 backdrop-blur-none"
         class="fixed inset-0 z-40 bg-slate-900/40"></div>
 
-    <div class="fixed inset-0 z-50 flex items-center justify-center px-4 py-12 sm:p-6"
+    <div class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6"
         x-show="loginModalOpen"
         x-transition:enter="ease-out duration-500"
         x-transition:enter-start="opacity-0 translate-y-8 scale-90"
@@ -27,19 +27,19 @@
         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
         x-transition:leave-end="opacity-0 translate-y-4 scale-95">
 
-        <section @click.outside="loginModalOpen = false" class="relative w-full max-w-[640px] overflow-hidden rounded-[2.5rem] bg-white dark:bg-slate-900 shadow-[0_20px_80px_rgba(0,0,0,0.2)] dark:shadow-none">
+        <section @click.outside="loginModalOpen = false" class="relative w-full max-w-[640px] my-auto overflow-hidden rounded-[2.5rem] bg-white dark:bg-slate-900 shadow-[0_20px_80px_rgba(0,0,0,0.2)] dark:shadow-none">
 
             {{-- Decorative Background Elements --}}
             <div class="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-gradient-to-br from-blue-400/20 to-sky-300/20 blur-3xl"></div>
             <div class="pointer-events-none absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-gradient-to-br from-orange-400/20 to-amber-300/20 blur-3xl"></div>
 
-            <div class="relative px-6 py-10 sm:px-12 sm:py-14">
+            <div class="relative px-5 py-8 sm:px-12 sm:py-14">
 
                 {{-- Close Button --}}
                 <button
                     type="button"
                     @click="loginModalOpen = false"
-                    class="absolute right-6 top-6 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 transition-all hover:rotate-90 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200"
+                    class="absolute right-5 top-5 sm:right-6 sm:top-6 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 transition-all hover:rotate-90 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200"
                     aria-label="Tutup">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -48,35 +48,35 @@
 
                 {{-- Header --}}
                 <div class="text-center">
-                    <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-md shadow-blue-500/15 ring-2 ring-[#1967d2]/20 dark:ring-white/10 transition-all duration-300 group-hover:scale-105 group-hover:shadow-blue-500/30 group-hover:ring-[#1967d2]/40">
-                        <img src="{{ asset('images/appkonkos.png') }}" alt="{{ config('app.name', 'APPKONKOS') }}" class="h-10 w-10 object-contain dark:brightness-110">
+                    <div class="mx-auto mb-4 sm:mb-6 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-md shadow-blue-500/15 ring-2 ring-[#1967d2]/20 dark:ring-white/10 transition-all duration-300 group-hover:scale-105 group-hover:shadow-blue-500/30 group-hover:ring-[#1967d2]/40">
+                        <img src="{{ asset('images/appkonkos.png') }}" alt="{{ config('app.name', 'APPKONKOS') }}" class="h-9 w-9 sm:h-10 sm:w-10 object-contain dark:brightness-110">
                     </div>
-                    <h2 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                    <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
                         Selamat Datang!
                     </h2>
-                    <p class="mt-3 text-base text-slate-500 dark:text-slate-400">
+                    <p class="mt-2 sm:mt-3 text-xs sm:text-base text-slate-500 dark:text-slate-400">
                         Pilih jenis akun untuk melanjutkan ke Appkonkos.
                     </p>
                 </div>
 
                 {{-- Cards Container --}}
-                <div class="mt-10 grid gap-5 sm:grid-cols-2">
+                <div class="mt-6 sm:mt-10 grid gap-4 sm:gap-5 sm:grid-cols-2">
 
                     {{-- Card Pencari --}}
                     <a
                         href="{{ route('auth.portal-login', 'pencari') }}"
-                        class="group relative flex flex-col items-center rounded-3xl border border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-blue-100 dark:hover:border-blue-900 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 hover:shadow-[0_20px_40px_-15px_rgba(25,103,210,0.15)]">
-                        <div class="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-[#1967d2] transition-colors duration-300 group-hover:bg-[#1967d2] group-hover:text-white">
-                            <svg class="h-8 w-8 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        class="group relative flex flex-col items-center rounded-2xl sm:rounded-3xl border border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm p-5 sm:p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-blue-100 dark:hover:border-blue-900 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 hover:shadow-[0_20px_40px_-15px_rgba(25,103,210,0.15)]">
+                        <div class="mb-4 sm:mb-5 flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-blue-100 text-[#1967d2] transition-colors duration-300 group-hover:bg-[#1967d2] group-hover:text-white">
+                            <svg class="h-6 w-6 sm:h-8 sm:w-8 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                             </svg>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white transition-colors group-hover:text-[#1967d2]">Pencari Kos</h3>
-                        <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                        <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white transition-colors group-hover:text-[#1967d2]">Pencari Kos</h3>
+                        <p class="mt-1.5 sm:mt-2 text-xs sm:text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                             Cari dan temukan hunian idamanmu dengan mudah.
                         </p>
 
-                        <div class="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-700/50 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 transition-colors group-hover:bg-[#1967d2] group-hover:text-white">
+                        <div class="mt-4 sm:mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-700/50 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 transition-colors group-hover:bg-[#1967d2] group-hover:text-white">
                             Masuk <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
@@ -86,18 +86,18 @@
                     {{-- Card Pemilik --}}
                     <a
                         href="{{ route('auth.portal-login', 'pemilik') }}"
-                        class="group relative flex flex-col items-center rounded-3xl border border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-orange-100 dark:hover:border-orange-900 hover:bg-orange-50/50 dark:hover:bg-orange-900/20 hover:shadow-[0_20px_40px_-15px_rgba(255,138,0,0.15)]">
-                        <div class="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 text-[#ff8a00] transition-colors duration-300 group-hover:bg-[#ff8a00] group-hover:text-white">
-                            <svg class="h-8 w-8 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        class="group relative flex flex-col items-center rounded-2xl sm:rounded-3xl border border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm p-5 sm:p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-orange-100 dark:hover:border-orange-900 hover:bg-orange-50/50 dark:hover:bg-orange-900/20 hover:shadow-[0_20px_40px_-15px_rgba(255,138,0,0.15)]">
+                        <div class="mb-4 sm:mb-5 flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-orange-100 text-[#ff8a00] transition-colors duration-300 group-hover:bg-[#ff8a00] group-hover:text-white">
+                            <svg class="h-6 w-6 sm:h-8 sm:w-8 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
                             </svg>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white transition-colors group-hover:text-[#ff8a00]">Pemilik / Admin</h3>
-                        <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                        <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white transition-colors group-hover:text-[#ff8a00]">Pemilik / Admin</h3>
+                        <p class="mt-1.5 sm:mt-2 text-xs sm:text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                             Kelola properti dan penyewa dalam satu dashboard.
                         </p>
 
-                        <div class="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-700/50 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 transition-colors group-hover:bg-[#ff8a00] group-hover:text-white">
+                        <div class="mt-4 sm:mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-700/50 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 transition-colors group-hover:bg-[#ff8a00] group-hover:text-white">
                             Masuk <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
@@ -105,7 +105,7 @@
                     </a>
                 </div>
 
-                <div class="mt-8 text-center">
+                <div class="mt-6 sm:mt-8 text-center">
                     <a
                         href="{{ route('auth.portal-login', 'superadmin') }}"
                         class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 dark:text-slate-500 transition hover:text-slate-700 dark:hover:text-slate-300">

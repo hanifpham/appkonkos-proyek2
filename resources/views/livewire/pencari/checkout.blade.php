@@ -8,13 +8,13 @@
 @endphp
 <div class="min-h-screen bg-white font-[Inter] selection:bg-blue-200 selection:text-blue-900 pb-24 text-slate-800">
     {{-- Simple Header --}}
-    <header class="border-b border-slate-200 bg-white sticky top-16 z-20 h-20 flex items-center">
+    <header class="border-b border-slate-200 bg-white sticky top-16 z-20 h-16 sm:h-20 flex items-center">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 w-full flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <a href="javascript:history.back()" class="flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
                     <span class="material-symbols-outlined text-[20px] text-slate-900">arrow_back_ios_new</span>
                 </a>
-                <h1 class="text-xl sm:text-2xl font-semibold text-slate-900">Konfirmasi dan Bayar</h1>
+                <h1 class="text-base sm:text-xl md:text-2xl font-semibold text-slate-900">Konfirmasi dan Bayar</h1>
             </div>
             
             {{-- Stepper --}}
@@ -28,7 +28,7 @@
         </div>
     </header>
 
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20">
         
         @if(session('error'))
         <div class="lg:col-span-12 animate-fade-in-up">
@@ -44,8 +44,8 @@
             
             {{-- Data Penyewa --}}
             <section>
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-semibold text-slate-900">Data Penyewa</h2>
+                <div class="flex items-center justify-between mb-4 sm:mb-6">
+                    <h2 class="text-lg sm:text-2xl font-semibold text-slate-900">Data Penyewa</h2>
                     <a href="{{ route('pencari.profil') }}" class="text-sm font-semibold text-[#1967d2] hover:text-[#1556b0] hover:underline flex items-center gap-1">
                         <span class="material-symbols-outlined text-[16px]">edit</span> Edit Profil
                     </a>
@@ -104,7 +104,7 @@
 
             {{-- Detail Sewa --}}
             <section>
-                <h2 class="text-2xl font-semibold text-slate-900 mb-6">Detail Waktu Sewa</h2>
+                <h2 class="text-lg sm:text-2xl font-semibold text-slate-900 mb-4 sm:mb-6">Detail Waktu Sewa</h2>
                 
                 <div class="grid sm:grid-cols-2 gap-6">
                     <div>
@@ -149,7 +149,7 @@
             {{-- Catatan Opsional --}}
             <section>
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-semibold text-slate-900">Catatan untuk Pemilik</h2>
+                    <h2 class="text-lg sm:text-2xl font-semibold text-slate-900">Catatan untuk Pemilik</h2>
                     <span class="text-sm text-slate-500">Opsional</span>
                 </div>
                 <textarea wire:model="catatan" rows="3" placeholder="Sampaikan pesan tambahan atau pertanyaan ke pemilik..." class="w-full rounded-lg border border-slate-300 bg-white p-4 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow resize-none"></textarea>
@@ -159,7 +159,7 @@
 
             {{-- Kebijakan & Aturan --}}
             <section>
-                <h2 class="text-2xl font-semibold text-slate-900 mb-4">Kebijakan Properti</h2>
+                <h2 class="text-lg sm:text-2xl font-semibold text-slate-900 mb-4">Kebijakan Properti</h2>
                 <p class="text-sm text-slate-600 mb-6 leading-relaxed">
                     Dengan melanjutkan pembayaran, Anda menyetujui aturan yang telah ditetapkan oleh pemilik. Pelanggaran terhadap aturan dapat dikenakan sanksi sesuai ketentuan pemilik properti.
                 </p>
@@ -189,7 +189,7 @@
         {{-- KOLOM KANAN (Order Summary) --}}
         <div class="lg:col-span-5 relative">
             <div class="sticky top-28 w-full max-w-[420px] mx-auto lg:ml-auto">
-                <div class="rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/40 p-6 sm:p-7">
+                <div class="rounded-xl sm:rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/40 p-5 sm:p-7">
                     
                     {{-- Timer Alert --}}
                     <div x-data="{ timer: 900 }" x-init="setInterval(() => { if(timer > 0) timer-- }, 1000)" class="mb-6 flex items-center gap-3 rounded-lg bg-amber-50 p-3 text-amber-800 border border-amber-200">
@@ -201,7 +201,7 @@
 
                     {{-- Property Card Preview --}}
                     <div class="flex gap-4 mb-6">
-                        <div class="h-28 w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                        <div class="h-20 w-20 sm:h-28 sm:w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100">
                             @if($fotoUrl)
                                 <img src="{{ $fotoUrl }}" alt="{{ $namaProperti }}" class="h-full w-full object-cover" loading="lazy">
                             @else
@@ -223,7 +223,7 @@
 
                     <hr class="border-slate-200 mb-6">
 
-                    <h3 class="text-lg font-semibold text-slate-900 mb-4">Rincian Harga</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-slate-900 mb-4">Rincian Harga</h3>
                     
                     <div class="space-y-4 mb-6 text-sm text-slate-600">
                         <div class="flex justify-between items-center">
@@ -240,7 +240,7 @@
 
                     <div class="flex justify-between items-center mb-8">
                         <span class="font-bold text-slate-900">Total Pembayaran</span>
-                        <span class="text-2xl font-bold text-[#1967d2]">Rp {{ number_format($this->totalPembayaran, 0, ',', '.') }}</span>
+                        <span class="text-xl sm:text-2xl font-bold text-[#1967d2]">Rp {{ number_format($this->totalPembayaran, 0, ',', '.') }}</span>
                     </div>
 
                     <button 

@@ -45,6 +45,7 @@ class RegistrationTest extends TestCase
             'name' => 'Test User',
             'email' => 'test@example.com',
             'no_telepon' => '081234567890',
+            'role' => 'pencari',
             'password' => 'password',
             'password_confirmation' => 'password',
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
@@ -52,5 +53,26 @@ class RegistrationTest extends TestCase
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_new_unverified_users_are_sent_to_verify_email_after_register(): void
+    {
+        if (! Features::enabled(Features::registration())) {
+            $this->markTestSkipped('Registration support is not enabled.');
+        }
+
+        $response = $this->followingRedirects()->post('/register', [
+            'name' => 'Unverified User',
+            'email' => 'unverified-register@example.com',
+            'no_telepon' => '081234567891',
+            'role' => 'pencari',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertOk();
+        $response->assertSee('Verifikasi Email');
     }
 }

@@ -1,9 +1,14 @@
 <?php
 
+use App\Http\Controllers\BerandaController;
+use App\Http\Controllers\CariController;
+use App\Http\Controllers\MidtransNotificationController;
 use App\Http\Controllers\Pencari\PembayaranController;
+use App\Livewire\Front\DetailProperti;
+use App\Livewire\Front\PusatBantuan;
 use App\Livewire\Mitra\Dashboard as MitraDashboard;
-use App\Livewire\Mitra\Keuangan;
 use App\Livewire\Mitra\KelolaKamarKos;
+use App\Livewire\Mitra\Keuangan;
 use App\Livewire\Mitra\Notifikasi as MitraNotifikasi;
 use App\Livewire\Mitra\PengaturanProfil;
 use App\Livewire\Mitra\PropertiSaya;
@@ -11,10 +16,13 @@ use App\Livewire\Mitra\RiwayatBooking;
 use App\Livewire\Mitra\TambahKontrakan;
 use App\Livewire\Mitra\TambahKosan;
 use App\Livewire\Mitra\UlasanPenyewa;
-use App\Livewire\Pencari\Dashboard as PencariDashboard;
-
-use App\Livewire\SuperAdmin\DetailModerasiProperti as SuperAdminDetailModerasiProperti;
+use App\Livewire\Pencari\Checkout;
+use App\Livewire\Pencari\FavoritSaya;
+use App\Livewire\Pencari\ProfilSaya;
+use App\Livewire\Pencari\RiwayatPesanan;
+use App\Livewire\Pencari\UlasanSaya;
 use App\Livewire\SuperAdmin\DashboardUtama as SuperAdminDashboard;
+use App\Livewire\SuperAdmin\DetailModerasiProperti as SuperAdminDetailModerasiProperti;
 use App\Livewire\SuperAdmin\ManajemenPencairan as SuperAdminManajemenPencairan;
 use App\Livewire\SuperAdmin\ManajemenPengguna as SuperAdminManajemenPengguna;
 use App\Livewire\SuperAdmin\ModerasiProperti as SuperAdminModerasiProperti;
@@ -24,10 +32,14 @@ use App\Livewire\SuperAdmin\TransaksiMidtrans as SuperAdminTransaksiMidtrans;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', App\Http\Controllers\BerandaController::class)->name('home');
-Route::get('/pusat-bantuan', App\Livewire\Front\PusatBantuan::class)->name('pusat-bantuan');
-Route::get('/cari', [App\Http\Controllers\CariController::class, 'index'])->name('cari');
-Route::get('/properti/{tipe}/{id}', App\Livewire\Front\DetailProperti::class)->name('properti.detail');
+Route::post('/midtrans/callback', MidtransNotificationController::class)->name('midtrans.callback');
+
+Route::middleware('redirect.unverified')->group(function (): void {
+    Route::get('/', BerandaController::class)->name('home');
+    Route::get('/pusat-bantuan', PusatBantuan::class)->name('pusat-bantuan');
+    Route::get('/cari', [CariController::class, 'index'])->name('cari');
+    Route::get('/properti/{tipe}/{id}', DetailProperti::class)->name('properti.detail');
+});
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/pilih-role', function () {
@@ -43,19 +55,18 @@ Route::middleware('guest')->group(function (): void {
     })->name('auth.portal-login');
 });
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:pencari'])->group(function (): void {
-    Route::get('/dashboard', PencariDashboard::class)->name('dashboard');
-    Route::get('/profil-saya', \App\Livewire\Pencari\ProfilSaya::class)->name('pencari.profil');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'role:pencari'])->group(function (): void {
+    Route::get('/profil-saya', ProfilSaya::class)->name('pencari.profil');
     Route::get('/pembayaran/{booking}', [PembayaranController::class, 'show'])->name('pencari.pembayaran.show');
     Route::post('/pembayaran/{booking}/snap-token', [PembayaranController::class, 'snapToken'])->name('pencari.pembayaran.snap-token');
-    Route::get('/favorit-saya', \App\Livewire\Pencari\FavoritSaya::class)->name('pencari.favorit');
-    Route::get('/riwayat-pesanan', \App\Livewire\Pencari\RiwayatPesanan::class)->name('pencari.riwayat-pesanan');
-    Route::get('/ulasan-saya', \App\Livewire\Pencari\UlasanSaya::class)->name('pencari.ulasan-saya');
-    Route::get('/checkout', \App\Livewire\Pencari\Checkout::class)->name('pencari.checkout');
+    Route::get('/favorit-saya', FavoritSaya::class)->name('pencari.favorit');
+    Route::get('/riwayat-pesanan', RiwayatPesanan::class)->name('pencari.riwayat-pesanan');
+    Route::get('/ulasan-saya', UlasanSaya::class)->name('pencari.ulasan-saya');
+    Route::get('/checkout', Checkout::class)->name('pencari.checkout');
     Route::get('/e-ticket/{booking}', [PembayaranController::class, 'eTicket'])->name('pencari.e-ticket');
 });
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:pemilik'])->group(function (): void {
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'role:pemilik'])->group(function (): void {
     Route::get('/mitra/dashboard', MitraDashboard::class)->name('mitra.dashboard');
     Route::get('/mitra/notifikasi', MitraNotifikasi::class)->name('mitra.notifikasi');
     Route::get('/mitra/properti', PropertiSaya::class)->name('mitra.properti');
@@ -68,7 +79,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:pemil
     Route::get('/mitra/properti/tambah-kontrakan', TambahKontrakan::class)->name('mitra.properti.tambah-kontrakan');
 });
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'role:superadmin'])->group(function (): void {
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'role:superadmin'])->group(function (): void {
     Route::get('/superadmin/dashboard', SuperAdminDashboard::class)->name('superadmin.dashboard');
     Route::get('/superadmin/pengguna', SuperAdminManajemenPengguna::class)->name('superadmin.pengguna');
     Route::get('/superadmin/properti', SuperAdminModerasiProperti::class)->name('superadmin.properti');

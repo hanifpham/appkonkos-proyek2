@@ -10,8 +10,9 @@ class PropertyController extends Controller
 {
     public function index()
     {
-        $kosan = Kosan::with(['tipeKamar', 'ulasan',])
+        $kosan = Kosan::with(['tipeKamar.kamar', 'ulasan'])
             ->where('status', 'aktif')
+            ->whereHas('tipeKamar.kamar', fn ($query) => $query->where('status_kamar', 'tersedia'))
             ->get()
             ->map(function ($item) {
                 $hargaMin = $item->tipeKamar->min('harga_per_bulan') ?? 0;
@@ -21,45 +22,46 @@ class PropertyController extends Controller
                     ?: 'https://via.placeholder.com/400x300';
 
                 return [
-                    'id'        => $item->id,
-                    'nama'      => $item->nama_properti,
-                    'alamat'    => $item->alamat_lengkap,
-                    'harga'     => (int) $hargaMin,
+                    'id' => $item->id,
+                    'nama' => $item->nama_properti,
+                    'alamat' => $item->alamat_lengkap,
+                    'harga' => (int) $hargaMin,
                     'harga_max' => (int) $hargaMax,
-                    'period'    => 'bulan',
-                    'tipe'      => 'Kosan',
-                    'foto'      => str_replace('http://localhost', 'http://192.168.1.8:8000', $foto),
-                    'rating'    => round($item->ulasan->avg('rating') ?? 0, 1),
-                    'lat'       => (float) $item->latitude,
-                    'lng'       => (float) $item->longitude,
-                    'gender'    => $item->jenis_kos ?? '',
+                    'period' => 'bulan',
+                    'tipe' => 'Kosan',
+                    'foto' => str_replace('http://localhost', 'http://192.168.1.10:8000', $foto),
+                    'rating' => round($item->ulasan->avg('rating') ?? 0, 1),
+                    'lat' => (float) $item->latitude,
+                    'lng' => (float) $item->longitude,
+                    'gender' => $item->jenis_kos ?? '',
                     'available_count' => $item->tipeKamar
-                        ->sum(fn($tipe) => $tipe->kamar
-                        ->where('status_kamar', 'tersedia')
-                        ->count()),
+                        ->sum(fn ($tipe) => $tipe->kamar
+                            ->where('status_kamar', 'tersedia')
+                            ->count()),
                 ];
             });
 
-        $kontrakan = Kontrakan::with(['ulasan',])
+        $kontrakan = Kontrakan::with(['ulasan'])
             ->where('status', 'aktif')
+            ->where('sisa_kamar', '>', 0)
             ->get()
             ->map(function ($item) {
                 $foto = $item->getFirstMediaUrl('foto_properti', 'webp')
                     ?: 'https://via.placeholder.com/400x300';
 
                 return [
-                    'id'        => $item->id,
-                    'nama'      => $item->nama_properti,
-                    'alamat'    => $item->alamat_lengkap,
-                    'harga'     => (int) $item->harga_sewa_tahun,
+                    'id' => $item->id,
+                    'nama' => $item->nama_properti,
+                    'alamat' => $item->alamat_lengkap,
+                    'harga' => (int) $item->harga_sewa_tahun,
                     'harga_max' => (int) $item->harga_sewa_tahun,
-                    'period'    => 'tahun',
-                    'tipe'      => 'Kontrakan',
-                    'foto'      => str_replace('http://localhost', 'http://192.168.1.8:8000', $foto),
-                    'rating'    => round($item->ulasan->avg('rating') ?? 0, 1),
-                    'lat'       => (float) $item->latitude,
-                    'lng'       => (float) $item->longitude,
-                    'available_count' => $item->status == 'aktif' ? 1 : 0,
+                    'period' => 'tahun',
+                    'tipe' => 'Kontrakan',
+                    'foto' => str_replace('http://localhost', 'http://192.168.1.10:8000', $foto),
+                    'rating' => round($item->ulasan->avg('rating') ?? 0, 1),
+                    'lat' => (float) $item->latitude,
+                    'lng' => (float) $item->longitude,
+                    'available_count' => (int) $item->sisa_kamar,
                 ];
             });
 
@@ -74,11 +76,12 @@ class PropertyController extends Controller
     public function detailKosan($id)
     {
         $kosan = Kosan::with([
-                'tipeKamar.kamar',
-                'ulasan', 
-                'pemilikProperti.user',
-            ])
+            'tipeKamar.kamar',
+            'ulasan',
+            'pemilikProperti.user',
+        ])
             ->where('status', 'aktif')
+            ->whereHas('tipeKamar.kamar', fn ($query) => $query->where('status_kamar', 'tersedia'))
             ->findOrFail($id);
 
         $fotos = $kosan->getMedia('foto_properti')
@@ -93,31 +96,31 @@ class PropertyController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'id'        => $kosan->id,
-                'nama'      => $kosan->nama_properti,
-                'alamat'    => $kosan->alamat_lengkap,
+                'id' => $kosan->id,
+                'nama' => $kosan->nama_properti,
+                'alamat' => $kosan->alamat_lengkap,
                 'peraturan' => $kosan->peraturan_kos ?? '',
-                'fotos'     => $fotos,
-                'rating'    => round($kosan->ulasan->avg('rating') ?? 0, 1),
-                'lat'       => (float) $kosan->latitude,
-                'lng'       => (float) $kosan->longitude,
-                'tipe'      => 'Kosan',
-                'gender'    => $kosan->jenis_kos ?? '',
+                'fotos' => $fotos,
+                'rating' => round($kosan->ulasan->avg('rating') ?? 0, 1),
+                'lat' => (float) $kosan->latitude,
+                'lng' => (float) $kosan->longitude,
+                'tipe' => 'Kosan',
+                'gender' => $kosan->jenis_kos ?? '',
                 'no_wa' => $kosan->pemilikProperti?->user?->no_wa ?? null,
 
                 'room_types' => $kosan->tipeKamar->map(function ($tipe) {
                     return [
-                        'id'              => $tipe->id,
-                        'name'            => $tipe->nama_tipe,
-                        'price'           => (int) $tipe->harga_per_bulan,
-                        'description'     => $tipe->fasilitas_tipe,
+                        'id' => $tipe->id,
+                        'name' => $tipe->nama_tipe,
+                        'price' => (int) $tipe->harga_per_bulan,
+                        'description' => $tipe->fasilitas_tipe,
                         'available_count' => $tipe->kamar
                             ->where('status_kamar', 'tersedia')
                             ->count(),
 
                         'rooms' => $tipe->kamar->map(function ($kamar) {
                             return [
-                                'id'     => $kamar->id,
+                                'id' => $kamar->id,
                                 'number' => $kamar->nomor_kamar,
                                 'status' => $kamar->status_kamar,
                             ];
@@ -132,6 +135,7 @@ class PropertyController extends Controller
     {
         $kontrakan = Kontrakan::with(['ulasan', 'pemilikProperti.user'])
             ->where('status', 'aktif')
+            ->where('sisa_kamar', '>', 0)
             ->findOrFail($id);
 
         $fotos = $kontrakan->getMedia('foto_properti')
@@ -146,17 +150,17 @@ class PropertyController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'id'        => $kontrakan->id,
-                'nama'      => $kontrakan->nama_properti,
-                'alamat'    => $kontrakan->alamat_lengkap,
+                'id' => $kontrakan->id,
+                'nama' => $kontrakan->nama_properti,
+                'alamat' => $kontrakan->alamat_lengkap,
                 'peraturan' => $kontrakan->peraturan_kontrakan ?? '',
-                'harga'     => (int) $kontrakan->harga_sewa_tahun,
-                'period'    => 'tahun',
-                'fotos'     => $fotos,
-                'rating'    => round($kontrakan->ulasan->avg('rating') ?? 0, 1),
-                'lat'       => (float) $kontrakan->latitude,
-                'lng'       => (float) $kontrakan->longitude,
-                'tipe'      => 'Kontrakan',
+                'harga' => (int) $kontrakan->harga_sewa_tahun,
+                'period' => 'tahun',
+                'fotos' => $fotos,
+                'rating' => round($kontrakan->ulasan->avg('rating') ?? 0, 1),
+                'lat' => (float) $kontrakan->latitude,
+                'lng' => (float) $kontrakan->longitude,
+                'tipe' => 'Kontrakan',
                 'no_wa' => $kontrakan->pemilikProperti?->user?->no_wa ?? null,
             ],
         ]);

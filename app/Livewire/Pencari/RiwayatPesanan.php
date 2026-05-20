@@ -102,10 +102,20 @@ class RiwayatPesanan extends Component
             return;
         }
 
+        if ($booking->status_booking === 'lunas' || $booking->pembayaran?->isSuccessful()) {
+            session()->flash('success', 'Pembayaran sudah berhasil dikonfirmasi.');
+            return;
+        }
+
         try {
             $payment = $midtrans->createOrRefreshTransaction($booking);
         } catch (RuntimeException $e) {
             session()->flash('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
+            return;
+        }
+
+        if ($payment->isSuccessful()) {
+            session()->flash('success', 'Pembayaran sudah berhasil dikonfirmasi.');
             return;
         }
 

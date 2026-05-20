@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\RedirectUnverifiedUsers;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -14,16 +15,25 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustProxies(at: '*');
+        $middleware->validateCsrfTokens(except: [
+            'api/midtrans/notifications',
+            'api/midtrans/callback',
+            'midtrans/callback',
+        ]);
+
         $middleware->alias([
+            'redirect.unverified' => RedirectUnverifiedUsers::class,
             'role' => RoleMiddleware::class,
         ]);
 
         $middleware->redirectUsersTo(function (Request $request) {
             $role = $request->user()?->role ?? 'pencari';
+
             return match ($role) {
                 'superadmin' => route('superadmin.dashboard', absolute: false),
                 'pemilik' => route('mitra.dashboard', absolute: false),
-                default => route('home', absolute: false),
+                default => route('dashboard', absolute: false),
             };
         });
     })

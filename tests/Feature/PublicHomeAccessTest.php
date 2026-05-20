@@ -17,8 +17,7 @@ class PublicHomeAccessTest extends TestCase
         $this->get(route('home'))
             ->assertOk()
             ->assertSee(config('app.name'))
-            ->assertSee('Jelajah tanpa login')
-            ->assertSee('Cari kos atau kontrakan dulu, login hanya saat mau pesan.')
+            ->assertSee('Masuk')
             ->assertDontSee('Laravel has an incredibly rich ecosystem');
     }
 
@@ -39,5 +38,17 @@ class PublicHomeAccessTest extends TestCase
         $this->get(route('home'))
             ->assertOk()
             ->assertSee(config('app.name'));
+    }
+
+    public function test_unverified_authenticated_user_is_redirected_from_public_homepage(): void
+    {
+        $user = User::factory()->unverified()->create([
+            'role' => 'pencari',
+        ]);
+
+        $this->actingAs($user);
+
+        $this->get(route('home'))
+            ->assertRedirect(route('verification.notice', absolute: false));
     }
 }

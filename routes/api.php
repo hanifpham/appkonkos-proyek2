@@ -12,6 +12,7 @@ Route::get('/user', function (Request $request) {
 })->middleware(['auth:sanctum', 'verified']);
 
 Route::post('/midtrans/notifications', MidtransNotificationController::class)->name('api.midtrans.notifications');
+Route::post('/midtrans/callback', MidtransNotificationController::class)->name('api.midtrans.callback');
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);

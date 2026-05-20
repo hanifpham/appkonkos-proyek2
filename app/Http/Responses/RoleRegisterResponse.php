@@ -33,10 +33,10 @@ class RoleRegisterResponse implements RegisterResponseContract
     protected function redirectPath(string $role): string
     {
         return match ($role) {
-            'superadmin' => '/superadmin/dashboard',
-            'pemilik'    => '/mitra/dashboard',
-            'pencari'    => '/dashboard',
-            default      => '/dashboard',
+            'superadmin' => route('superadmin.dashboard'),
+            'pemilik'    => route('mitra.dashboard'),
+            'pencari'    => route('pencari.riwayat-pesanan'),
+            default      => route('home'),
         };
     }
 }

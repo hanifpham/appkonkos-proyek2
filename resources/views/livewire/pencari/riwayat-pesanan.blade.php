@@ -5,7 +5,7 @@
         <x-pencari.sidebar active="riwayat" />
 
         {{-- KONTEN UTAMA KANAN --}}
-        <div class="flex-1 min-w-0">
+        <div class="flex-1 min-w-0" wire:poll.5s>
 
             {{-- Flash Messages --}}
             @if(session('success'))

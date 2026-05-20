@@ -8,11 +8,13 @@ use App\Models\Booking;
 use App\Models\Kamar;
 use App\Models\Kosan;
 use App\Models\Pembayaran;
-use App\Models\PencariKos;
 use App\Models\PemilikProperti;
+use App\Models\PencariKos;
 use App\Models\TipeKamar;
 use App\Models\User;
+use App\Mail\StrukPembayaranMail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class MidtransNotificationControllerTest extends TestCase
@@ -21,6 +23,8 @@ class MidtransNotificationControllerTest extends TestCase
 
     public function test_midtrans_notification_updates_payment_status(): void
     {
+        Mail::fake();
+
         $booking = $this->createBooking();
 
         $payment = Pembayaran::create([
@@ -53,22 +57,31 @@ class MidtransNotificationControllerTest extends TestCase
 
         $this->postJson(route('api.midtrans.notifications'), $payload)
             ->assertOk()
-            ->assertJsonPath('status_bayar', 'lunas');
+            ->assertJsonPath('status', 'success');
 
         $payment->refresh();
+        $booking->refresh();
+        $booking->kamar->refresh();
 
         $this->assertSame('lunas', $payment->status_bayar);
         $this->assertSame('settlement', $payment->status_midtrans);
         $this->assertSame('trx-001', $payment->midtrans_transaction_id);
         $this->assertSame('bank_transfer_bca', $payment->metode_bayar);
         $this->assertNotNull($payment->waktu_bayar);
+        $this->assertSame('lunas', $booking->status_booking);
+        $this->assertSame('dihuni', $booking->kamar->status_kamar);
+
+        Mail::assertSent(StrukPembayaranMail::class, function (StrukPembayaranMail $mail) use ($payment): bool {
+            return $mail->hasTo('pencari-midtrans@example.com')
+                && $mail->payment->is($payment);
+        });
     }
 
-    public function test_midtrans_notification_rejects_invalid_signature(): void
+    public function test_midtrans_notification_ignores_invalid_signature_with_ok_response(): void
     {
         $booking = $this->createBooking();
 
-        Pembayaran::create([
+        $payment = Pembayaran::create([
             'booking_id' => $booking->id,
             'metode_bayar' => 'bank_transfer',
             'waktu_bayar' => null,
@@ -84,7 +97,16 @@ class MidtransNotificationControllerTest extends TestCase
             'gross_amount' => '850000.00',
             'transaction_status' => 'settlement',
             'signature_key' => 'invalid-signature',
-        ])->assertForbidden();
+        ])->assertOk()
+            ->assertJsonPath('status', 'success');
+
+        $payment->refresh();
+        $booking->refresh();
+        $booking->kamar->refresh();
+
+        $this->assertSame('pending', $payment->status_bayar);
+        $this->assertSame('pending', $booking->status_booking);
+        $this->assertSame('tersedia', $booking->kamar->status_kamar);
     }
 
     private function createBooking(): Booking

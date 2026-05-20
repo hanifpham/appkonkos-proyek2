@@ -272,12 +272,17 @@ $durationOptions = $isKosan
                         $interiorPhoto = $roomType->getMediaDisplayUrl('foto_interior');
                         $roomAvailableCount = $roomType->kamar->where('status_kamar', 'tersedia')->count();
                         $isSelected = $selectedTipeKamarId === $roomType->id;
+                        $roomTypeIsFull = $roomAvailableCount === 0;
                         @endphp
-                        <button type="button" wire:click="$set('selectedTipeKamarId', {{ $roomType->id }})" 
-                                class="relative flex flex-col overflow-hidden rounded-3xl border-2 text-left transition-all duration-300 hover:-translate-y-1 {{ $isSelected ? 'border-[#1967d2] bg-blue-50/30 shadow-lg shadow-blue-500/10' : 'border-slate-100 bg-white hover:border-blue-200 hover:shadow-md' }}">
+                        <button type="button" wire:click="$set('selectedTipeKamarId', {{ $roomType->id }})" @disabled($roomTypeIsFull)
+                                class="relative flex flex-col overflow-hidden rounded-3xl border-2 text-left transition-all duration-300 {{ $roomTypeIsFull ? 'cursor-not-allowed border-slate-100 bg-slate-50 opacity-70' : ($isSelected ? 'border-[#1967d2] bg-blue-50/30 shadow-lg shadow-blue-500/10' : 'border-slate-100 bg-white hover:-translate-y-1 hover:border-blue-200 hover:shadow-md') }}">
                             @if($isSelected)
                             <div class="absolute right-4 top-4 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#1967d2] text-white shadow-md">
                                 <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+                            </div>
+                            @elseif($roomTypeIsFull)
+                            <div class="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-slate-500">
+                                <span class="material-symbols-outlined text-[18px]">lock</span>
                             </div>
                             @endif
                             
@@ -287,8 +292,8 @@ $durationOptions = $isKosan
                             <div class="flex-1 p-5">
                                 <h3 class="text-lg font-black text-slate-900">{{ $roomType->nama_tipe }}</h3>
                                 <p class="mt-1 text-base font-bold text-[#1967d2]">Rp {{ number_format((int) $roomType->harga_per_bulan, 0, ',', '.') }}<span class="text-xs font-medium text-slate-500">/bln</span></p>
-                                <div class="mt-4 inline-flex items-center rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">
-                                    {{ $roomAvailableCount }} unit tersisa
+                                <div class="mt-4 inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold {{ $roomTypeIsFull ? 'bg-slate-200 text-slate-500' : 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100' }}">
+                                    {{ $roomTypeIsFull ? 'Penuh' : $roomAvailableCount.' unit tersisa' }}
                                 </div>
                             </div>
                         </button>
@@ -296,34 +301,104 @@ $durationOptions = $isKosan
                     </div>
 
                     {{-- Room Numbers --}}
-                    <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-                        <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
-                            <h3 class="text-base font-bold text-slate-900">Pilih Nomor Kamar</h3>
-                            <div class="flex gap-4 text-xs font-bold text-slate-500">
-                                <div class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-slate-100 ring-1 ring-slate-200"></span>Tersedia</div>
-                                <div class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#1967d2]"></span>Dipilih</div>
-                                <div class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-slate-200 line-through"></span>Penuh</div>
+                    <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                        <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+                            <div>
+                                <h3 class="text-lg font-black text-slate-900">Pilih Nomor Kamar</h3>
+                                <p class="mt-1 text-sm text-slate-500">Kamar yang terkunci sudah dipesan dan tidak bisa dipilih.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2 text-xs font-bold text-slate-600">
+                                <div class="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 ring-1 ring-slate-200">
+                                    <span class="h-2.5 w-2.5 rounded-full bg-white ring-2 ring-blue-300"></span>Tersedia
+                                </div>
+                                <div class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-[#1967d2] ring-1 ring-blue-100">
+                                    <span class="h-2.5 w-2.5 rounded-full bg-[#1967d2]"></span>Dipilih
+                                </div>
+                                <div class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-slate-500 ring-1 ring-slate-200">
+                                    <span class="material-symbols-outlined text-[15px]">lock</span>Dipesan
+                                </div>
                             </div>
                         </div>
 
                         @if($activeType && $activeType->kamar->isNotEmpty())
-                        <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
                             @foreach($activeType->kamar as $room)
+                            @php
+                            $roomLabel = (string) $room->nomor_kamar;
+                            $roomLabelParts = preg_split('/\s*-\s*/', $roomLabel, 2) ?: [];
+                            $roomFloorLabel = trim($roomLabelParts[0] ?? '');
+                            $roomNumberLabel = trim($roomLabelParts[1] ?? $roomLabel);
+                            $roomNumberLength = strlen($roomNumberLabel);
+                            $roomNumberSize = match (true) {
+                                $roomNumberLength <= 4 => 'text-2xl',
+                                $roomNumberLength <= 8 => 'text-xl',
+                                $roomNumberLength <= 14 => 'text-[16px]',
+                                default => 'text-[13px]',
+                            };
+                            $isRoomSelected = $selectedKamarId === $room->id;
+                            @endphp
                             @if($room->status_kamar === 'tersedia')
-                            <button type="button" wire:click="selectKamar({{ $room->id }}, '{{ $room->status_kamar }}')" 
-                                    class="relative flex aspect-square items-center justify-center rounded-2xl text-sm font-black transition-all duration-300 {{ $selectedKamarId === $room->id ? 'bg-[#1967d2] text-white shadow-lg shadow-blue-500/30 scale-105' : 'bg-slate-50 text-slate-700 ring-1 ring-slate-200 hover:bg-blue-50 hover:text-[#1967d2] hover:ring-blue-200' }}">
-                                {{ $room->nomor_kamar }}
+                            <button type="button" wire:click="selectKamar({{ $room->id }}, '{{ $room->status_kamar }}')"
+                                    wire:key="room-option-{{ $room->id }}"
+                                    class="group relative flex min-h-[118px] flex-col justify-between overflow-hidden rounded-2xl border p-3 text-left transition-all duration-200 {{ $isRoomSelected ? 'border-[#1967d2] bg-[#1967d2] text-white shadow-lg shadow-blue-500/25' : 'border-slate-200 bg-white text-slate-900 hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md' }}"
+                                    title="Kamar {{ $roomLabel }}"
+                                    aria-label="Pilih kamar {{ $roomLabel }}">
+                                <span class="flex items-center justify-between gap-2">
+                                    <span class="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-black uppercase tracking-wide {{ $isRoomSelected ? 'bg-white/15 text-blue-50' : 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 group-hover:bg-white' }}">
+                                        <span class="h-1.5 w-1.5 rounded-full {{ $isRoomSelected ? 'bg-white' : 'bg-emerald-500' }}"></span>
+                                        Tersedia
+                                    </span>
+                                    @if($isRoomSelected)
+                                    <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                                    @endif
+                                </span>
+                                <span class="min-w-0">
+                                    @if($roomFloorLabel !== '' && $roomFloorLabel !== $roomNumberLabel)
+                                    <span class="block truncate text-xs font-bold {{ $isRoomSelected ? 'text-blue-100' : 'text-slate-500 group-hover:text-blue-600' }}">{{ $roomFloorLabel }}</span>
+                                    @endif
+                                    <span class="room-label-clamp mt-1 block font-black leading-none tracking-normal {{ $roomNumberSize }}">{{ $roomNumberLabel }}</span>
+                                </span>
+                                <span class="flex items-center gap-1 text-[11px] font-bold {{ $isRoomSelected ? 'text-blue-100' : 'text-slate-400 group-hover:text-blue-500' }}">
+                                    <span class="material-symbols-outlined text-[14px]">touch_app</span>
+                                    Pilih kamar
+                                </span>
                             </button>
                             @else
-                            <div class="relative flex aspect-square items-center justify-center rounded-2xl bg-slate-100 text-sm font-bold text-slate-400 opacity-60 cursor-not-allowed overflow-hidden">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="h-px w-full bg-slate-300 -rotate-45"></div>
-                                </div>
-                                <span class="z-10">{{ $room->nomor_kamar }}</span>
+                            <div wire:key="room-option-{{ $room->id }}"
+                                 class="relative flex min-h-[118px] cursor-not-allowed flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 p-3 text-left text-slate-400"
+                                 title="Kamar {{ $roomLabel }} sudah dipesan"
+                                 aria-label="Kamar {{ $roomLabel }} sudah dipesan"
+                                 aria-disabled="true">
+                                <div class="absolute inset-0 bg-[repeating-linear-gradient(135deg,rgba(148,163,184,0.12)_0,rgba(148,163,184,0.12)_8px,transparent_8px,transparent_16px)]"></div>
+                                <span class="relative flex items-center justify-between gap-2">
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-white/70 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-slate-500 ring-1 ring-slate-200">
+                                        <span class="material-symbols-outlined text-[13px]">lock</span>
+                                        Dipesan
+                                    </span>
+                                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-slate-500 ring-1 ring-slate-300">
+                                        <span class="material-symbols-outlined text-[18px]">lock</span>
+                                    </span>
+                                </span>
+                                <span class="relative min-w-0">
+                                    @if($roomFloorLabel !== '' && $roomFloorLabel !== $roomNumberLabel)
+                                    <span class="block truncate text-xs font-bold text-slate-400">{{ $roomFloorLabel }}</span>
+                                    @endif
+                                    <span class="room-label-clamp mt-1 block font-black leading-none tracking-normal text-slate-500 {{ $roomNumberSize }}">{{ $roomNumberLabel }}</span>
+                                </span>
+                                <span class="relative flex items-center gap-1 text-[11px] font-bold text-slate-400">
+                                    <span class="material-symbols-outlined text-[14px]">block</span>
+                                    Tidak tersedia
+                                </span>
                             </div>
                             @endif
                             @endforeach
                         </div>
+                        @if($activeType->kamar->where('status_kamar', 'tersedia')->isEmpty())
+                        <div class="mt-4 flex items-center gap-2 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-700 ring-1 ring-amber-100">
+                            <span class="material-symbols-outlined text-[18px]">info</span>
+                            Semua kamar pada tipe ini sudah dipesan. Silakan pilih tipe kamar lain.
+                        </div>
+                        @endif
                         @else
                         <div class="flex items-center justify-center rounded-2xl bg-slate-50 py-8 text-sm font-medium text-slate-500">
                             Tidak ada data kamar.
@@ -575,6 +650,16 @@ $durationOptions = $isKosan
         .animate-fade-in-up {
             animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
+        }
+        .room-label-clamp {
+            display: -webkit-box;
+            max-width: calc(100% - 14px);
+            overflow: hidden;
+            overflow-wrap: anywhere;
+            text-align: center;
+            line-height: 1.05;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
         }
         [x-cloak] { display: none !important; }
     </style>

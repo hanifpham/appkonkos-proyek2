@@ -2,15 +2,14 @@
 
 namespace App\Livewire\Front;
 
-use App\Models\Booking;
 use App\Models\Favorit;
 use App\Models\Kamar;
 use App\Models\Kontrakan;
 use App\Models\Kosan;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -18,12 +17,19 @@ use Livewire\Component;
 class DetailProperti extends Component
 {
     public string $tipe;
+
     public string $propertiId;
+
     public mixed $properti;
+
     public ?int $selectedTipeKamarId = null;
+
     public ?int $selectedKamarId = null;
+
     public string $tanggalCheckIn;
+
     public int $durasiSewa = 1;
+
     public bool $isFavorit = false;
 
     public function mount(string $tipe, string $id): void
@@ -35,6 +41,7 @@ class DetailProperti extends Component
         if ($tipe === 'kosan') {
             $this->properti = Kosan::query()
                 ->where('status', 'aktif')
+                ->whereHas('tipeKamar.kamar', fn ($query) => $query->where('status_kamar', 'tersedia'))
                 ->with([
                     'media',
                     'pemilikProperti.user',
@@ -43,13 +50,17 @@ class DetailProperti extends Component
                     'tipeKamar.kamar',
                 ])
                 ->findOrFail($id);
-            
+
             if ($this->properti->tipeKamar->isNotEmpty()) {
-                $this->selectedTipeKamarId = $this->properti->tipeKamar->first()->id;
+                $availableType = $this->properti->tipeKamar
+                    ->first(fn ($type) => $type->kamar->contains('status_kamar', 'tersedia'));
+
+                $this->selectedTipeKamarId = $availableType?->id;
             }
         } elseif ($tipe === 'kontrakan') {
             $this->properti = Kontrakan::query()
                 ->where('status', 'aktif')
+                ->where('sisa_kamar', '>', 0)
                 ->with([
                     'media',
                     'pemilikProperti.user',
@@ -108,41 +119,46 @@ class DetailProperti extends Component
 
     public function buatBooking()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
         $user = Auth::user();
         if ($user->role !== 'pencari') {
             session()->flash('error', 'Hanya akun pencari yang dapat melakukan booking.');
+
             return;
         }
 
         $pencari = $user->pencariKos;
-        if (!$pencari) {
+        if (! $pencari) {
             session()->flash('error', 'Profil Pencari Kos Anda belum lengkap.');
+
             return;
         }
-        
+
         if ($this->tipe === 'kosan') {
-            if (!$this->selectedKamarId) {
+            if (! $this->selectedKamarId) {
                 session()->flash('error', 'Silakan pilih nomor kamar terlebih dahulu.');
+
                 return;
             }
 
             // Validasi ketat keamanan Backend (Mencegah user bypass inspect element)
-            $kamarCheck = \App\Models\Kamar::find($this->selectedKamarId);
-            if (!$kamarCheck || $kamarCheck->status_kamar !== 'tersedia') {
+            $kamarCheck = Kamar::find($this->selectedKamarId);
+            if (! $kamarCheck || $kamarCheck->status_kamar !== 'tersedia') {
                 session()->flash('error', 'Mohon maaf, kamar ini baru saja habis dipesan.');
+
                 return;
             }
 
             return redirect()->route('pencari.checkout', ['kamar_id' => $this->selectedKamarId]);
         } else {
             // Validasi ketat keamanan Backend untuk Kontrakan
-            $kontrakanCheck = \App\Models\Kontrakan::find($this->propertiId);
-            if (!$kontrakanCheck || $kontrakanCheck->sisa_kamar <= 0 || $kontrakanCheck->status !== 'aktif') {
+            $kontrakanCheck = Kontrakan::find($this->propertiId);
+            if (! $kontrakanCheck || $kontrakanCheck->sisa_kamar <= 0 || $kontrakanCheck->status !== 'aktif') {
                 session()->flash('error', 'Mohon maaf, unit kontrakan ini baru saja habis dipesan.');
+
                 return;
             }
 

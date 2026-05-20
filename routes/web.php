@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\CariController;
+use App\Http\Controllers\MidtransNotificationController;
 use App\Http\Controllers\Pencari\PembayaranController;
 use App\Livewire\Front\DetailProperti;
 use App\Livewire\Front\PusatBantuan;
@@ -16,7 +17,6 @@ use App\Livewire\Mitra\TambahKontrakan;
 use App\Livewire\Mitra\TambahKosan;
 use App\Livewire\Mitra\UlasanPenyewa;
 use App\Livewire\Pencari\Checkout;
-use App\Livewire\Pencari\Dashboard as PencariDashboard;
 use App\Livewire\Pencari\FavoritSaya;
 use App\Livewire\Pencari\ProfilSaya;
 use App\Livewire\Pencari\RiwayatPesanan;
@@ -31,6 +31,8 @@ use App\Livewire\SuperAdmin\PengaturanProfil as SuperAdminPengaturanProfil;
 use App\Livewire\SuperAdmin\TransaksiMidtrans as SuperAdminTransaksiMidtrans;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/midtrans/callback', MidtransNotificationController::class)->name('midtrans.callback');
 
 Route::middleware('redirect.unverified')->group(function (): void {
     Route::get('/', BerandaController::class)->name('home');
@@ -54,7 +56,6 @@ Route::middleware('guest')->group(function (): void {
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'role:pencari'])->group(function (): void {
-    Route::get('/dashboard', PencariDashboard::class)->name('dashboard');
     Route::get('/profil-saya', ProfilSaya::class)->name('pencari.profil');
     Route::get('/pembayaran/{booking}', [PembayaranController::class, 'show'])->name('pencari.pembayaran.show');
     Route::post('/pembayaran/{booking}/snap-token', [PembayaranController::class, 'snapToken'])->name('pencari.pembayaran.snap-token');

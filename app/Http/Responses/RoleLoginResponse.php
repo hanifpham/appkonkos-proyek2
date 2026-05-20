@@ -32,7 +32,8 @@ class RoleLoginResponse implements LoginResponseContract
         return match ($role) {
             'superadmin' => route('superadmin.dashboard'),
             'pemilik' => route('mitra.dashboard'),
-            default => route('dashboard'),
+            'pencari' => route('pencari.riwayat-pesanan'),
+            default => route('home'),
         };
     }
 }

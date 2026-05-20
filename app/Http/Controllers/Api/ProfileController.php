@@ -11,6 +11,7 @@ class ProfileController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
+        $profil = $user->pencariKos;
 
         return response()->json([
             'success' => true,
@@ -20,6 +21,10 @@ class ProfileController extends Controller
                 'email'             => $user->email,
                 'no_telepon'        => $user->no_telepon,
                 'profile_photo_url' => $user->profile_photo_url,
+                'no_wa'             => $profil?->no_wa,
+                'jenis_kelamin'     => $profil?->jenis_kelamin,
+                'pekerjaan'         => $profil?->pekerjaan,
+                'kota_asal'         => $profil?->kota_asal,
             ],
         ]);
     }
@@ -29,21 +34,20 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $request->validate([
-            'name'          => 'sometimes|required|string|max:255',
+            'name'          => 'sometimes|nullable|string|max:255',
             'no_telepon'    => 'sometimes|nullable|string|max:15',
+            'no_wa'         => 'sometimes|nullable|string|max:15',
+            'jenis_kelamin' => 'sometimes|nullable|string',
+            'pekerjaan'     => 'sometimes|nullable|string',
+            'domisili'      => 'sometimes|nullable|string|max:255',
             'foto'          => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
             'password_lama' => 'required_with:password_baru|string',
             'password_baru' => 'sometimes|required|string|min:8',
             'konfirmasi'    => 'required_with:password_baru|same:password_baru',
         ]);
 
-        if ($request->has('name')) {
-            $user->name = $request->name;
-        }
-
-        if ($request->has('no_telepon')) {
-            $user->no_telepon = $request->no_telepon;
-        }
+        if ($request->has('name'))       $user->name       = $request->name;
+        if ($request->has('no_telepon')) $user->no_telepon = $request->no_telepon;
 
         if ($request->filled('password_baru')) {
             if (!Hash::check($request->password_lama, $user->password)) {
@@ -55,12 +59,20 @@ class ProfileController extends Controller
             $user->password = Hash::make($request->password_baru);
         }
 
-        // Upload foto
         if ($request->hasFile('foto')) {
             $user->updateProfilePhoto($request->file('foto'));
         }
 
         $user->save();
+
+        $profil = $user->pencariKos()->firstOrCreate(['user_id' => $user->id]);
+
+        if ($request->has('no_wa'))         $profil->no_wa         = $request->no_wa;
+        if ($request->has('jenis_kelamin')) $profil->jenis_kelamin = $request->jenis_kelamin;
+        if ($request->has('pekerjaan'))     $profil->pekerjaan     = $request->pekerjaan;
+        if ($request->has('domisili'))      $profil->kota_asal     = $request->domisili;
+
+        $profil->save();
 
         return response()->json([
             'success' => true,
@@ -71,6 +83,10 @@ class ProfileController extends Controller
                 'email'             => $user->email,
                 'no_telepon'        => $user->no_telepon,
                 'profile_photo_url' => $user->profile_photo_url,
+                'no_wa'             => $profil->no_wa,
+                'jenis_kelamin'     => $profil->jenis_kelamin,
+                'pekerjaan'         => $profil->pekerjaan,
+                'kota_asal'         => $profil->kota_asal,
             ],
         ]);
     }

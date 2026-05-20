@@ -98,8 +98,27 @@ class MidtransService
         ]);
 
         if ($payment->isSuccessful()) {
-            $payment->waktu_bayar = $this->resolveTransactionTime($payload) ?? now();
+    $payment->waktu_bayar = $this->resolveTransactionTime($payload) ?? now();
+
+    if ($payment->booking) {
+
+        $payment->booking->update([
+            'status' => 'dibayar',
+        ]);
+
+        if ($payment->booking->kamar) {
+            $payment->booking->kamar->update([
+                'status_kamar' => 'terisi',
+            ]);
         }
+
+        if ($payment->booking->kontrakan) {
+            $payment->booking->kontrakan->update([
+                'status' => 'tidak_tersedia',
+            ]);
+        }
+    }
+}
 
         $payment->save();
 

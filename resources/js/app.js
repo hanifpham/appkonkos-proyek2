@@ -1,11 +1,11 @@
-import './bootstrap';
+import "./bootstrap";
 
-const THEME_KEY = 'theme';
-const DASHBOARD_THEME_KEY = 'mitra-dark-mode';
+const THEME_KEY = "theme";
+const DASHBOARD_THEME_KEY = "mitra-dark-mode";
 
 const canUseLocalStorage = () => {
     try {
-        const testKey = '__appkonkos_theme_test__';
+        const testKey = "__appkonkos_theme_test__";
         window.localStorage.setItem(testKey, testKey);
         window.localStorage.removeItem(testKey);
 
@@ -24,14 +24,14 @@ const getStoredTheme = () => {
 
     const publicTheme = window.localStorage.getItem(THEME_KEY);
 
-    if (publicTheme === 'dark' || publicTheme === 'light') {
+    if (publicTheme === "dark" || publicTheme === "light") {
         return publicTheme;
     }
 
     const dashboardTheme = window.localStorage.getItem(DASHBOARD_THEME_KEY);
 
-    if (dashboardTheme === 'true' || dashboardTheme === 'false') {
-        return dashboardTheme === 'true' ? 'dark' : 'light';
+    if (dashboardTheme === "true" || dashboardTheme === "false") {
+        return dashboardTheme === "true" ? "dark" : "light";
     }
 
     return null;
@@ -44,7 +44,7 @@ const getPreferredTheme = () => {
         return storedTheme;
     }
 
-    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return "light"; // ← diubah: default selalu light, tidak mengikuti OS
 };
 
 const persistTheme = (theme) => {
@@ -53,13 +53,16 @@ const persistTheme = (theme) => {
     }
 
     window.localStorage.setItem(THEME_KEY, theme);
-    window.localStorage.setItem(DASHBOARD_THEME_KEY, theme === 'dark' ? 'true' : 'false');
+    window.localStorage.setItem(
+        DASHBOARD_THEME_KEY,
+        theme === "dark" ? "true" : "false",
+    );
 };
 
 const applyTheme = (theme) => {
-    const isDark = theme === 'dark';
+    const isDark = theme === "dark";
 
-    document.documentElement.classList.toggle('dark', isDark);
+    document.documentElement.classList.toggle("dark", isDark);
     document.documentElement.style.colorScheme = theme;
 
     return isDark;
@@ -72,25 +75,29 @@ window.appkonkosTheme = {
 
         const isDark = applyTheme(theme);
 
-        window.dispatchEvent(new CustomEvent('appkonkos-theme-changed', {
-            detail: { darkMode: isDark, theme },
-        }));
+        window.dispatchEvent(
+            new CustomEvent("appkonkos-theme-changed", {
+                detail: { darkMode: isDark, theme },
+            }),
+        );
 
         return isDark;
     },
 
     isDark() {
-        return document.documentElement.classList.contains('dark');
+        return document.documentElement.classList.contains("dark");
     },
 
     set(darkMode) {
-        const theme = darkMode ? 'dark' : 'light';
+        const theme = darkMode ? "dark" : "light";
         persistTheme(theme);
         const isDark = applyTheme(theme);
 
-        window.dispatchEvent(new CustomEvent('appkonkos-theme-changed', {
-            detail: { darkMode: isDark, theme },
-        }));
+        window.dispatchEvent(
+            new CustomEvent("appkonkos-theme-changed", {
+                detail: { darkMode: isDark, theme },
+            }),
+        );
 
         return isDark;
     },

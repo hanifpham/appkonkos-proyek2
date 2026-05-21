@@ -38,6 +38,17 @@ COPY . .
 # Install dependencies Laravel
 RUN composer install --optimize-autoloader --no-dev
 
+# Install dependencies Laravel
+RUN composer install --optimize-autoloader --no-dev
+
+# --- TAMBAHKAN DUA BARIS INI UNTUK VITE (FRONTEND) ---
+RUN npm install
+RUN npm run build
+# ----------------------------------------------------
+
+# Set permission
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
 # Set permission
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 

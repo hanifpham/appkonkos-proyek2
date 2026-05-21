@@ -1,6 +1,9 @@
 # Dockerfile
 FROM php:8.2-fpm-alpine
 
+# Tambahkan baris ini agar Alpine tahu jenis file CSS dan JS
+RUN apk add --no-cache mailcap
+
 # Install dependencies sistem
 RUN apk add --no-cache \
     nginx \

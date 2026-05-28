@@ -44,4 +44,10 @@ return [
         'is_3ds' => env('MIDTRANS_IS_3DS', true),
     ],
 
+    'mailtrap-sdk' => [
+        'host' => env('MAILTRAP_HOST', 'send.api.mailtrap.io'),
+        'apiKey' => env('MAILTRAP_API_TOKEN'),
+        'inboxId' => env('MAILTRAP_INBOX_ID'),
+    ],
+
 ];

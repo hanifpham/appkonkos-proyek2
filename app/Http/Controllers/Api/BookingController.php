@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
-public function index(Request $request)
+    public function index(Request $request)
 {
     $pencariKos = $request->user()->pencariKos;
 
@@ -24,18 +24,72 @@ public function index(Request $request)
         ->latest()
         ->get();
 
-    return response()->json(['success' => true, 'data' => $bookings]);
+    $data = $bookings->map(function ($booking) {
+        $foto = '';
+        if ($booking->kamar) {
+            $foto = $booking->kamar->tipeKamar?->kosan
+                ?->getFirstMediaUrl('foto_properti', 'webp') ?? '';
+            $foto = str_replace('http://localhost', 'http://192.168.1.8:8000', $foto);
+        } elseif ($booking->kontrakan) {
+            $foto = $booking->kontrakan
+                ->getFirstMediaUrl('foto_properti', 'webp') ?? '';
+            $foto = str_replace('http://localhost', 'http://192.168.1.8:8000', $foto);
+        }
+
+        $nama = '';
+        if ($booking->kamar) {
+            $namaKosan = $booking->kamar->tipeKamar?->kosan?->nama_properti ?? '';
+            $namaTipe  = $booking->kamar->tipeKamar?->nama_tipe ?? '';
+            $nama = $namaKosan . ($namaTipe ? ' • ' . $namaTipe : '');
+        } else {
+            $nama = $booking->kontrakan?->nama_properti ?? 'Kontrakan';
+        }
+
+        $alamat = '';
+        if ($booking->kamar) {
+            $alamat = $booking->kamar->tipeKamar?->kosan?->alamat_lengkap ?? '';
+        } else {
+            $alamat = $booking->kontrakan?->alamat_lengkap ?? '';
+        }
+
+        // ← TAMBAH INI: cek pembayaran juga
+        $statusBooking = $booking->status_booking;
+        $statusBayar   = $booking->pembayaran?->status_bayar;
+
+        if ($statusBayar === 'lunas' && $statusBooking === 'pending') {
+            $booking->update(['status_booking' => 'lunas']);
+            $statusBooking = 'lunas';
+        }
+
+        return [
+            'id'             => $booking->id,
+            'nama'           => $nama,
+            'alamat'         => $alamat,
+            'foto'           => $foto,
+            'total_biaya'    => $booking->total_biaya,
+            'status_booking' => $statusBooking, // ← pakai variabel ini
+            'created_at'     => $booking->created_at,
+            'kamar_id'       => $booking->kamar_id,
+            'kontrakan_id'   => $booking->kontrakan_id,
+            'batas_bayar'    => $statusBooking === 'pending'
+                ? $booking->created_at->addHours(24)->toIso8601String()
+                : null,
+            'redirect_url'   => $booking->pembayaran?->snap_redirect_url ?? '',
+        ];
+    });
+
+    return response()->json(['success' => true, 'data' => $data]);
 }
+
     public function store(Request $request, MidtransService $midtrans)
     {
         $user = $request->user();
         $pencariKos = $user->pencariKos;
 
-        if (!$pencariKos || 
-            empty($user->no_telepon) || 
-            empty($user->no_wa) || 
-            empty($pencariKos->kota_asal) || 
-            empty($pencariKos->jenis_kelamin) || 
+        if (!$pencariKos ||
+            empty($user->no_telepon) ||
+            empty($pencariKos->kota_asal) ||
+            empty($pencariKos->jenis_kelamin) ||
             empty($pencariKos->pekerjaan)) {
             return response()->json([
                 'success' => false,
@@ -49,17 +103,17 @@ public function index(Request $request)
             'kontrakan_id'   => 'nullable|exists:kontrakan,id',
             'tgl_mulai_sewa' => 'required|date',
             'durasi_bulan'   => 'required|integer|min:1',
+            'catatan'        => 'nullable|string|max:500',
         ]);
 
         if (!$request->kamar_id && !$request->kontrakan_id) {
             return response()->json(['success' => false, 'message' => 'Kamar atau kontrakan wajib dipilih'], 422);
         }
 
-        $tglMulai = \Carbon\Carbon::parse($request->tgl_mulai_sewa);
-        $tglSelesai = $tglMulai->copy()->addMonths($request->durasi_bulan);
-        $totalHarga = 0;
+        $tglMulai     = \Carbon\Carbon::parse($request->tgl_mulai_sewa);
+        $tglSelesai   = $tglMulai->copy()->addMonths($request->durasi_bulan);
         $biayaLayanan = 10000;
-        $totalHarga = $biayaLayanan;
+        $totalHarga   = $biayaLayanan;
 
         if ($request->kamar_id) {
             $kamar = Kamar::with('tipeKamar')->findOrFail($request->kamar_id);
@@ -71,10 +125,19 @@ public function index(Request $request)
                 ], 422);
             }
 
-            $totalHarga += $kamar->tipeKamar->harga_per_bulan * $request->durasi_bulan; 
+            $totalHarga += $kamar->tipeKamar->harga_per_bulan * $request->durasi_bulan;
+
         } else {
             $kontrakan = Kontrakan::findOrFail($request->kontrakan_id);
-            $totalHarga += $kontrakan->harga_sewa_tahun * ceil($request->durasi_bulan / 12); 
+
+            if ($kontrakan->sisa_kamar <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kontrakan sudah tidak tersedia'
+                ], 422);
+            }
+
+            $totalHarga += $kontrakan->harga_sewa_tahun * ceil($request->durasi_bulan / 12);
         }
 
         $booking = Booking::create([
@@ -86,9 +149,16 @@ public function index(Request $request)
             'durasi_bulan'     => $request->durasi_bulan,
             'total_biaya'      => $totalHarga,
             'status_booking'   => 'pending',
+            'catatan'          => $request->catatan ?? '',
         ]);
 
-       try {
+        if ($request->kamar_id) {
+            $kamar->update(['status_kamar' => 'dihuni']);
+        } else {
+            $kontrakan->decrement('sisa_kamar');
+        }
+
+        try {
             $payment = $midtrans->createOrRefreshTransaction($booking);
             $redirectUrl = $payment->snap_redirect_url;
             if (empty($redirectUrl) && !empty($payment->snap_token)) {
@@ -108,14 +178,17 @@ public function index(Request $request)
                 'snap_token'    => $payment->snap_token,
                 'redirect_url'  => $redirectUrl,
                 'total_harga'   => $totalHarga,
-                'biaya_layanan'  => $biayaLayanan,
+                'biaya_layanan' => $biayaLayanan,
                 'no_wa_pemilik' => $noWaPemilik,
             ], 201);
 
         } catch (\Exception $e) {
             $booking->delete();
+
             if (isset($kamar)) {
                 $kamar->update(['status_kamar' => 'tersedia']);
+            } elseif (isset($kontrakan)) {
+                $kontrakan->increment('sisa_kamar');
             }
 
             return response()->json([
@@ -125,25 +198,50 @@ public function index(Request $request)
         }
     }
 
+    public function cancel(Request $request, $id)
+    {
+        $booking = Booking::where('id', $id)
+            ->where('pencari_kos_id', $request->user()->pencariKos->id)
+            ->firstOrFail();
+
+        $booking->update(['status_booking' => 'batal']);
+
+        if ($booking->kamar_id) {
+            Kamar::where('id', $booking->kamar_id)
+                ->update(['status_kamar' => 'tersedia']);
+        } elseif ($booking->kontrakan_id) {
+            Kontrakan::where('id', $booking->kontrakan_id)
+                ->increment('sisa_kamar');
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $booking = Booking::where('id', $id)
+            ->where('pencari_kos_id', $request->user()->pencariKos->id)
+            ->firstOrFail();
+
+        if (!in_array($booking->status_booking, ['batal', 'refund'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Booking aktif tidak bisa dihapus'
+            ], 422);
+        }
+
+        $booking->delete();
+
+        return response()->json(['success' => true]);
+    }
+
     private function getCekFieldKosong($user, $pencariKos): array
     {
         $kosong = [];
         if (empty($user->no_telepon)) $kosong[] = 'no_telepon';
-        if (empty($user->no_wa)) $kosong[] = 'no_wa';
         if (!$pencariKos || empty($pencariKos->kota_asal)) $kosong[] = 'domisili';
         if (!$pencariKos || empty($pencariKos->jenis_kelamin)) $kosong[] = 'jenis_kelamin';
         if (!$pencariKos || empty($pencariKos->pekerjaan)) $kosong[] = 'pekerjaan';
         return $kosong;
     }
-    public function cancel(Request $request, $id)
-{
-    $user = $request->user();
-    $booking = Booking::where('id', $id)
-        ->where('pencari_kos_id', $user->pencariKos->id)
-        ->firstOrFail();
-
-    $booking->update(['status_booking' => 'batal']);
-
-    return response()->json(['success' => true]);
-}
 }

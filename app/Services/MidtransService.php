@@ -89,43 +89,46 @@ class MidtransService
     }
 
     public function syncPaymentStatus(Pembayaran $payment, array $payload): Pembayaran
-    {
-        $transactionStatus = strtolower((string) Arr::get($payload, 'transaction_status', ''));
-        $fraudStatus = strtolower((string) Arr::get($payload, 'fraud_status', ''));
-        $paymentMethod = $this->resolvePaymentMethod($payload);
-        $normalizedStatus = $this->normalizeTransactionStatus($transactionStatus, $fraudStatus);
-        $shouldDispatchSuccessNotifications = false;
+{
+    $transactionStatus = strtolower((string) Arr::get($payload, 'transaction_status', ''));
+    $fraudStatus       = strtolower((string) Arr::get($payload, 'fraud_status', ''));
+    $normalizedStatus  = $this->normalizeTransactionStatus($transactionStatus, $fraudStatus);
+    $shouldDispatchSuccessNotifications = false;
 
-        DB::beginTransaction();
+    DB::beginTransaction();
 
-        if ($payment->isSuccessful()) {
-    $payment->waktu_bayar = $this->resolveTransactionTime($payload) ?? now();
+    try {
+        $payment->status_bayar    = $normalizedStatus;
+        $payment->status_midtrans = $transactionStatus;
+        $payment->fraud_status    = $fraudStatus ?: null;
+        $payment->payload_midtrans = array_merge(
+            (array) ($payment->payload_midtrans ?? []),
+            $payload,
+        );
 
-    if ($payment->booking) {
-
-        $payment->booking->update([
-            'status' => 'dibayar',
-        ]);
-
-        if ($payment->booking->kamar) {
-            $payment->booking->kamar->update([
-                'status_kamar' => 'terisi',
-            ]);
+        if ($normalizedStatus === 'lunas') {
+            $payment->waktu_bayar = $this->resolveTransactionTime($payload) ?? now();
+            $bookingWasPaid = $this->markBookingAndPropertyAsPaid($payment);
+            if (! $bookingWasPaid) {
+                $shouldDispatchSuccessNotifications = true;
+            }
         }
-
-        if ($payment->booking->kontrakan) {
-            $payment->booking->kontrakan->update([
-                'status' => 'tidak_tersedia',
-            ]);
-        }
-    }
-}
 
         $payment->save();
+        DB::commit();
 
-        return $payment;
+        if ($shouldDispatchSuccessNotifications) {
+            $this->dispatchPaymentSuccessNotifications($payment);
+        }
+
+    } catch (Throwable $e) {
+        DB::rollBack();
+        Log::error('syncPaymentStatus error: ' . $e->getMessage());
+        throw $e;
     }
 
+    return $payment->fresh();
+}
     public function isValidSignature(array $payload): bool
     {
         $signatureKey = (string) Arr::get($payload, 'signature_key', '');

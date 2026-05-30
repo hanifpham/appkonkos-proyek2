@@ -21,7 +21,6 @@ class ProfileController extends Controller
                 'email'             => $user->email,
                 'no_telepon'        => $user->no_telepon,
                 'profile_photo_url' => $user->profile_photo_url,
-                'no_wa'             => $profil?->no_wa,
                 'jenis_kelamin'     => $profil?->jenis_kelamin,
                 'pekerjaan'         => $profil?->pekerjaan,
                 'kota_asal'         => $profil?->kota_asal,
@@ -36,7 +35,6 @@ class ProfileController extends Controller
         $request->validate([
             'name'          => 'sometimes|nullable|string|max:255',
             'no_telepon'    => 'sometimes|nullable|string|max:15',
-            'no_wa'         => 'sometimes|nullable|string|max:15',
             'jenis_kelamin' => 'sometimes|nullable|string',
             'pekerjaan'     => 'sometimes|nullable|string',
             'domisili'      => 'sometimes|nullable|string|max:255',
@@ -67,7 +65,6 @@ class ProfileController extends Controller
 
         $profil = $user->pencariKos()->firstOrCreate(['user_id' => $user->id]);
 
-        if ($request->has('no_wa'))         $profil->no_wa         = $request->no_wa;
         if ($request->has('jenis_kelamin')) $profil->jenis_kelamin = $request->jenis_kelamin;
         if ($request->has('pekerjaan'))     $profil->pekerjaan     = $request->pekerjaan;
         if ($request->has('domisili'))      $profil->kota_asal     = $request->domisili;
@@ -83,7 +80,6 @@ class ProfileController extends Controller
                 'email'             => $user->email,
                 'no_telepon'        => $user->no_telepon,
                 'profile_photo_url' => $user->profile_photo_url,
-                'no_wa'             => $profil->no_wa,
                 'jenis_kelamin'     => $profil->jenis_kelamin,
                 'pekerjaan'         => $profil->pekerjaan,
                 'kota_asal'         => $profil->kota_asal,

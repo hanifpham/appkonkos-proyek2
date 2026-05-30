@@ -53,7 +53,7 @@ class Booking extends Model
 
     public function pencariKos(): BelongsTo
     {
-        return $this->belongsTo(PencariKos::class, 'pencari_kos_id');
+        return $this->belongsTo(PencariKos::class, 'pencari_kos_id');           
     }
 
     public function kontrakan(): BelongsTo

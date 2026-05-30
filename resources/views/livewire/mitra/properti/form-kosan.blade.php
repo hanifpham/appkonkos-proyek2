@@ -38,7 +38,7 @@
             </a>
         </div>
 
-        <form wire:submit.prevent="simpan" class="space-y-6">
+        <form wire:submit.prevent="simpan" class="space-y-6" enctype="multipart/form-data">
             <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
                 <section class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <div class="border-b border-slate-100 px-6 py-5 dark:border-slate-800">
@@ -123,12 +123,12 @@
 
                         <div class="mt-4 space-y-3">
                             <div class="flex flex-col gap-3">
-                                <!-- Foto 1: Utama -->
+                                <!-- Foto Utama -->
                                 <div class="group relative flex flex-col gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 transition-all hover:border-blue-200 hover:bg-blue-50/30 dark:border-slate-800 dark:bg-slate-950/40">
                                     <div class="flex items-center justify-between">
-                                        <label for="foto_1" class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Foto Utama *</label>
+                                        <label for="foto_utama" class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Foto Utama *</label>
                                         <div class="flex items-center gap-2">
-                                            @if ($foto_1 || isset($existingPhotoUrls[0]))
+                                            @if ($foto_utama || isset($existingPhotoUrls[0]))
                                                 <button type="button" wire:click="hapusFoto(1)" class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition hover:bg-rose-100">
                                                     <span class="material-symbols-outlined text-[14px]">close</span>
                                                 </button>
@@ -143,15 +143,16 @@
                                     <div class="flex items-center gap-3">
                                         <div class="flex-1">
                                             <input
-                                                id="foto_1"
+                                                id="foto_utama"
+                                                name="foto_utama"
                                                 type="file"
-                                                wire:model="foto_1"
+                                                wire:model="foto_utama"
                                                 accept=".jpg,.jpeg,.png,.webp"
                                                 class="block w-full text-[11px] text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-[#0F4C81] file:px-3 file:py-1.5 file:text-[10px] file:font-bold file:text-white transition hover:file:bg-[#0c3d68]">
                                         </div>
                                         <div class="shrink-0">
-                                            @if ($foto_1)
-                                                <img src="{{ $foto_1->temporaryUrl() }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
+                                            @if ($foto_utama)
+                                                <img src="{{ $foto_utama->temporaryUrl() }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
                                             @elseif(isset($existingPhotoUrls[0]))
                                                 <img src="{{ $existingPhotoUrls[0] }}" class="h-12 w-16 rounded-lg border border-white object-cover shadow-sm ring-1 ring-slate-200">
                                             @else
@@ -161,7 +162,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    @error('foto_1') <p class="text-[10px] font-medium text-rose-600">{{ $message }}</p> @enderror
+                                    @error('foto_utama') <p class="text-[10px] font-medium text-rose-600">{{ $message }}</p> @enderror
                                 </div>
 
                                 <!-- Foto 2: Samping -->

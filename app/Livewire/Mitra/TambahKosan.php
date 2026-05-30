@@ -39,7 +39,7 @@ class TambahKosan extends Component
     public string $fasilitas_umum = '';
 
     /** @var mixed */
-    public $foto_1;
+    public $foto_utama;
 
     /** @var mixed */
     public $foto_2;
@@ -76,7 +76,7 @@ class TambahKosan extends Component
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'peraturan_kos' => ['required', 'string', 'max:5000'],
             'fasilitas_umum' => ['nullable', 'string', 'max:5000'],
-            'foto_1' => $this->editId === null
+            'foto_utama' => $this->editId === null
                 ? ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048']
                 : ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'foto_2' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
@@ -98,7 +98,7 @@ class TambahKosan extends Component
             'longitude' => 'Longitude',
             'peraturan_kos' => 'Peraturan Kos',
             'fasilitas_umum' => 'Fasilitas Umum',
-            'foto_1' => 'Foto Utama',
+            'foto_utama' => 'Foto Utama',
             'foto_2' => 'Foto Samping',
             'foto_3' => 'Foto Dalam',
             'foto_4' => 'Foto Fasilitas',
@@ -147,7 +147,7 @@ class TambahKosan extends Component
         ];
 
         $uploadedPhotos = array_filter([
-            $this->foto_1,
+            $this->foto_utama,
             $this->foto_2,
             $this->foto_3,
             $this->foto_4,
@@ -179,7 +179,7 @@ class TambahKosan extends Component
 
     public function hapusFoto(int $slot): void
     {
-        $property = "foto_" . $slot;
+        $property = $slot === 1 ? 'foto_utama' : "foto_" . $slot;
         if (property_exists($this, $property)) {
             $this->$property = null;
         }

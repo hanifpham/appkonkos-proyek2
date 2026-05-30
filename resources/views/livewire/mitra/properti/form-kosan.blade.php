@@ -387,14 +387,14 @@
                     <button
                         type="submit"
                         wire:loading.attr="disabled"
-                        wire:target="simpan,foto_properti"
+                        wire:target="simpan,foto_utama,foto_2,foto_3,foto_4"
                         class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0F4C81] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-[#0F4C81]/20 transition hover:bg-[#0c3d68] disabled:cursor-not-allowed disabled:opacity-70">
-                        <svg wire:loading wire:target="simpan,foto_properti" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <svg wire:loading wire:target="simpan,foto_utama,foto_2,foto_3,foto_4" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4Z"></path>
                         </svg>
-                        <span wire:loading.remove wire:target="simpan,foto_properti">{{ $editId ? 'Perbarui & Kelola Kamar' : 'Simpan & Lanjut Kelola Kamar' }}</span>
-                        <span wire:loading wire:target="simpan,foto_properti">Menyimpan...</span>
+                        <span wire:loading.remove wire:target="simpan,foto_utama,foto_2,foto_3,foto_4">{{ $editId ? 'Perbarui & Kelola Kamar' : 'Simpan & Lanjut Kelola Kamar' }}</span>
+                        <span wire:loading wire:target="simpan,foto_utama,foto_2,foto_3,foto_4">Menyimpan...</span>
                     </button>
                 </div>
             </div>

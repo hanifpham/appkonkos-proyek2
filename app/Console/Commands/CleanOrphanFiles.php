@@ -62,6 +62,7 @@ class CleanOrphanFiles extends Command
         // Profile photos are now managed by Spatie Media Library.
         // Check the media table for known file names.
         $dbFileNames = DB::table('media')
+            ->where('model_type', \App\Models\User::class)
             ->where('collection_name', 'foto_profil')
             ->pluck('file_name')
             ->toArray();

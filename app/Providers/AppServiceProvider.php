@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Kosan;
+use App\Models\Kontrakan;
+use App\Models\TipeKamar;
+use App\Models\PemilikProperti;
+use App\Models\User;
+use App\Observers\MediaCleanupObserver;
 use App\Support\MediaLibrary\PublicMirrorFileRemover;
 use App\Support\MediaLibrary\StableMediaPathGenerator;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -30,6 +36,13 @@ class AppServiceProvider extends ServiceProvider
             'media-library.path_generator' => StableMediaPathGenerator::class,
             'media-library.file_remover_class' => PublicMirrorFileRemover::class,
         ]);
+
+        // Register media cleanup observers
+        Kosan::observe(MediaCleanupObserver::class);
+        Kontrakan::observe(MediaCleanupObserver::class);
+        TipeKamar::observe(MediaCleanupObserver::class);
+        PemilikProperti::observe(MediaCleanupObserver::class);
+        User::observe(MediaCleanupObserver::class);
 
         RateLimiter::for('login', function (Request $request): Limit {
             return Limit::perMinute(5)->by($request->ip());

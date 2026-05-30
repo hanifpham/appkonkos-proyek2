@@ -170,7 +170,7 @@ class Keuangan extends Component
 
     public function getWithdrawalDisplayId(PencairanDana $riwayat): string
     {
-        return '#WD-'.str_pad((string) $riwayat->id, 5, '0', STR_PAD_LEFT);
+        return '#WD-' . str_pad((string) $riwayat->id, 5, '0', STR_PAD_LEFT);
     }
 
     public function getWithdrawalBankName(PencairanDana $riwayat): string
@@ -193,7 +193,7 @@ class Keuangan extends Component
         $masked = $this->maskAccountNumber($rekening);
 
         return $atasNama !== null && $atasNama !== ''
-            ? $masked.' a.n '.$atasNama
+            ? $masked . ' a.n ' . $atasNama
             : $masked;
     }
 
@@ -204,7 +204,7 @@ class Keuangan extends Component
 
     public function formatRupiah(int $amount): string
     {
-        return 'Rp '.number_format($amount, 0, ',', '.');
+        return 'Rp ' . number_format($amount, 0, ',', '.');
     }
 
     protected function refreshState(): void
@@ -239,7 +239,7 @@ class Keuangan extends Component
     {
         return PencairanDana::query()
             ->whereHas('pemilikProperti', function (Builder $query): void {
-                $query->where('user_id', auth()->id());
+                $query->where('user_id', Auth::id());
             });
     }
 
@@ -247,7 +247,7 @@ class Keuangan extends Component
     {
         $totalSettlement = (int) Pembayaran::query()
             ->whereIn('status_bayar', Pembayaran::successStatuses())
-            ->whereHas('booking', fn (Builder $query): Builder => $this->applyOwnedBookingConstraint($query, $pemilikId))
+            ->whereHas('booking', fn(Builder $query): Builder => $this->applyOwnedBookingConstraint($query, $pemilikId))
             ->sum('nominal_bayar');
 
         $nilaiKomisi = (int) round($totalSettlement * ($this->komisiPlatformPersen / 100));
@@ -296,10 +296,10 @@ class Keuangan extends Component
         if ($search !== '') {
             $query->where(function (Builder $builder) use ($search): void {
                 $builder
-                    ->where('id', 'like', '%'.$search.'%')
-                    ->orWhere('nama_bank_tujuan', 'like', '%'.$search.'%')
-                    ->orWhere('nomor_rekening_tujuan', 'like', '%'.$search.'%')
-                    ->orWhere('atas_nama_tujuan', 'like', '%'.$search.'%');
+                    ->where('id', 'like', '%' . $search . '%')
+                    ->orWhere('nama_bank_tujuan', 'like', '%' . $search . '%')
+                    ->orWhere('nomor_rekening_tujuan', 'like', '%' . $search . '%')
+                    ->orWhere('atas_nama_tujuan', 'like', '%' . $search . '%');
             });
         }
 
@@ -361,7 +361,7 @@ class Keuangan extends Component
             'namaBank' => ['required', 'string', 'max:100'],
             'nomorRekening' => ['required', 'string', 'max:50'],
             'atasNama' => ['required', 'string', 'max:100'],
-            'nominalPencairan' => ['required', 'integer', 'min:50000', 'max:'.$this->saldoTersedia],
+            'nominalPencairan' => ['required', 'integer', 'min:50000', 'max:' . $this->saldoTersedia],
         ];
     }
 
@@ -424,7 +424,7 @@ class Keuangan extends Component
             return $accountNumber;
         }
 
-        return substr($accountNumber, 0, 4).'***'.substr($accountNumber, -3);
+        return substr($accountNumber, 0, 4) . '***' . substr($accountNumber, -3);
     }
 
     protected function dispatchValidationErrorToast(ValidationException $exception): void

@@ -35,7 +35,7 @@ class ProfilSaya extends Component
             $this->name = $user->name;
             $this->email = $user->email;
             $this->no_wa = $user->no_telepon ?? '';
-            
+
             if ($pencari) {
                 if ($pencari->jenis_kelamin === 'L') {
                     $this->jenis_kelamin = 'Laki-laki';
@@ -44,7 +44,7 @@ class ProfilSaya extends Component
                 } else {
                     $this->jenis_kelamin = $pencari->jenis_kelamin ?? '';
                 }
-                
+
                 $this->pekerjaan = $pencari->pekerjaan ?? '';
                 $this->domisili = $pencari->kota_asal ?? '';
             }

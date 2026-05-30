@@ -29,6 +29,7 @@ class PengaturanProfil extends Component
 
     public string $profilePhotoUrl = '';
 
+    /** @var mixed */
     public $foto_baru = null;
 
     public bool $notifEmail = true;
@@ -77,7 +78,7 @@ class PengaturanProfil extends Component
         $path = $this->foto_baru->store('profile-photos', 'public');
         $this->ensurePublicStorageFile($path);
 
-        auth()->user()->update([
+        $user->update([
             'profile_photo_path' => $path,
         ]);
 
@@ -274,12 +275,12 @@ class PengaturanProfil extends Component
             $this->ensurePublicStorageFile($user->profile_photo_path);
 
             $baseUrl = rtrim(request()->getBaseUrl(), '/');
-            $storageUrl = ($baseUrl === '' ? '' : $baseUrl).'/storage/'.ltrim($user->profile_photo_path, '/');
+            $storageUrl = ($baseUrl === '' ? '' : $baseUrl) . '/storage/' . ltrim($user->profile_photo_path, '/');
 
-            return $storageUrl.'?v='.$timestamp;
+            return $storageUrl . '?v=' . $timestamp;
         }
 
-        return 'https://ui-avatars.com/api/?name='.urlencode($user->name ?? 'Super Admin').'&color=113C7A&background=EBF4FF';
+        return 'https://ui-avatars.com/api/?name=' . urlencode($user->name ?? 'Super Admin') . '&color=113C7A&background=EBF4FF';
     }
 
     protected function deleteStoredProfilePhoto(mixed $oldPath, string $newPath): void
@@ -296,7 +297,7 @@ class PengaturanProfil extends Component
         }
 
         Storage::disk('public')->delete($normalizedPath);
-        File::delete(public_path('storage/'.$normalizedPath));
+        File::delete(public_path('storage/' . $normalizedPath));
     }
 
     protected function ensurePublicStorageFile(string $path): void
@@ -309,7 +310,7 @@ class PengaturanProfil extends Component
         }
 
         $sourcePath = Storage::disk('public')->path($normalizedPath);
-        $publicPath = public_path('storage/'.$normalizedPath);
+        $publicPath = public_path('storage/' . $normalizedPath);
 
         if (! File::exists($sourcePath)) {
             return;

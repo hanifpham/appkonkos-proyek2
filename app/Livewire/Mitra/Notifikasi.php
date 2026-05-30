@@ -6,6 +6,7 @@ namespace App\Livewire\Mitra;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -25,7 +26,9 @@ class Notifikasi extends Component
 
     public function markAsRead(string $id): void
     {
-        $notification = auth()->user()?->unreadNotifications()->find($id);
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        $notification = $user?->unreadNotifications()->find($id);
 
         if ($notification !== null) {
             $notification->markAsRead();
@@ -34,7 +37,9 @@ class Notifikasi extends Component
 
     public function markAllAsRead(): void
     {
-        auth()->user()?->unreadNotifications()->update([
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        $user?->unreadNotifications()->update([
             'read_at' => now(),
         ]);
     }
@@ -42,7 +47,8 @@ class Notifikasi extends Component
     #[Layout('layouts.mitra.utama')]
     public function render(): View
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
         $notificationsQuery = $user?->notifications()?->latest();
 
         if ($notificationsQuery === null) {

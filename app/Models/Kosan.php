@@ -124,7 +124,8 @@ class Kosan extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('foto_properti');
+        $this->addMediaCollection('foto_properti')
+            ->useDisk('public');
     }
 
     public function registerMediaConversions(?Media $media = null): void

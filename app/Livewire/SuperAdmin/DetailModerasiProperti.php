@@ -117,18 +117,11 @@ class DetailModerasiProperti extends Component
     {
         $user = $this->properti->pemilikProperti?->user;
 
-        if ($user?->profile_photo_path) {
-            $baseUrl = rtrim(request()->getBaseUrl(), '/');
+        if ($user !== null) {
+            $mediaUrl = $user->getFirstMediaUrl('foto_profil');
 
-            return ($baseUrl === '' ? '' : $baseUrl).'/storage/'.ltrim($user->profile_photo_path, '/')
-                .'?v='.($user->updated_at?->timestamp ?? now()->timestamp);
-        }
-
-        if ($user !== null && method_exists($user, 'getFirstMediaUrl')) {
-            $mediaUrl = $user->getFirstMediaUrl('profile_photos');
-
-            if (is_string($mediaUrl) && $mediaUrl !== '') {
-                return $mediaUrl;
+            if ($mediaUrl !== '') {
+                return $mediaUrl . '?v=' . ($user->updated_at?->timestamp ?? now()->timestamp);
             }
         }
 

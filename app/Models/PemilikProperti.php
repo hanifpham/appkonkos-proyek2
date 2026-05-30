@@ -83,8 +83,12 @@ class PemilikProperti extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('foto_ktp')->singleFile();
-        $this->addMediaCollection('foto_selfie')->singleFile();
+        $this->addMediaCollection('foto_ktp')
+            ->singleFile()
+            ->useDisk('public');
+        $this->addMediaCollection('foto_selfie')
+            ->singleFile()
+            ->useDisk('public');
     }
 
     public function registerMediaConversions(?Media $media = null): void

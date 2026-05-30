@@ -13,6 +13,9 @@ class ProfileController extends Controller
         $user = $request->user();
         $profil = $user->pencariKos;
 
+        $profilePhotoUrl = $user->getFirstMediaUrl('foto_profil')
+            ?: 'https://ui-avatars.com/api/?name=' . urlencode($user->name ?? 'User') . '&color=113C7A&background=EBF4FF';
+
         return response()->json([
             'success' => true,
             'user' => [
@@ -20,7 +23,7 @@ class ProfileController extends Controller
                 'name'              => $user->name,
                 'email'             => $user->email,
                 'no_telepon'        => $user->no_telepon,
-                'profile_photo_url' => $user->profile_photo_url,
+                'profile_photo_url' => $profilePhotoUrl,
                 'jenis_kelamin'     => $profil?->jenis_kelamin,
                 'pekerjaan'         => $profil?->pekerjaan,
                 'kota_asal'         => $profil?->kota_asal,
@@ -58,7 +61,11 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('foto')) {
-            $user->updateProfilePhoto($request->file('foto'));
+            $extension = $request->file('foto')->getClientOriginalExtension() ?: 'jpg';
+            $user->clearMediaCollection('foto_profil');
+            $user->addMedia($request->file('foto')->getRealPath())
+                ->usingFileName('pencari-' . $user->id . '-' . now()->format('YmdHis') . '.' . $extension)
+                ->toMediaCollection('foto_profil');
         }
 
         $user->save();
@@ -71,6 +78,9 @@ class ProfileController extends Controller
 
         $profil->save();
 
+        $profilePhotoUrl = $user->getFirstMediaUrl('foto_profil')
+            ?: 'https://ui-avatars.com/api/?name=' . urlencode($user->name ?? 'User') . '&color=113C7A&background=EBF4FF';
+
         return response()->json([
             'success' => true,
             'message' => 'Profil berhasil diperbarui',
@@ -79,7 +89,7 @@ class ProfileController extends Controller
                 'name'              => $user->name,
                 'email'             => $user->email,
                 'no_telepon'        => $user->no_telepon,
-                'profile_photo_url' => $user->profile_photo_url,
+                'profile_photo_url' => $profilePhotoUrl,
                 'jenis_kelamin'     => $profil->jenis_kelamin,
                 'pekerjaan'         => $profil->pekerjaan,
                 'kota_asal'         => $profil->kota_asal,

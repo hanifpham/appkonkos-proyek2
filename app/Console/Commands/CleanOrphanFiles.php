@@ -58,14 +58,20 @@ class CleanOrphanFiles extends Command
         }
 
         $allFiles = Storage::disk($disk)->files($folder);
-        $dbPaths = \App\Models\User::whereNotNull('profile_photo_path')->pluck('profile_photo_path')->toArray();
+
+        // Profile photos are now managed by Spatie Media Library.
+        // Check the media table for known file names.
+        $dbFileNames = DB::table('media')
+            ->where('collection_name', 'foto_profil')
+            ->pluck('file_name')
+            ->toArray();
         
         $deletedCount = 0;
         foreach ($allFiles as $file) {
             // Avoid deleting .gitignore or other system files if any
             if (basename($file) === '.gitignore') continue;
 
-            if (!in_array($file, $dbPaths)) {
+            if (!in_array(basename($file), $dbFileNames)) {
                 Storage::disk($disk)->delete($file);
                 $deletedCount++;
                 if ($this->getOutput()->isVerbose()) {

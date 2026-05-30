@@ -6,11 +6,9 @@
         default => route('home'),
     };
 
-    $profilePhotoUrl = Auth::user()->profile_photo_path
-        ? (rtrim(request()->getBaseUrl(), '/') === ''
-            ? '/storage/'.ltrim(Auth::user()->profile_photo_path, '/')
-            : rtrim(request()->getBaseUrl(), '/').'/storage/'.ltrim(Auth::user()->profile_photo_path, '/'))
-            .'?v='.(Auth::user()->updated_at?->timestamp ?? now()->timestamp)
+    $profileMediaUrl = Auth::user()->getFirstMediaUrl('foto_profil');
+    $profilePhotoUrl = $profileMediaUrl !== ''
+        ? $profileMediaUrl . '?v=' . (Auth::user()->updated_at?->timestamp ?? now()->timestamp)
         : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&color=113C7A&background=EBF4FF';
 
     $navigationItems = match ($user->role) {

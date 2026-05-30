@@ -8,8 +8,6 @@ use App\Models\PemilikProperti;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -130,27 +128,19 @@ class PengaturanProfil extends Component
             throw $exception;
         }
 
-        $oldProfilePhotoPath = $user->profile_photo_path;
-        $extension = $this->foto_baru->getClientOriginalExtension() ?: $this->foto_baru->extension() ?: 'jpg';
-        $path = $this->foto_baru->storeAs(
-            'profile-photos',
-            'user-'.$user->id.'-'.now()->format('YmdHis').'.'.$extension,
-            'public'
-        );
+        $extension = $this->foto_baru->getClientOriginalExtension()
+            ?: $this->foto_baru->extension()
+            ?: 'jpg';
+        $user->clearMediaCollection('foto_profil');
+        $mediaItem = $user->addMedia($this->foto_baru->getRealPath())
+            ->usingFileName('mitra-' . $user->id . '-' . now()->format('YmdHis') . '.' . $extension)
+            ->toMediaCollection('foto_profil');
 
-        if (! is_string($path) || $path === '') {
+        if (! $mediaItem->id) {
             throw ValidationException::withMessages([
                 'foto_baru' => 'Foto profil gagal disimpan. Silakan coba lagi.',
             ]);
         }
-
-        $this->ensurePublicStorageFile($path);
-
-        $user->update([
-            'profile_photo_path' => $path,
-        ]);
-
-        $this->deleteStoredProfilePhoto($oldProfilePhotoPath, $path);
 
         $freshUser = $user->fresh();
 
@@ -491,57 +481,13 @@ class PengaturanProfil extends Component
     protected function profilePhotoUrlFor(User $user): string
     {
         $timestamp = $user->updated_at?->timestamp ?? now()->timestamp;
+        $mediaUrl = $user->getFirstMediaUrl('foto_profil');
 
-        if (is_string($user->profile_photo_path) && $user->profile_photo_path !== '') {
-            $this->ensurePublicStorageFile($user->profile_photo_path);
-
-            $baseUrl = rtrim(request()->getBaseUrl(), '/');
-            $storageUrl = ($baseUrl === '' ? '' : $baseUrl).'/storage/'.ltrim($user->profile_photo_path, '/');
-
-            return $storageUrl.'?v='.$timestamp;
+        if ($mediaUrl !== '') {
+            return $mediaUrl . '?v=' . $timestamp;
         }
 
-        return 'https://ui-avatars.com/api/?name='.urlencode($user->name ?? 'User').'&color=113C7A&background=EBF4FF';
-    }
-
-    protected function deleteStoredProfilePhoto(mixed $oldPath, string $newPath): void
-    {
-        if (! is_string($oldPath) || trim($oldPath) === '') {
-            return;
-        }
-
-        $normalizedPath = ltrim($oldPath, '/');
-        $normalizedPath = preg_replace('#^(storage/|public/storage/)#', '', $normalizedPath) ?? $normalizedPath;
-
-        if ($normalizedPath === '' || $normalizedPath === $newPath) {
-            return;
-        }
-
-        Storage::disk('public')->delete($normalizedPath);
-        File::delete(public_path('storage/'.$normalizedPath));
-    }
-
-    protected function ensurePublicStorageFile(string $path): void
-    {
-        $normalizedPath = ltrim($path, '/');
-        $normalizedPath = preg_replace('#^(storage/|public/storage/)#', '', $normalizedPath) ?? $normalizedPath;
-
-        if ($normalizedPath === '') {
-            return;
-        }
-
-        $sourcePath = Storage::disk('public')->path($normalizedPath);
-        $publicPath = public_path('storage/'.$normalizedPath);
-
-        if (! File::exists($sourcePath)) {
-            return;
-        }
-
-        File::ensureDirectoryExists(dirname($publicPath));
-
-        if (! File::exists($publicPath) || File::size($publicPath) !== File::size($sourcePath)) {
-            File::copy($sourcePath, $publicPath);
-        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($user->name ?? 'User') . '&color=113C7A&background=EBF4FF';
     }
 
     protected function nullableString(mixed $value): ?string

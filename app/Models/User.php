@@ -11,34 +11,24 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail, HasMedia
 {
     use HasApiTokens;
     use HasFactory;
-    use HasProfilePhoto;
+    use InteractsWithMedia;
     use Notifiable;
     use TwoFactorAuthenticatable;
 
     protected static function booted(): void
     {
         static::deleting(function (User $user): void {
-            if ($user->profile_photo_path) {
-                Storage::disk($user->profilePhotoDisk())->delete($user->profile_photo_path);
-            }
-        });
-
-        static::updating(function (User $user): void {
-            if ($user->isDirty('profile_photo_path')) {
-                $oldPath = $user->getOriginal('profile_photo_path');
-                if ($oldPath) {
-                    Storage::disk($user->profilePhotoDisk())->delete($oldPath);
-                }
-            }
+            $user->clearMediaCollection('foto_profil');
         });
     }
 
@@ -50,7 +40,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'role',
         'status',
         'status_akun',
-        'profile_photo_path',
         'password',
     ];
 
@@ -61,10 +50,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'two_factor_secret',
     ];
 
-    protected $appends = [
-        'profile_photo_url',
-    ];
-
     protected function casts(): array
     {
         return [
@@ -72,6 +57,21 @@ class User extends Authenticatable implements MustVerifyEmail
             'status_akun' => 'boolean',
             'password' => 'hashed',
         ];
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('foto_profil')
+            ->singleFile()
+            ->useDisk('public');
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(200)
+            ->height(200)
+            ->nonQueued();
     }
 
     public function pencariKos(): HasOne

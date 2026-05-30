@@ -61,7 +61,9 @@ class TipeKamar extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('foto_interior')->singleFile();
+        $this->addMediaCollection('foto_interior')
+            ->singleFile()
+            ->useDisk('public');
     }
 
     public function registerMediaConversions(?Media $media = null): void

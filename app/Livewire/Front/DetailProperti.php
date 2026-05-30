@@ -9,8 +9,6 @@ use App\Models\Kosan;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -171,14 +169,12 @@ class DetailProperti extends Component
         $name = $user?->name ?? $fallbackName;
         $timestamp = $user?->updated_at?->timestamp ?? now()->timestamp;
 
-        if (is_string($user?->profile_photo_path) && $user->profile_photo_path !== '') {
-            $normalizedPath = $this->normalizeStoragePath($user->profile_photo_path);
-            $this->ensurePublicStorageFile($normalizedPath);
+        if ($user !== null) {
+            $mediaUrl = $user->getFirstMediaUrl('foto_profil');
 
-            $baseUrl = rtrim(request()->getBaseUrl(), '/');
-            $storageUrl = ($baseUrl === '' ? '' : $baseUrl).'/storage/'.$normalizedPath;
-
-            return $storageUrl.'?v='.$timestamp;
+            if ($mediaUrl !== '') {
+                return $mediaUrl . '?v=' . $timestamp;
+            }
         }
 
         return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=113C7A&background=EBF4FF';
@@ -188,32 +184,5 @@ class DetailProperti extends Component
     public function render(): View
     {
         return view('livewire.front.detail-properti');
-    }
-
-    protected function normalizeStoragePath(string $path): string
-    {
-        $normalizedPath = ltrim($path, '/');
-
-        return preg_replace('#^(storage/|public/storage/)#', '', $normalizedPath) ?? $normalizedPath;
-    }
-
-    protected function ensurePublicStorageFile(string $path): void
-    {
-        if ($path === '') {
-            return;
-        }
-
-        $sourcePath = Storage::disk('public')->path($path);
-        $publicPath = public_path('storage/'.$path);
-
-        if (! File::exists($sourcePath)) {
-            return;
-        }
-
-        File::ensureDirectoryExists(dirname($publicPath));
-
-        if (! File::exists($publicPath) || File::size($publicPath) !== File::size($sourcePath)) {
-            File::copy($sourcePath, $publicPath);
-        }
     }
 }

@@ -7,7 +7,6 @@ use Livewire\WithFileUploads;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class ProfilSaya extends Component
 {
@@ -19,7 +18,7 @@ class ProfilSaya extends Component
     public string $jenis_kelamin = '';
     public string $pekerjaan = '';
     public string $domisili = '';
-    public ?string $foto_profil = null;
+    public string $foto_profil_url = '';
     public mixed $new_foto_profil = null;
 
     public string $current_password = '';
@@ -48,7 +47,8 @@ class ProfilSaya extends Component
                 $this->pekerjaan = $pencari->pekerjaan ?? '';
                 $this->domisili = $pencari->kota_asal ?? '';
             }
-            $this->foto_profil = $user->profile_photo_path ?? null;
+            $this->foto_profil_url = $user->getFirstMediaUrl('foto_profil')
+                ?: 'https://ui-avatars.com/api/?name=' . urlencode($user->name ?? 'User') . '&color=113C7A&background=EBF4FF';
         }
     }
 
@@ -72,14 +72,12 @@ class ProfilSaya extends Component
         ];
 
         if ($this->new_foto_profil) {
-            // Delete old photo if exists
-            if ($user->profile_photo_path && Storage::disk('public')->exists($user->profile_photo_path)) {
-                Storage::disk('public')->delete($user->profile_photo_path);
-            }
-            // Store new photo
-            $path = $this->new_foto_profil->store('profile-photos', 'public');
-            $userData['profile_photo_path'] = $path;
-            $this->foto_profil = $path;
+            $extension = $this->new_foto_profil->getClientOriginalExtension() ?: 'jpg';
+            $user->clearMediaCollection('foto_profil');
+            $user->addMedia($this->new_foto_profil->getRealPath())
+                ->usingFileName('pencari-' . $user->id . '-' . now()->format('YmdHis') . '.' . $extension)
+                ->toMediaCollection('foto_profil');
+            $this->foto_profil_url = $user->getFirstMediaUrl('foto_profil');
         }
 
         $user->forceFill($userData)->save();

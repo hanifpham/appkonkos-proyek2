@@ -82,31 +82,10 @@
                 $pendingBadgeCount = 0;
             }
 
-            $profilePhotoPath = is_string($user?->profile_photo_path)
-                ? ltrim($user->profile_photo_path, '/')
-                : '';
+            $layoutMediaUrl = $user?->getFirstMediaUrl('foto_profil') ?? '';
 
-            if ($profilePhotoPath !== '') {
-                $profilePhotoPath = preg_replace('#^(storage/|public/storage/)#', '', $profilePhotoPath) ?? $profilePhotoPath;
-                $sourceProfilePhoto = storage_path('app/public/'.$profilePhotoPath);
-                $publicProfilePhoto = public_path('storage/'.$profilePhotoPath);
-
-                if (file_exists($sourceProfilePhoto)) {
-                    if (! is_dir(dirname($publicProfilePhoto))) {
-                        mkdir(dirname($publicProfilePhoto), 0775, true);
-                    }
-
-                    if (! file_exists($publicProfilePhoto) || filesize($publicProfilePhoto) !== filesize($sourceProfilePhoto)) {
-                        copy($sourceProfilePhoto, $publicProfilePhoto);
-                    }
-                }
-            }
-
-            $profilePhotoUrl = $profilePhotoPath !== ''
-                ? (rtrim(request()->getBaseUrl(), '/') === ''
-                    ? '/storage/'.$profilePhotoPath
-                    : rtrim(request()->getBaseUrl(), '/').'/storage/'.$profilePhotoPath)
-                    .'?v='.($user?->updated_at?->timestamp ?? now()->timestamp)
+            $profilePhotoUrl = $layoutMediaUrl !== ''
+                ? $layoutMediaUrl . '?v=' . ($user?->updated_at?->timestamp ?? now()->timestamp)
                 : 'https://ui-avatars.com/api/?name='.urlencode($user?->name ?? 'User').'&color=113C7A&background=EBF4FF';
             $profilePhotoFallbackUrl = 'https://ui-avatars.com/api/?name='.urlencode($user?->name ?? 'User').'&color=113C7A&background=EBF4FF';
 

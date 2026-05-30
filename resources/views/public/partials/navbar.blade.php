@@ -86,29 +86,11 @@
             @auth
             @php
             $navUser = Auth::user();
-            $navProfilePhotoPath = is_string($navUser?->profile_photo_path)
-            ? ltrim($navUser->profile_photo_path, '/')
-            : '';
+            $navMediaUrl = $navUser->getFirstMediaUrl('foto_profil');
 
-            if ($navProfilePhotoPath !== '') {
-            $navProfilePhotoPath = preg_replace('#^(storage/|public/storage/)#', '', $navProfilePhotoPath) ?? $navProfilePhotoPath;
-            $sourceNavProfilePhoto = storage_path('app/public/'.$navProfilePhotoPath);
-            $publicNavProfilePhoto = public_path('storage/'.$navProfilePhotoPath);
-
-            if (file_exists($sourceNavProfilePhoto)) {
-            if (! is_dir(dirname($publicNavProfilePhoto))) {
-            mkdir(dirname($publicNavProfilePhoto), 0775, true);
-            }
-
-            if (! file_exists($publicNavProfilePhoto) || filesize($publicNavProfilePhoto) !== filesize($sourceNavProfilePhoto)) {
-            copy($sourceNavProfilePhoto, $publicNavProfilePhoto);
-            }
-            }
-            }
-
-            $navProfilePhoto = $navProfilePhotoPath !== ''
-            ? '/storage/'.$navProfilePhotoPath.'?v='.($navUser->updated_at?->timestamp ?? now()->timestamp)
-            : 'https://ui-avatars.com/api/?name='.urlencode($navUser->name).'&color=113C7A&background=EBF4FF';
+            $navProfilePhoto = $navMediaUrl !== ''
+                ? $navMediaUrl . '?v=' . ($navUser->updated_at?->timestamp ?? now()->timestamp)
+                : 'https://ui-avatars.com/api/?name='.urlencode($navUser->name).'&color=113C7A&background=EBF4FF';
             $navProfileFallbackPhoto = 'https://ui-avatars.com/api/?name='.urlencode($navUser->name).'&color=113C7A&background=EBF4FF';
             @endphp
             <div class="hidden items-center gap-2 md:flex">

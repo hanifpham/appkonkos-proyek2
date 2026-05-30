@@ -2,8 +2,9 @@
 
 @php
     $user = auth()->user();
-    $profilePhoto = $user->profile_photo_path 
-        ? asset('storage/' . ltrim($user->profile_photo_path, '/')) 
+    $sidebarMediaUrl = $user->getFirstMediaUrl('foto_profil');
+    $profilePhoto = $sidebarMediaUrl !== ''
+        ? $sidebarMediaUrl
         : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&color=113C7A&background=EBF4FF';
 @endphp
 

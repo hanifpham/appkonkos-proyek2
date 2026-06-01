@@ -1,5 +1,17 @@
 <?php
 
+// Force HTTPS when behind reverse proxy - must be before Laravel boots
+if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+}
+if (
+    (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
+    (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+) {
+    // Override the request scheme for Laravel's URL generator
+    $_SERVER['REQUEST_SCHEME'] = 'https';
+}
+
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 

@@ -15,6 +15,7 @@ use App\Support\MediaLibrary\StableMediaPathGenerator;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,6 +33,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Force HTTPS when behind reverse proxy
+        if (
+            app()->environment('production') ||
+            request()->server('HTTP_X_FORWARDED_PROTO') === 'https' ||
+            request()->server('HTTPS') === 'on'
+        ) {
+            URL::forceScheme('https');
+        }
+
         config([
             'media-library.path_generator' => StableMediaPathGenerator::class,
             'media-library.file_remover_class' => PublicMirrorFileRemover::class,

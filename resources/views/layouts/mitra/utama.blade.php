@@ -378,9 +378,9 @@
                             </div>
 
                             @if(auth()->user()?->role === 'superadmin')
-                                <livewire:superadmin.notification-bell />
+                                @livewire('App\Livewire\SuperAdmin\NotificationBell')
                             @else
-                                <livewire:common.notification-bell />
+                                @livewire('App\Livewire\Common\NotificationBell')
                             @endif
 
                             <button

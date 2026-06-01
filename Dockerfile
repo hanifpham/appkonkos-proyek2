@@ -17,18 +17,25 @@ RUN apk add --no-cache \
     libpng-dev \
     libzip-dev \
     oniguruma-dev \
-    libxml2-dev
+    libxml2-dev \
+    libjpeg-turbo-dev \
+    libwebp-dev \
+    freetype-dev
 
 # Install ekstensi PHP
-RUN docker-php-ext-install \
-    pdo_mysql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    gd \
-    opcache \
-    zip
+RUN docker-php-ext-configure gd \
+        --with-jpeg \
+        --with-webp \
+        --with-freetype \
+    && docker-php-ext-install \
+        pdo_mysql \
+        mbstring \
+        exif \
+        pcntl \
+        bcmath \
+        gd \
+        opcache \
+        zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -41,16 +48,10 @@ COPY . .
 # Install dependencies Laravel
 RUN composer install --optimize-autoloader --no-dev
 
-# Install dependencies Laravel
-RUN composer install --optimize-autoloader --no-dev
-
 # --- TAMBAHKAN DUA BARIS INI UNTUK VITE (FRONTEND) ---
 RUN npm install
 RUN npm run build
 # ----------------------------------------------------
-
-# Set permission
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Set permission
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache

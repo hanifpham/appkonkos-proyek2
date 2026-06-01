@@ -64,7 +64,7 @@ return [
     */
 
     'temporary_file_upload' => [
-        'disk'        => 'local',
+        'disk'        => 'public',
         'rules'       => ['required', 'file', 'max:2048'],
         'directory'   => 'livewire-tmp',
         'middleware'  => 'throttle:60,1',

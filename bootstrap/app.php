@@ -15,13 +15,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Force HTTPS for signed URL verification
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+            \Illuminate\Support\Facades\URL::forceRootUrl('https://appkonkos.my.id');
+        }
+
         $middleware->trustProxies(
             at: '*',
-            headers: \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR |
-                \Illuminate\Http\Request::HEADER_X_FORWARDED_HOST |
-                \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT |
-                \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO |
-                \Illuminate\Http\Request::HEADER_X_FORWARDED_PREFIX
+            headers: \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR |
+                \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_HOST |
+                \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PORT |
+                \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PROTO |
+                \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PREFIX
         );
         $middleware->validateCsrfTokens(except: [
             'api/midtrans/notifications',

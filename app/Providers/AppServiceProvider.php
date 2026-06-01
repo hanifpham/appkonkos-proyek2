@@ -36,10 +36,12 @@ class AppServiceProvider extends ServiceProvider
         // Force HTTPS when behind reverse proxy
         if (
             app()->environment('production') ||
-            request()->server('HTTP_X_FORWARDED_PROTO') === 'https' ||
-            request()->server('HTTPS') === 'on'
+            request()->server('HTTPS') === 'on' ||
+            request()->server('HTTPS') === '1' ||
+            request()->server('HTTP_X_FORWARDED_PROTO') === 'https'
         ) {
-            URL::forceScheme('https');
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+            \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
         }
 
         config([

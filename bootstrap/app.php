@@ -15,12 +15,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Force HTTPS for signed URL verification
-        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
-            \Illuminate\Support\Facades\URL::forceRootUrl('https://appkonkos.my.id');
-        }
-
         $middleware->trustProxies(
             at: '*',
             headers: \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR |

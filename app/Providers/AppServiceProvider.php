@@ -37,8 +37,7 @@ class AppServiceProvider extends ServiceProvider
         if (
             app()->environment('production') ||
             (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
-            request()->server('HTTPS') === 'on' ||
-            request()->server('HTTPS') === '1'
+            request()->server('HTTPS') === 'on'
         ) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
             \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));

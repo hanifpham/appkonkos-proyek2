@@ -51,6 +51,7 @@ class GoogleController extends Controller
                 'name'        => $googleUser->getName() ?? $googleUser->getNickname() ?? 'User Google',
                 'email'       => $googleUser->getEmail(),
                 'password'    => bcrypt(Str::random(32)),
+                'no_telepon'  => '-',
                 'role'        => 'pencari',
                 'status'      => 'aktif',
                 'status_akun' => true,

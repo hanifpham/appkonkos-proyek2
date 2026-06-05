@@ -37,6 +37,8 @@ class Booking extends Model
         'tgl_selesai_sewa',
         'total_biaya',
         'status_booking',
+        'durasi_bulan',
+        'catatan',   
     ];
 
     /**

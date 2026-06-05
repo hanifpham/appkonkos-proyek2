@@ -7,9 +7,57 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
+use Google\Client;
 
 class AuthController extends Controller
 {
+     public function googleLogin(Request $request)
+    {
+        $request->validate(['id_token' => 'required|string']);
+
+        try {
+            $client = new \Google\Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+            $payload = $client->verifyIdToken($request->id_token);
+
+            if (!$payload) {
+                return response()->json(['success' => false, 'message' => 'Token Google tidak valid'], 401);
+            }
+
+            $user = User::where('email', $payload['email'])->first();
+
+            if ($user) {
+                if (!$user->status_akun) {
+                    return response()->json(['success' => false, 'message' => 'Akun dinonaktifkan'], 403);
+                }
+            } else {
+                // user baru dari google, langsung verified
+                $user = User::create([
+                    'name'              => $payload['name'],
+                    'email'             => $payload['email'],
+                    'password'          => Hash::make(str()->random(32)),
+                    'no_telepon'        => '',
+                    'role'              => 'pencari',
+                    'status'            => 'aktif',
+                    'status_akun'       => 1,
+                    'email_verified_at' => now(),
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'token'   => $user->createToken('auth_token')->plainTextToken,
+                'user'    => [
+                    'id'   => $user->id,
+                    'name' => $user->name,
+                    'role' => $user->role,
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function register(Request $request)
     {
         $request->validate([

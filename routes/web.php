@@ -34,6 +34,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/midtrans/callback', MidtransNotificationController::class)->name('midtrans.callback');
 
+// Google OAuth
+Route::get('/auth/google', [App\Http\Controllers\Auth\GoogleController::class, 'redirect'])
+    ->name('auth.google');
+Route::get('/auth/google/callback', [App\Http\Controllers\Auth\GoogleController::class, 'callback'])
+    ->name('auth.google.callback');
+
 Route::middleware('redirect.unverified')->group(function (): void {
     Route::get('/', BerandaController::class)->name('home');
     Route::get('/pusat-bantuan', PusatBantuan::class)->name('pusat-bantuan');

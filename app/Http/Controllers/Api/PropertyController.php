@@ -29,7 +29,7 @@ class PropertyController extends Controller
                     'harga_max'       => (int) $hargaMax,
                     'period'          => 'bulan',
                     'tipe'            => 'Kosan',
-                    'foto'            => str_replace('http://localhost', 'http://192.168.1.10:8000', $foto),
+                    'foto'            => str_replace('http://localhost',  config('app.url'), $foto),
                     'rating'          => round($item->ulasan->avg('rating') ?? 0, 1),
                     'lat'             => (float) $item->latitude,
                     'lng'             => (float) $item->longitude,
@@ -57,7 +57,7 @@ class PropertyController extends Controller
                     'harga_max'       => (int) $item->harga_sewa_tahun,
                     'period'          => 'tahun',
                     'tipe'            => 'Kontrakan',
-                    'foto'            => str_replace('http://localhost', 'http://192.168.1.10:8000', $foto),
+                    'foto'            => str_replace('http://localhost',  config('app.url'), $foto),
                     'rating'          => round($item->ulasan->avg('rating') ?? 0, 1),
                     'lat'             => (float) $item->latitude,
                     'lng'             => (float) $item->longitude,
@@ -83,7 +83,7 @@ class PropertyController extends Controller
         $fotos = $kosan->getMedia('foto_properti')
             ->map(fn ($media) => str_replace(
                 'http://localhost',
-                'http://192.168.1.10:8000',
+                 config('app.url'),
                 $media->getUrl('webp')
             ))->values();
 
@@ -153,7 +153,7 @@ class PropertyController extends Controller
         $fotos = $kontrakan->getMedia('foto_properti')
             ->map(fn ($media) => str_replace(
                 'http://localhost',
-                'http://192.168.1.10:8000',
+                 config('app.url'),
                 $media->getUrl('webp')
             ))->values();
 

@@ -8,6 +8,7 @@ use App\Models\Kamar;
 use App\Models\Kontrakan;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Midtrans\Transaction;
 use Midtrans\Config as MidtransConfig;
 
@@ -120,7 +121,7 @@ class BookingController extends Controller
                 'alasan_refund'  => $refund?->alasan_refund,
                 'nominal_refund' => $refund?->nominal_refund,
                 'bukti_transfer' => $refund?->bukti_transfer_refund
-                    ? str_replace('http://localhost', 'http://192.168.1.10:8000', $refund->bukti_transfer_refund)
+                    ? str_replace('http://localhost',  config('app.url'), $refund->bukti_transfer_refund)
                     : null,
                 'kamar_nama'     => $booking->kamar?->nomor_kamar ?? '',
                 'tipe_kamar'     => $booking->kamar?->tipeKamar?->nama_tipe ?? '',
@@ -142,8 +143,8 @@ class BookingController extends Controller
             empty($pencariKos->jenis_kelamin) ||
             empty($pencariKos->pekerjaan)) {
             return response()->json([
-                'success' => false,
-                'message' => 'profil_tidak_lengkap',
+                'success'      => false,
+                'message'      => 'profil_tidak_lengkap',
                 'field_kosong' => $this->getCekFieldKosong($user, $pencariKos),
             ], 422);
         }
@@ -155,63 +156,95 @@ class BookingController extends Controller
         ]);
 
         if (!$request->kamar_id && !$request->kontrakan_id) {
-            return response()->json(['success' => false, 'message' => 'Kamar atau kontrakan wajib dipilih'], 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Kamar atau kontrakan wajib dipilih',
+            ], 422);
         }
 
         $tglMulai = \Carbon\Carbon::parse($request->tgl_mulai_sewa);
-        if ($request->kamar_id) {
-            $tglSelesai = $tglMulai->copy()->addMonths($request->durasi_bulan);
-        } else {
-            $tglSelesai = $tglMulai->copy()->addYears($request->durasi_bulan);
-        }
+        $tglSelesai = $request->kamar_id
+            ? $tglMulai->copy()->addMonths($request->durasi_bulan)
+            : $tglMulai->copy()->addYears($request->durasi_bulan);
 
         $biayaLayanan = 10000;
-        $totalHarga   = $biayaLayanan;
-
-        if ($request->kamar_id) {
-            $kamar = Kamar::with('tipeKamar')->findOrFail($request->kamar_id);
-
-            if ($kamar->status_kamar !== 'tersedia') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Kamar sudah tidak tersedia'
-                ], 422);
-            }
-
-            $totalHarga += $kamar->tipeKamar->harga_per_bulan * $request->durasi_bulan;
-        } else {
-            $kontrakan = Kontrakan::findOrFail($request->kontrakan_id);
-
-            if ($kontrakan->sisa_kamar <= 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Kontrakan sudah tidak tersedia'
-                ], 422);
-            }
-
-            $totalHarga += $kontrakan->harga_sewa_tahun * $request->durasi_bulan;
-        }
-
-        $booking = Booking::create([
-            'pencari_kos_id'   => $pencariKos->id,
-            'kamar_id'         => $request->kamar_id,
-            'kontrakan_id'     => $request->kontrakan_id,
-            'tgl_mulai_sewa'   => $tglMulai,
-            'tgl_selesai_sewa' => $tglSelesai,
-            'total_biaya'      => $totalHarga,
-            'status_booking'   => 'pending',
-        ]);
-
-        if ($request->kamar_id) {
-            $kamar->update(['status_kamar' => 'dihuni']);
-        } else {
-            $kontrakan->decrement('sisa_kamar');
-        }
+        $booking      = null;
+        $kamar        = null;
+        $kontrakan    = null;
+        $totalHarga   = 0;
 
         try {
-            $payment = $midtrans->createOrRefreshTransaction($booking);
-            $redirectUrl = $payment->snap_redirect_url;
-            if (empty($redirectUrl) && !empty($payment->snap_token)) {
+            // ── Bungkus dalam transaction + pessimistic lock ──────────────
+            DB::transaction(function () use (
+                $request, $pencariKos, $tglMulai, $tglSelesai,
+                $biayaLayanan, &$booking, &$kamar, &$kontrakan, &$totalHarga
+            ) {
+                $totalHarga = $biayaLayanan;
+
+                if ($request->kamar_id) {
+                    $kamar = Kamar::with('tipeKamar')
+                        ->lockForUpdate()
+                        ->findOrFail($request->kamar_id);
+
+                    // Cek ulang status setelah dapat lock
+                    if ($kamar->status_kamar !== 'tersedia') {
+                        throw new \Exception('kamar_tidak_tersedia');
+                    }
+
+                    $totalHarga += $kamar->tipeKamar->harga_per_bulan * $request->durasi_bulan;
+
+                    // Langsung ubah status sebelum booking dibuat
+                    $kamar->update(['status_kamar' => 'dihuni']);
+
+                } else {
+                    // lockForUpdate() pada kontrakan
+                    $kontrakan = Kontrakan::lockForUpdate()
+                        ->findOrFail($request->kontrakan_id);
+
+                    if ($kontrakan->sisa_kamar <= 0) {
+                        throw new \Exception('kontrakan_tidak_tersedia');
+                    }
+
+                    $totalHarga += $kontrakan->harga_sewa_tahun * $request->durasi_bulan;
+
+                    $kontrakan->decrement('sisa_kamar');
+                }
+
+                $booking = Booking::create([
+                    'pencari_kos_id'   => $pencariKos->id,
+                    'kamar_id'         => $request->kamar_id,
+                    'kontrakan_id'     => $request->kontrakan_id,
+                    'tgl_mulai_sewa'   => $tglMulai,
+                    'tgl_selesai_sewa' => $tglSelesai,
+                    'total_biaya'      => $totalHarga,
+                    'status_booking'   => 'pending',
+                ]);
+            });
+
+        } catch (\Exception $e) {
+            // Rollback otomatis oleh DB::transaction
+            $msg = match ($e->getMessage()) {
+                'kamar_tidak_tersedia'     => 'Maaf, kamar baru saja dipesan orang lain.',
+                'kontrakan_tidak_tersedia' => 'Maaf, kontrakan sudah penuh.',
+                default                    => 'Gagal membuat booking: ' . $e->getMessage(),
+            };
+
+            return response()->json(['success' => false, 'message' => $msg], 422);
+        }
+
+        if (!$booking) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membuat booking.',
+            ], 500);
+        }
+
+        // ── Buat transaksi Midtrans di luar transaction DB ────────────────
+        try {
+            $payment     = $midtrans->createOrRefreshTransaction($booking);
+            $redirectUrl = $payment?->snap_redirect_url ?? '';
+
+            if (empty($redirectUrl) && !empty($payment?->snap_token)) {
                 $redirectUrl = 'https://app.sandbox.midtrans.com/snap/v2/vtweb/' . $payment->snap_token;
             }
 
@@ -225,27 +258,30 @@ class BookingController extends Controller
                     optional(optional($booking->kontrakan)->pemilikProperti)->user
                 )->no_wa ?? '';
             }
+
             return response()->json([
                 'success'       => true,
                 'booking_id'    => $booking->id,
                 'snap_token'    => $payment->snap_token,
                 'redirect_url'  => $redirectUrl,
-                'total_harga'   => $totalHarga,
+                'total_harga'   => $booking->total_biaya,
                 'biaya_layanan' => $biayaLayanan,
                 'no_wa_pemilik' => $noWaPemilik,
             ], 201);
+
         } catch (\Exception $e) {
+            // Midtrans gagal → batalkan booking & kembalikan stok
             $booking->delete();
 
-            if (isset($kamar)) {
+            if ($kamar) {
                 $kamar->update(['status_kamar' => 'tersedia']);
-            } elseif (isset($kontrakan)) {
+            } elseif ($kontrakan) {
                 $kontrakan->increment('sisa_kamar');
             }
 
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal membuat transaksi: ' . $e->getMessage(),
+                'message' => 'Gagal membuat transaksi pembayaran: ' . $e->getMessage(),
             ], 422);
         }
     }
@@ -278,7 +314,7 @@ class BookingController extends Controller
         if (!in_array($booking->status_booking, ['batal', 'refund'])) {
             return response()->json([
                 'success' => false,
-                'message' => 'Booking aktif tidak bisa dihapus'
+                'message' => 'Booking aktif tidak bisa dihapus',
             ], 422);
         }
 
@@ -316,7 +352,10 @@ class BookingController extends Controller
 
         $existing = \App\Models\Refund::where('booking_id', $id)->first();
         if ($existing) {
-            return response()->json(['success' => false, 'message' => 'Refund sudah pernah diajukan'], 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Refund sudah pernah diajukan',
+            ], 422);
         }
 
         \App\Models\Refund::create([

@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class UlasanController extends Controller
 {
-    // Ambil ulasan properti
     public function index(Request $request)
     {
         $request->validate([
@@ -47,14 +46,13 @@ class UlasanController extends Controller
         });
 
         return response()->json([
-            'success'    => true,
-            'data'       => $ulasan,
-            'rata_rata'  => round($ulasan->avg('rating') ?? 0, 1),
-            'total'      => $ulasan->count(),
+            'success'   => true,
+            'data'      => $ulasan,
+            'rata_rata' => round($ulasan->avg('rating') ?? 0, 1),
+            'total'     => $ulasan->count(),
         ]);
     }
 
-    // Cek apakah user boleh review
     public function cekBolehReview(Request $request)
     {
         $request->validate([
@@ -73,24 +71,36 @@ class UlasanController extends Controller
             ]);
         }
 
-        // Cek sudah booking & lunas
         $bookingQuery = Booking::where('pencari_kos_id', $pencariKos->id)
             ->where('status_booking', 'lunas');
 
         if ($request->tipe === 'kosan') {
-            $sudahBooking = $bookingQuery->whereHas('tipeKamar', function ($q) use ($request) {
-                $q->where('kosan_id', $request->properti_id);
-            })->exists();
+            // Booking kosan: kamar_id → kamar → tipeKamar → kosan_id
+            $sudahBooking = (clone $bookingQuery)
+                ->whereHas('kamar.tipeKamar', function ($q) use ($request) {
+                    $q->where('kosan_id', $request->properti_id);
+                })->exists();
         } else {
-            $sudahBooking = $bookingQuery->where('kontrakan_id', $request->properti_id)->exists();
+            $sudahBooking = (clone $bookingQuery)
+                ->where('kontrakan_id', $request->properti_id)
+                ->exists();
         }
 
-        // Cek sudah pernah review
         $sudahReview = false;
         if ($sudahBooking) {
-            $bookingIds = Booking::where('pencari_kos_id', $pencariKos->id)
-                ->where('status_booking', 'lunas')
-                ->pluck('id');
+            if ($request->tipe === 'kosan') {
+                $bookingIds = Booking::where('pencari_kos_id', $pencariKos->id)
+                    ->where('status_booking', 'lunas')
+                    ->whereHas('kamar.tipeKamar', function ($q) use ($request) {
+                        $q->where('kosan_id', $request->properti_id);
+                    })
+                    ->pluck('id');
+            } else {
+                $bookingIds = Booking::where('pencari_kos_id', $pencariKos->id)
+                    ->where('status_booking', 'lunas')
+                    ->where('kontrakan_id', $request->properti_id)
+                    ->pluck('id');
+            }
 
             $sudahReview = Ulasan::whereIn('booking_id', $bookingIds)
                 ->where(function ($q) use ($request) {
@@ -124,18 +134,25 @@ class UlasanController extends Controller
         $pencariKos = $user->pencariKos;
 
         if (!$pencariKos) {
-            return response()->json(['success' => false, 'message' => 'Profil tidak ditemukan.'], 403);
+            return response()->json([
+                'success' => false,
+                'message' => 'Profil tidak ditemukan.',
+            ], 403);
         }
 
         $bookingQuery = Booking::where('pencari_kos_id', $pencariKos->id)
             ->where('status_booking', 'lunas');
 
         if ($request->tipe === 'kosan') {
-            $booking = $bookingQuery->whereHas('tipeKamar', function ($q) use ($request) {
-                $q->where('kosan_id', $request->properti_id);
-            })->latest()->first();
+            // Booking kosan: kamar_id → kamar → tipeKamar → kosan_id
+            $booking = (clone $bookingQuery)
+                ->whereHas('kamar.tipeKamar', function ($q) use ($request) {
+                    $q->where('kosan_id', $request->properti_id);
+                })->latest()->first();
         } else {
-            $booking = $bookingQuery->where('kontrakan_id', $request->properti_id)->latest()->first();
+            $booking = (clone $bookingQuery)
+                ->where('kontrakan_id', $request->properti_id)
+                ->latest()->first();
         }
 
         if (!$booking) {
@@ -186,19 +203,16 @@ class UlasanController extends Controller
         ]);
 
         $ulasan = Ulasan::findOrFail($id);
-
-        $user = $request->user();
+        $user   = $request->user();
         $pemilik = $user->pemilikProperti;
 
         if ($pemilik) {
             $isOwner = false;
-
             if ($ulasan->kosan_id) {
                 $isOwner = $ulasan->kosan?->pemilik_properti_id === $pemilik->id;
             } elseif ($ulasan->kontrakan_id) {
                 $isOwner = $ulasan->kontrakan?->pemilik_properti_id === $pemilik->id;
             }
-
             if (!$isOwner) {
                 return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
             }
@@ -233,10 +247,13 @@ class UlasanController extends Controller
                     'created_at'      => $item->created_at->diffForHumans(),
                     'is_anonymous'    => $item->is_anonymous,
                     'balasan_pemilik' => $item->balasan_pemilik,
-                    'properti_nama'   => $item->kosan?->nama ?? $item->kontrakan?->nama ?? '-',
+                    'properti_nama'   => $item->kosan?->nama_properti
+                                        ?? $item->kontrakan?->nama_properti
+                                        ?? '-',
                     'properti_tipe'   => $item->kosan_id ? 'Kosan' : 'Kontrakan',
                 ];
             });
+
         return response()->json(['success' => true, 'data' => $ulasan]);
     }
 
@@ -249,28 +266,36 @@ class UlasanController extends Controller
             return response()->json(['success' => true, 'data' => []]);
         }
 
-        $bookings = Booking::with(['kosan', 'kontrakan'])
+        $bookings = Booking::with(['kamar.tipeKamar.kosan', 'kontrakan'])
             ->where('pencari_kos_id', $pencariKos->id)
             ->where('status_booking', 'lunas')
             ->get()
             ->filter(function ($booking) {
-                $sudah = Ulasan::where('booking_id', $booking->id)->exists();
-                return !$sudah;
+                return !Ulasan::where('booking_id', $booking->id)->exists();
             })
             ->map(function ($booking) {
-                $isKosan = $booking->kosan_id !== null;
+                $isKosan = $booking->kamar_id !== null;
+
+                if ($isKosan) {
+                    $kosan = $booking->kamar?->tipeKamar?->kosan;
+                    return [
+                        'booking_id'    => $booking->id,
+                        'properti_id'   => $kosan?->id,
+                        'properti_nama' => $kosan?->nama_properti,
+                        'properti_tipe' => 'kosan',
+                        'tipe_kamar'    => $booking->kamar?->tipeKamar?->nama_tipe,
+                    ];
+                }
+
                 return [
                     'booking_id'    => $booking->id,
-                    'properti_id'   => $isKosan
-                        ? $booking->kosan_id
-                        : $booking->kontrakan_id,
-                    'properti_nama' => $isKosan
-                        ? $booking->kosan?->nama
-                        : $booking->kontrakan?->nama,
-                    'properti_tipe' => $isKosan ? 'kosan' : 'kontrakan',
+                    'properti_id'   => $booking->kontrakan_id,
+                    'properti_nama' => $booking->kontrakan?->nama_properti,
+                    'properti_tipe' => 'kontrakan',
                     'tipe_kamar'    => null,
                 ];
             })
+            ->filter(fn ($b) => $b['properti_id'] !== null) 
             ->values();
 
         return response()->json(['success' => true, 'data' => $bookings]);

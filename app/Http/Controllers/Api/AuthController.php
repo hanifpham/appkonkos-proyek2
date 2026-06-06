@@ -114,13 +114,13 @@ class AuthController extends Controller
             ], 403);
         }
 
-        // if (!$user->hasVerifiedEmail()) {
-        //     return response()->json([
-        //         'success'        => false,
-        //         'message'        => 'Email belum diverifikasi. Silakan cek inbox Anda.',
-        //         'email_verified' => false,
-        //     ], 403);
-        // }
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json([
+                'success'        => false,
+                'message'        => 'Email belum diverifikasi. Silakan cek inbox Anda.',
+                'email_verified' => false,
+            ], 403);
+        }
 
         return response()->json([
             'success' => true,
@@ -151,5 +151,15 @@ class AuthController extends Controller
         $user->sendEmailVerificationNotification();
 
         return response()->json(['success' => true, 'message' => 'Email verifikasi telah dikirim ulang']);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logout berhasil',
+        ]);
     }
 }

@@ -103,49 +103,129 @@
 
             <div class="overflow-x-auto">
                 <table class="min-w-full text-left text-sm">
-                    <thead class="bg-[#f8f9fb] text-[11px] uppercase tracking-[0.04em] text-slate-500 dark:bg-slate-950/80 dark:text-slate-300">
+                    <thead class="bg-slate-50 text-[11px] uppercase tracking-[0.08em] text-slate-500 dark:bg-slate-800 dark:text-slate-300">
                         <tr>
-                            <th class="px-6 py-4 font-semibold">ID Booking</th>
-                            <th class="px-6 py-4 font-semibold">Nama Penyewa</th>
+                            <th class="px-6 py-4 font-semibold">Penyewa</th>
                             <th class="px-6 py-4 font-semibold">Properti</th>
-                            <th class="px-6 py-4 font-semibold">Tanggal Mulai</th>
-                            <th class="px-6 py-4 font-semibold">Status Bayar</th>
+                            <th class="px-6 py-4 font-semibold">Check-in</th>
+                            <th class="px-6 py-4 font-semibold">Total Bayar</th>
+                            <th class="px-6 py-4 font-semibold">Status</th>
                             <th class="px-6 py-4 text-right font-semibold">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-[#edf0f4] dark:divide-slate-800">
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                         @forelse ($pesananTerbaru as $pesanan)
-                            <tr wire:key="booking-row-{{ $pesanan->id }}" class="transition hover:bg-[#fafbfc] dark:hover:bg-slate-800/30">
-                                <td class="px-6 py-5 font-semibold text-slate-800 dark:text-white">#{{ strtoupper(substr($pesanan->id, 0, 8)) }}</td>
+                            @php
+                                $penyewa = $pesanan->pencariKos?->user;
+
+                                // Property image URL
+                                if ($pesanan->kamar !== null) {
+                                    $propertyImageUrl = $pesanan->kamar->tipeKamar?->kosan?->getMediaDisplayUrl('foto_properti') ?? '';
+                                } else {
+                                    $propertyImageUrl = $pesanan->kontrakan?->getMediaDisplayUrl('foto_properti') ?? '';
+                                }
+
+                                // Property name
+                                if ($pesanan->kamar !== null) {
+                                    $propertyName = $pesanan->kamar->tipeKamar?->kosan?->nama_properti ?? 'Kosan';
+                                } else {
+                                    $propertyName = $pesanan->kontrakan?->nama_properti ?? 'Kontrakan';
+                                }
+
+                                // Property unit label
+                                if ($pesanan->kamar !== null) {
+                                    $propertyUnitLabel = 'Kamar ' . ($pesanan->kamar->nomor_kamar ?? '-');
+                                } elseif ($pesanan->kontrakan !== null) {
+                                    $propertyUnitLabel = 'Unit Utama';
+                                } else {
+                                    $propertyUnitLabel = '-';
+                                }
+
+                                // Booking display ID
+                                $bookingDisplayId = '#' . strtoupper(substr($pesanan->id, 0, 8));
+
+                                // Total bayar
+                                $totalBayar = (int) ($pesanan->pembayaran?->nominal_bayar ?? $pesanan->total_biaya ?? 0);
+                                $totalBayarFormatted = 'Rp ' . number_format($totalBayar, 0, ',', '.');
+
+                                // Payment status
+                                $normalizedStatus = $pesanan->pembayaran?->normalizedStatus() ?? 'pending';
+
+                                // Status label
+                                $statusLabel = match ($normalizedStatus) {
+                                    'lunas' => 'SETTLEMENT',
+                                    'gagal' => 'GAGAL',
+                                    'refund' => 'REFUNDED',
+                                    default => 'PENDING',
+                                };
+
+                                // Status classes
+                                $statusClasses = match ($normalizedStatus) {
+                                    'lunas' => 'bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-900/40',
+                                    'gagal' => 'bg-red-100 text-red-700 border border-red-200 dark:bg-red-950/30 dark:text-red-300 dark:border-red-900/40',
+                                    'refund' => 'bg-rose-100 text-rose-700 border border-rose-200 dark:bg-rose-950/30 dark:text-rose-300 dark:border-rose-900/40',
+                                    default => 'bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-900/40',
+                                };
+
+                                // Can sync Midtrans
+                                $canSync = $pesanan->pembayaran !== null
+                                    && filled($pesanan->pembayaran->midtrans_order_id)
+                                    && in_array($normalizedStatus, ['pending', 'gagal'], true);
+                            @endphp
+                            <tr wire:key="booking-row-{{ $pesanan->id }}" class="align-top transition hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
                                 <td class="px-6 py-5">
                                     <div class="flex items-center gap-3">
-                                        <div class="{{ $this->getPenyewaInitialsClasses($pesanan) }} flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold">
-                                            {{ $this->getPenyewaInitials($pesanan) }}
+                                        <div class="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-200">
+                                            {{ strtoupper(substr($penyewa?->name ?? 'P', 0, 1)) }}
                                         </div>
-                                        <span class="font-medium text-slate-700 dark:text-slate-200">{{ $pesanan->pencariKos?->user?->name ?? 'Penyewa' }}</span>
+                                        <div class="min-w-0">
+                                            <p class="font-semibold text-slate-900 dark:text-white">{{ $penyewa?->name ?? 'Penyewa' }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">{{ $bookingDisplayId }}</p>
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-5 text-slate-600 dark:text-slate-300">{{ $this->getBookingPropertyLabel($pesanan) }}</td>
-                                <td class="px-6 py-5 text-slate-600 dark:text-slate-300">{{ $pesanan->tgl_mulai_sewa?->locale('id')->translatedFormat('d M Y') }}</td>
                                 <td class="px-6 py-5">
-                                    <span class="{{ $this->getStatusBayarClasses($pesanan) }} rounded-full px-3 py-1.5 text-xs font-medium">
-                                        {{ $this->getStatusBayarLabel($pesanan) }}
+                                    <div class="flex items-center gap-3">
+                                        @if ($propertyImageUrl !== '')
+                                            <img src="{{ $propertyImageUrl }}" alt="{{ $propertyName }}" class="h-12 w-12 rounded-xl object-cover" loading="lazy">
+                                        @else
+                                            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-slate-100 to-slate-200 text-[10px] font-bold text-slate-500 dark:from-slate-800 dark:to-slate-700 dark:text-slate-300">
+                                                APK
+                                            </div>
+                                        @endif
+                                        <div class="min-w-0">
+                                            <p class="font-semibold text-slate-800 dark:text-slate-100">{{ $propertyName }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">{{ $propertyUnitLabel }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-5 text-slate-600 dark:text-slate-300">
+                                    {{ $pesanan->tgl_mulai_sewa?->locale('id')->translatedFormat('d M Y') ?? '-' }}
+                                </td>
+                                <td class="px-6 py-5">
+                                    <p class="font-semibold text-slate-900 dark:text-white">{{ $totalBayarFormatted }}</p>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <span class="{{ $statusClasses }} inline-flex rounded-full px-3 py-1 text-[11px] font-bold tracking-wide">
+                                        {{ $statusLabel }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-5 text-right">
-                                    @if ($this->canProcessBooking($pesanan))
-                                        <div class="flex flex-wrap items-center justify-end gap-2">
-                                            <button wire:click="konfirmasiBooking('{{ $pesanan->id }}')" wire:loading.attr="disabled" wire:target="konfirmasiBooking,tolakBooking" type="button" class="rounded-[10px] bg-[#0F4C81] px-4 py-2 text-xs font-medium text-white transition hover:bg-[#0c3c66] disabled:cursor-not-allowed disabled:opacity-60">
-                                                Konfirmasi
-                                            </button>
-                                            <button wire:click="tolakBooking('{{ $pesanan->id }}')" wire:loading.attr="disabled" wire:target="konfirmasiBooking,tolakBooking" type="button" class="rounded-[10px] border border-red-200 bg-red-50 px-4 py-2 text-xs font-medium text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-300">
-                                                Tolak
-                                            </button>
-                                        </div>
+                                    @if ($canSync)
+                                        <button
+                                            type="button"
+                                            wire:click="syncMidtrans('{{ $pesanan->id }}')"
+                                            wire:loading.attr="disabled"
+                                            wire:target="syncMidtrans"
+                                            class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#0F4C81] hover:text-[#0F4C81] disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300"
+                                        >
+                                            <span wire:loading.remove wire:target="syncMidtrans('{{ $pesanan->id }}')" class="material-symbols-outlined text-[16px]">sync</span>
+                                            <span wire:loading wire:target="syncMidtrans('{{ $pesanan->id }}')" class="material-symbols-outlined text-[16px] animate-spin">refresh</span>
+                                            <span wire:loading.remove wire:target="syncMidtrans('{{ $pesanan->id }}')">Sync Midtrans</span>
+                                            <span wire:loading wire:target="syncMidtrans('{{ $pesanan->id }}')">Memproses...</span>
+                                        </button>
                                     @else
-                                        <span class="text-xs italic text-slate-400 dark:text-slate-500">
-                                            {{ $pesanan->status_booking === 'batal' ? 'Booking dibatalkan' : 'Menunggu pembayaran' }}
-                                        </span>
+                                        <span class="text-xs text-slate-400 dark:text-slate-500">Tidak ada aksi</span>
                                     @endif
                                 </td>
                             </tr>

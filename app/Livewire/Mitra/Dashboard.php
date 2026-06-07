@@ -13,6 +13,7 @@ use App\Models\PemilikProperti;
 use App\Models\Setting;
 use App\Models\TipeKamar;
 use App\Models\User;
+use App\Services\MidtransService;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,6 +21,9 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Midtrans\Config as MidtransConfig;
+use Midtrans\Transaction;
+use Throwable;
 
 class Dashboard extends Component
 {
@@ -105,6 +109,55 @@ class Dashboard extends Component
         }
 
         session()->flash('dashboard_success', 'Booking berhasil ditolak.');
+
+        $this->refreshDashboard();
+    }
+
+    public function syncMidtrans(string $bookingId, MidtransService $midtransService): void
+    {
+        $this->configureMidtrans();
+
+        $booking = $this->ownedBookingsQuery()
+            ->with(['pembayaran', 'refund', 'kamar.tipeKamar.kosan', 'kontrakan'])
+            ->findOrFail($bookingId);
+
+        $payment = $booking->pembayaran;
+
+        if ($payment === null || blank($payment->midtrans_order_id)) {
+            $this->dispatch(
+                'appkonkos-toast',
+                icon: 'warning',
+                title: 'Order Midtrans belum tersedia',
+                text: 'Transaksi ini belum memiliki referensi order Midtrans untuk diverifikasi.'
+            );
+
+            return;
+        }
+
+        try {
+            $status = Transaction::status((string) $payment->midtrans_order_id);
+
+            $midtransService->syncPaymentStatus(
+                $payment,
+                json_decode(json_encode($status), true, 512, JSON_THROW_ON_ERROR)
+            );
+
+            $this->dispatch(
+                'appkonkos-toast',
+                icon: 'success',
+                title: 'Status tersinkronisasi',
+                text: 'Status pembayaran berhasil diperbarui dari Midtrans Sandbox.'
+            );
+        } catch (Throwable $exception) {
+            report($exception);
+
+            $this->dispatch(
+                'appkonkos-toast',
+                icon: 'error',
+                title: 'Sinkronisasi gagal',
+                text: 'Status pembayaran tidak dapat diverifikasi ke Midtrans saat ini.'
+            );
+        }
 
         $this->refreshDashboard();
     }
@@ -479,5 +532,13 @@ class Dashboard extends Component
                     $kosanQuery->where('pemilik_properti_id', $pemilikId);
                 });
         });
+    }
+
+    protected function configureMidtrans(): void
+    {
+        MidtransConfig::$serverKey = (string) config('midtrans.server_key');
+        MidtransConfig::$isProduction = (bool) config('midtrans.is_production', false);
+        MidtransConfig::$isSanitized = (bool) config('midtrans.is_sanitized', true);
+        MidtransConfig::$is3ds = (bool) config('midtrans.is_3ds', true);
     }
 }

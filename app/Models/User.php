@@ -16,6 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Notifications\VerifyEmailMobile;
 
 class User extends Authenticatable implements MustVerifyEmail, HasMedia
 {
@@ -87,5 +88,9 @@ class User extends Authenticatable implements MustVerifyEmail, HasMedia
     public function favorits(): HasMany
     {
         return $this->hasMany(Favorit::class, 'user_id');
+    }
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyEmailMobile);
     }
 }

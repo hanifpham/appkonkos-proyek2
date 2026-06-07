@@ -29,8 +29,9 @@ Route::prefix('auth')->group(function () {
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
+    // Setelah verified, redirect ke deep link app
     return redirect('appkonkos://email-verified?status=success');
-})->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
+})->middleware(['signed'])->name('verification.verify');
 
 Route::get('/all-properties', [PropertyController::class, 'index']);
 Route::get('/ulasan', [UlasanController::class, 'index']);

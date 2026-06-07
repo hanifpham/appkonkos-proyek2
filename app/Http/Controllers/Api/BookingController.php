@@ -32,11 +32,11 @@ class BookingController extends Controller
             if ($booking->kamar) {
                 $foto = $booking->kamar->tipeKamar?->kosan
                     ?->getFirstMediaUrl('foto_properti', 'webp') ?? '';
-                $foto = str_replace('http://localhost', 'http://192.168.1.8:8000', $foto);
+                $foto = str_replace('http://localhost',  config('app.url'), $foto);
             } elseif ($booking->kontrakan) {
                 $foto = $booking->kontrakan
                     ->getFirstMediaUrl('foto_properti', 'webp') ?? '';
-                $foto = str_replace('http://localhost', 'http://192.168.1.8:8000', $foto);
+                $foto = str_replace('http://localhost',  config('app.url'), $foto);
             }
 
             $nama = '';

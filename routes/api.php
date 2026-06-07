@@ -29,8 +29,22 @@ Route::prefix('auth')->group(function () {
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    // Setelah verified, redirect ke deep link app
-    return redirect('appkonkos://email-verified?status=success');
+    return response()->make('
+        <html>
+        <head>
+            <meta http-equiv="refresh" content="0;url=appkonkos://email-verified?status=success">
+        </head>
+        <body>
+            <script>
+                window.location = "appkonkos://email-verified?status=success";
+                setTimeout(function() {
+                    window.location = "appkonkos://email-verified?status=success";
+                }, 500);
+            </script>
+            <p>Verifikasi berhasil! Membuka aplikasi...</p>
+        </body>
+        </html>
+    ');
 })->middleware(['signed'])->name('verification.verify');
 
 Route::get('/all-properties', [PropertyController::class, 'index']);

@@ -56,7 +56,31 @@ class AppServiceProvider extends ServiceProvider
         User::observe(MediaCleanupObserver::class);
 
         RateLimiter::for('login', function (Request $request): Limit {
-            return Limit::perMinute(5)->by($request->ip());
+            return Limit::perMinute(5)
+                ->by($request->input('email') . '|' . $request->ip())
+                ->response(function () {
+                    return back()->withErrors([
+                        'email' => 'Terlalu banyak percobaan login. Silakan coba lagi dalam 1 menit.',
+                    ]);
+                });
+        });
+
+        RateLimiter::for('register', function (Request $request): Limit {
+            return Limit::perMinute(3)
+                ->by($request->ip())
+                ->response(function () {
+                    return back()->withErrors([
+                        'email' => 'Terlalu banyak percobaan registrasi. Silakan coba lagi dalam 1 menit.',
+                    ]);
+                });
+        });
+
+        RateLimiter::for('upload', function (Request $request): Limit {
+            return Limit::perMinute(20)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('api', function (Request $request): Limit {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
         RateLimiter::for('transaction', function (Request $request): Limit {

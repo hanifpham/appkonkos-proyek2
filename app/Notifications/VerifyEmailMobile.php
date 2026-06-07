@@ -3,10 +3,15 @@
 namespace App\Notifications;
 
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class VerifyEmailMobile extends VerifyEmail
+class VerifyEmailMobile extends VerifyEmail implements ShouldQueue
 {
+    use Queueable;
+
+    public int $tries = 3;
     // Biarkan verificationUrl() default (pakai https://)
     // Hanya override tampilan emailnya saja
 

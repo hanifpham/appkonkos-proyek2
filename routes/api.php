@@ -18,8 +18,8 @@ Route::post('/midtrans/notifications', MidtransNotificationController::class)->n
 Route::post('/midtrans/callback', MidtransNotificationController::class)->name('api.midtrans.callback');
 
 Route::prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:register');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
     Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
     Route::post('/google', [AuthController::class, 'googleLogin']);
     Route::middleware('auth:sanctum')->group(function () {

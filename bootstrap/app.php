@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\RedirectUnverifiedUsers;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -33,6 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'redirect.unverified' => RedirectUnverifiedUsers::class,
             'role' => RoleMiddleware::class,
         ]);
+
+        $middleware->append(SecurityHeaders::class);
 
         $middleware->redirectUsersTo(function (Request $request) {
             $role = $request->user()?->role ?? 'pencari';

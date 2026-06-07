@@ -6,11 +6,14 @@ namespace App\Notifications;
 
 use App\Models\PencairanDana;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class PencairanStatusNotification extends Notification
+class PencairanStatusNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    public int $tries = 3;
 
     public function __construct(
         protected PencairanDana $pencairan,

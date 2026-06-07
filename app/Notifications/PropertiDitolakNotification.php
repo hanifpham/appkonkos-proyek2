@@ -7,11 +7,14 @@ namespace App\Notifications;
 use App\Models\Kontrakan;
 use App\Models\Kosan;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class PropertiDitolakNotification extends Notification
+class PropertiDitolakNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    public int $tries = 3;
 
     public function __construct(
         protected Kosan|Kontrakan $properti,

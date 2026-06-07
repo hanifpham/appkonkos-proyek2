@@ -6,11 +6,14 @@ namespace App\Notifications;
 
 use App\Models\Booking;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class BookingSettlementNotification extends Notification
+class BookingSettlementNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    public int $tries = 3;
 
     public function __construct(
         protected Booking $booking,

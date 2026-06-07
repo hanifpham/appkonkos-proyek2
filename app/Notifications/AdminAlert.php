@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class AdminAlert extends Notification
+class AdminAlert extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    public int $tries = 3;
 
     public function __construct(
         protected string $title,

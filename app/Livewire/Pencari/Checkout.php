@@ -93,7 +93,7 @@ class Checkout extends Component
         if (!$this->tanggal_masuk) {
             return null;
         }
-        return Carbon::parse($this->tanggal_masuk)->addMonths($this->durasi_sewa)->format('d F Y');
+        return Carbon::parse($this->tanggal_masuk)->addMonths($this->durasi_sewa)->locale('id')->translatedFormat('d F Y');
     }
 
     #[Computed]
@@ -106,6 +106,12 @@ class Checkout extends Component
     {
         $user = Auth::user();
         $pencari = $user->pencariKos;
+
+        $noTelp = $user->no_telepon;
+        if (!filled($noTelp) || $noTelp === '-') {
+            session()->flash('error', 'Silakan tambahkan nomor WhatsApp yang valid di halaman profil sebelum melanjutkan.');
+            return;
+        }
         
         $jenisKelamin = $user->jenis_kelamin ?? $pencari?->jenis_kelamin;
         

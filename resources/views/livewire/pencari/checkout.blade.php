@@ -3,10 +3,28 @@
     $noTelp = auth()->user()->no_telepon;
     $jKelamin = $pencari?->jenis_kelamin;
     $pekerjaan = $pencari?->pekerjaan;
-    
-    $isDataLengkap = filled($noTelp) && filled($jKelamin) && filled($pekerjaan);
+
+    $isTeleponValid = filled($noTelp) && $noTelp !== '-';
+    $isDataLengkap = $isTeleponValid && filled($jKelamin) && filled($pekerjaan);
 @endphp
-<div class="min-h-screen bg-white font-[Inter] selection:bg-blue-200 selection:text-blue-900 pb-24 text-slate-800">
+<div
+    x-data="{
+        agreed: @entangle('setuju_aturan'),
+        isDataLengkap: @js($isDataLengkap),
+        isTeleponValid: @js($isTeleponValid),
+        timer: 900,
+        get canSubmit() {
+            return this.agreed && this.isDataLengkap;
+        },
+        formatTimer() {
+            const m = Math.floor(this.timer / 60).toString().padStart(2, '0');
+            const s = (this.timer % 60).toString().padStart(2, '0');
+            return m + ':' + s;
+        }
+    }"
+    x-init="setInterval(() => { if(timer > 0) timer-- }, 1000)"
+    class="min-h-screen bg-white font-[Inter] selection:bg-blue-200 selection:text-blue-900 pb-24 text-slate-800"
+>
     {{-- Simple Header --}}
     <header class="border-b border-slate-200 bg-white sticky top-16 z-20 h-16 sm:h-20 flex items-center">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 w-full flex items-center justify-between">
@@ -67,8 +85,12 @@
                             <span class="block text-base font-medium text-slate-900">{{ auth()->user()->email }}</span>
                         </div>
                         <div>
-                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Nomor Telepon</span>
-                            <span class="block text-base font-medium {{ $noTelp ? 'text-slate-900' : 'text-rose-500 italic' }}">{{ $noTelp ?? 'Belum diisi' }}</span>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Nomor Telepon / WhatsApp</span>
+                            @if($isTeleponValid)
+                                <span class="block text-base font-medium text-slate-900">{{ $noTelp }}</span>
+                            @else
+                                <span class="block text-base font-medium text-rose-500 italic">Belum diisi</span>
+                            @endif
                         </div>
                         <div>
                             <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Jenis Kelamin</span>
@@ -82,6 +104,24 @@
                         </div>
                     </div>
 
+                    {{-- Phone Number Warning --}}
+                    @if(!$isTeleponValid)
+                    <div class="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                        <div class="flex items-start gap-3 text-amber-800">
+                            <span class="material-symbols-outlined text-[24px] shrink-0">phone_missed</span>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold mb-1">Nomor WhatsApp Belum Valid</p>
+                                <p class="text-sm mb-4">Nomor WhatsApp aktif wajib diisi agar pemilik properti dapat menghubungi Anda. Silakan klik tombol di bawah untuk menambahkan nomor di halaman profil Anda.</p>
+                                <a href="{{ route('pencari.profil') }}" class="inline-flex w-full justify-center sm:w-auto items-center gap-2 rounded-lg bg-amber-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-700 transition-colors">
+                                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                                    Tambah Nomor WhatsApp di Profil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- Incomplete Profile Warning --}}
                     @if(!$isDataLengkap)
                     <div class="mt-6 rounded-lg border border-rose-200 bg-rose-50 p-4">
                         <div class="flex items-start gap-3 text-rose-700">
@@ -137,9 +177,12 @@
                 </div>
                 
                 @if($this->tanggalKeluar)
-                <div class="mt-4 flex items-center justify-between text-sm text-slate-600">
-                    <span>Perkiraan Check-out</span>
-                    <span class="font-semibold text-slate-900">{{ $this->tanggalKeluar }}</span>
+                <div class="mt-5 flex items-center gap-3 rounded-lg bg-slate-50 border border-slate-200 p-4">
+                    <span class="material-symbols-outlined text-[20px] text-slate-400">event_available</span>
+                    <div class="flex-1 flex items-center justify-between text-sm">
+                        <span class="text-slate-600">Perkiraan Check-out</span>
+                        <span class="font-semibold text-slate-900">{{ $this->tanggalKeluar }}</span>
+                    </div>
                 </div>
                 @endif
             </section>
@@ -173,11 +216,13 @@
                     @endforeach
                 </ul>
 
-                <label class="flex items-start gap-3 cursor-pointer p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                <label class="flex items-start gap-3 cursor-pointer p-4 rounded-lg border transition-colors"
+                    :class="agreed ? 'border-[#1967d2] bg-blue-50/50 ring-1 ring-[#1967d2]/20' : 'border-slate-200 hover:bg-slate-50'"
+                >
                     <div class="relative flex items-center mt-0.5">
-                        <input type="checkbox" wire:model.live="setuju_aturan" class="w-5 h-5 rounded border-slate-300 text-[#1967d2] focus:ring-[#1967d2] cursor-pointer">
+                        <input type="checkbox" x-model="agreed" wire:model.live="setuju_aturan" class="w-5 h-5 rounded border-slate-300 text-[#1967d2] focus:ring-[#1967d2] cursor-pointer">
                     </div>
-                    <span class="text-sm text-slate-900 font-medium">
+                    <span class="text-sm font-medium" :class="agreed ? 'text-[#1967d2]' : 'text-slate-900'">
                         Saya menyetujui Aturan Properti dan Ketentuan Layanan APPKONKOS.
                     </span>
                 </label>
@@ -192,10 +237,10 @@
                 <div class="rounded-xl sm:rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/40 p-5 sm:p-7">
                     
                     {{-- Timer Alert --}}
-                    <div x-data="{ timer: 900 }" x-init="setInterval(() => { if(timer > 0) timer-- }, 1000)" class="mb-6 flex items-center gap-3 rounded-lg bg-amber-50 p-3 text-amber-800 border border-amber-200">
+                    <div class="mb-6 flex items-center gap-3 rounded-lg bg-amber-50 p-3 text-amber-800 border border-amber-200">
                         <span class="material-symbols-outlined text-[20px]">timer</span>
                         <div class="flex-1 text-sm">
-                            Selesaikan pembayaran dalam <span class="font-bold" x-text="Math.floor(timer / 60).toString().padStart(2, '0') + ':' + (timer % 60).toString().padStart(2, '0')"></span>
+                            Selesaikan pesanan dalam <span class="font-bold" x-text="formatTimer()"></span>
                         </div>
                     </div>
 
@@ -227,7 +272,7 @@
                     
                     <div class="space-y-4 mb-6 text-sm text-slate-600">
                         <div class="flex justify-between items-center">
-                            <span>Harga Sewa ({{ $durasi_sewa }} {{ $tipeProperti === 'kosan' ? 'Bulan' : 'Tahun' }})</span>
+                            <span>Harga Sewa ({{ $durasi_sewa }} {{ $tipeProperti === 'kosan' ? 'Bulan' : 'Bulan' }})</span>
                             <span class="text-slate-900">Rp {{ number_format($this->hargaSewa, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between items-center">
@@ -246,8 +291,11 @@
                     <button 
                         wire:click="prosesPembayaran" 
                         wire:loading.attr="disabled"
-                        @disabled(!$setuju_aturan || !$isDataLengkap)
-                        class="w-full rounded-lg bg-[#1967d2] hover:bg-[#1556b0] py-4 text-base font-semibold text-white shadow-md transition-colors disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none flex items-center justify-center gap-2"
+                        x-bind:disabled="!canSubmit"
+                        class="w-full rounded-lg py-4 text-base font-semibold shadow-md transition-all duration-200 flex items-center justify-center gap-2"
+                        :class="canSubmit
+                            ? 'bg-[#1967d2] hover:bg-[#1556b0] text-white cursor-pointer shadow-blue-200/50'
+                            : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'"
                     >
                         <span wire:loading.remove wire:target="prosesPembayaran">Konfirmasi & Bayar</span>
                         <span wire:loading wire:target="prosesPembayaran" class="flex items-center gap-2">
@@ -256,9 +304,14 @@
                         </span>
                     </button>
                     
+                    {{-- Contextual warning messages below button --}}
                     @if(!$isDataLengkap)
                     <p class="mt-3 text-center text-xs font-semibold text-rose-500">Silakan lengkapi profil Anda terlebih dahulu.</p>
                     @endif
+
+                    <p x-show="!agreed && isDataLengkap" x-cloak class="mt-3 text-center text-xs font-semibold text-amber-600">
+                        Centang persetujuan aturan properti untuk melanjutkan.
+                    </p>
                     
                     <div class="mt-4 flex items-center justify-center gap-2 text-xs font-medium text-slate-500">
                         <span class="material-symbols-outlined text-[16px]">lock</span>
@@ -278,6 +331,7 @@
             animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
         }
+        [x-cloak] { display: none !important; }
     </style>
 </div>
 

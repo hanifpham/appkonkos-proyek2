@@ -31,6 +31,8 @@ use App\Livewire\SuperAdmin\PengaturanProfil as SuperAdminPengaturanProfil;
 use App\Livewire\SuperAdmin\TransaksiMidtrans as SuperAdminTransaksiMidtrans;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 Route::post('/midtrans/callback', MidtransNotificationController::class)->name('midtrans.callback');
 
@@ -95,3 +97,50 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::get('/superadmin/refund', SuperAdminPengajuanRefund::class)->name('superadmin.refund');
     Route::get('/superadmin/pengaturan-profil', SuperAdminPengaturanProfil::class)->name('superadmin.pengaturan-profil');
 });
+
+// KODE BARU: BAJAK RUTE VERIFIKASI EMAIL LARAVEL
+Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+    $user = User::findOrFail($id);
+
+    if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        return response()->json(['message' => 'Link verifikasi tidak sah atau kedaluwarsa.'], 403);
+    }
+
+    if (! $user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+        event(new \Illuminate\Auth\Events\Verified($user)); 
+    }
+
+    return response()->make('
+        <html>
+        <head>
+            <title>Verifikasi Berhasil - APPKONKOS</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 40px 20px; background-color: #f4f7f6; color: #333; }
+                .box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 400px; margin: auto; }
+                .icon { font-size: 50px; margin-bottom: 10px; }
+                .btn { display: block; padding: 14px 24px; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 15px; transition: 0.3s; }
+                .btn-mobile { background-color: #0056b3; }
+                .btn-mobile:hover { background-color: #004494; }
+                .btn-web { background-color: #28a745; }
+                .btn-web:hover { background-color: #218838; }
+                .text-muted { font-size: 14px; color: #6c757d; margin-top: 25px; }
+            </style>
+        </head>
+        <body>
+            <div class="box">
+                <div class="icon">✅</div>
+                <h2>Verifikasi Berhasil!</h2>
+                <p>Akun <b>' . htmlspecialchars($user->name) . '</b> sudah aktif dan siap digunakan.</p>
+                
+                <p class="text-muted">Lanjutkan ke aplikasi yang sedang kamu gunakan:</p>
+                
+                <a href="appkonkos://email-verified" class="btn btn-mobile">📱 Buka di Aplikasi Mobile</a>
+                
+                <a href="/login" class="btn btn-web">💻 Lanjut Login di Website</a>
+            </div>
+        </body>
+        </html>
+    ');
+})->middleware(['signed'])->name('verification.verify');

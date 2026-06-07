@@ -7,8 +7,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PropertyController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\BookingController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\Api\UlasanController;
+use App\Models\User; // 1. DITAMBAHKAN: Mengimpor Model User untuk eksekusi manual
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -27,25 +27,54 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
+// --- 2. BAGIAN UTAMA YANG DIUBAH TOTAL ---
+Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+    // Cari usernya secara manual berdasarkan ID yang dikirim dari URL email
+    $user = User::findOrFail($id);
+
+    // Validasi kecocokan hash/token keamanan bawaan Laravel
+    if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        return response()->json(['message' => 'Link verifikasi tidak sah atau sudah kedaluwarsa.'], 403);
+    }
+
+    // Jika lolos validasi dan status di DB masih NULL, ubah ke waktu sekarang (Verifikasi Sukses)
+    if (! $user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+        event(new \Illuminate\Auth\Events\Verified($user)); 
+    }
+
+    // Return HTML interaktif lengkap dengan tombol manual untuk menjebol blokir Chrome
     return response()->make('
         <html>
         <head>
-            <meta http-equiv="refresh" content="0;url=appkonkos://email-verified?status=success">
+            <title>Verifikasi Akun APPKONKOS</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body { font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f9f9f9; color: #333; }
+                .btn { display: inline-block; padding: 12px 24px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .loader { border: 4px solid #f3f3f3; border-top: 4px solid #2196F3; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            </style>
         </head>
         <body>
+            <div class="loader"></div>
+            <h2>Verifikasi Berhasil!</h2>
+            <p>Akun Anda sudah aktif. Membuka aplikasi APPKONKOS...</p>
+            
+            <a href="appkonkos://email-verified" class="btn">Buka Aplikasi Manual</a>
+
             <script>
-                window.location = "appkonkos://email-verified?status=success";
+                // Otomatis coba lempar ke aplikasi Flutter
+                window.location = "appkonkos://email-verified";
                 setTimeout(function() {
-                    window.location = "appkonkos://email-verified?status=success";
-                }, 500);
+                    window.location = "appkonkos://email-verified";
+                }, 1000);
             </script>
-            <p>Verifikasi berhasil! Membuka aplikasi...</p>
         </body>
         </html>
     ');
 })->middleware(['signed'])->name('verification.verify');
+// --- AKHIR DARI BAGIAN YANG DIUBAH ---
 
 Route::get('/all-properties', [PropertyController::class, 'index']);
 Route::get('/ulasan', [UlasanController::class, 'index']);

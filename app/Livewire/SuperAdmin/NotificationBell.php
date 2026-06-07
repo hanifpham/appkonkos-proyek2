@@ -18,11 +18,20 @@ class NotificationBell extends Component
         ];
     }
 
+    public function placeholder(): string
+    {
+        return <<<'HTML'
+        <div class="inline-flex h-10 w-10 items-center justify-center rounded-full">
+            <div class="h-6 w-6 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse"></div>
+        </div>
+        HTML;
+    }
+
     public function render(): View
     {
         /** @var \App\Models\User|null $user */
         $user = \Illuminate\Support\Facades\Auth::user();
-        
+
         /** @var Collection<int, DatabaseNotification> $notifications */
         $notifications = $user?->unreadNotifications()->latest()->limit(5)->get() ?? collect();
         $unreadCount = $user?->unreadNotifications()->count() ?? 0;
@@ -46,7 +55,7 @@ class NotificationBell extends Component
         /** @var \App\Models\User|null $user */
         $user = \Illuminate\Support\Facades\Auth::user();
         $user?->unreadNotifications->markAsRead();
-        
+
         $this->dispatch(
             'appkonkos-toast',
             icon: 'success',

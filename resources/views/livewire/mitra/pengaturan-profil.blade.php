@@ -559,16 +559,14 @@
 
         @if ($activeTab === 'keamanan_akun')
             <div class="jetstream-security-panel space-y-6">
-                @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::updatePasswords()))
-                    <section class="jetstream-security-card overflow-hidden rounded-xl border border-gray-100 bg-surface-light p-6 shadow-sm dark:border-gray-700 dark:bg-surface-dark">
-                        <div class="mb-6 border-b border-gray-100 pb-5 dark:border-gray-700">
-                            <h3 class="text-base font-bold text-gray-800 dark:text-white">Ganti Password</h3>
-                            <p class="mt-1 text-xs leading-6 text-gray-500 dark:text-gray-400">Gunakan form Jetstream agar validasi password saat ini dan hashing tetap mengikuti standar Laravel.</p>
-                        </div>
+                <section class="jetstream-security-card overflow-hidden rounded-xl border border-gray-100 bg-surface-light p-6 shadow-sm dark:border-gray-700 dark:bg-surface-dark">
+                    <div class="mb-6 border-b border-gray-100 pb-5 dark:border-gray-700">
+                        <h3 class="text-base font-bold text-gray-800 dark:text-white">Ganti Password</h3>
+                        <p class="mt-1 text-xs leading-6 text-gray-500 dark:text-gray-400">Perbarui password Anda secara berkala untuk menjaga keamanan akun mitra.</p>
+                    </div>
 
-                        @livewire('profile.update-password-form')
-                    </section>
-                @endif
+                    @livewire('mitra.ubah-password')
+                </section>
 
                 @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
                     <section class="jetstream-security-card overflow-hidden rounded-xl border border-gray-100 bg-surface-light p-6 shadow-sm dark:border-gray-700 dark:bg-surface-dark">

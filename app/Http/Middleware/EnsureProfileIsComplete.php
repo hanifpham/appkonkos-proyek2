@@ -15,20 +15,25 @@ class EnsureProfileIsComplete
     {
         $user = $request->user();
 
-        // 1. Cek apakah user sudah login dan mempunyai role 'pemilik' (Mitra)
         if ($user && $user->role === 'pemilik') {
             
-            // 2. Cek apakah field esensial masih kosong atau default
-            $isProfileIncomplete = 
-                is_null($user->no_telepon) || 
-                empty(trim($user->no_telepon)) || 
-                $user->no_telepon === '-' || 
-                is_null($user->jenis_kelamin);
+            // Define the exact fields that must not be null/empty
+            $requiredFields = ['no_telepon', 'jenis_kelamin'];
 
-            // 3. Jika profil belum lengkap, blokir dan arahkan ke pengaturan profil
-            if ($isProfileIncomplete) {
-                return redirect()->route('mitra.pengaturan-profil')
-                    ->with('error', 'Akses Ditolak! Anda wajib melengkapi data diri (Nomor Telepon, Jenis Kelamin, dll) sebelum dapat mengelola properti.');
+            foreach ($requiredFields as $field) {
+                $value = $user->$field;
+
+                // Strict Evaluation: incomplete ONLY IF null, "", or "-"
+                if ($value === null || $value === '' || $value === '-') {
+                    
+                    // DEBUGGING DIAGNOSTIC TOOL
+                    // TODO: Once you find the problematic column, comment out the line below:
+                    dd('Middleware Error: Missing data detected in column -> ' . $field, 'Current User Data:', $user->toArray());
+
+                    // TODO: ... and uncomment the redirect block below:
+                    // return redirect()->route('mitra.pengaturan-profil')
+                    //     ->with('error', 'Akses Ditolak! Anda wajib melengkapi data diri (Nomor Telepon, Jenis Kelamin, dll) sebelum dapat mengelola properti.');
+                }
             }
         }
 

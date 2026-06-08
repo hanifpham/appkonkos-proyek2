@@ -186,13 +186,7 @@ class TransaksiMidtrans extends Component
 
     public function getMetodeLabel(Pembayaran $item): string
     {
-        $metode = trim((string) $item->metode_bayar);
-
-        if ($metode === '') {
-            return '-';
-        }
-
-        return Str::upper(str_replace('_', ' ', $metode));
+        return $item->metode_bayar_formatted;
     }
 
     /**

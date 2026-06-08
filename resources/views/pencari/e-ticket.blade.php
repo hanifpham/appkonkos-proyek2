@@ -225,7 +225,7 @@
                 <div class="w-full mb-6">
                     <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Metode Pembayaran</div>
                     <div class="font-bold text-slate-800 text-sm capitalize">
-                        {{ str_replace('_', ' ', $booking->pembayaran->metode_bayar ?? 'Midtrans') }}
+                        {{ $booking->pembayaran?->metode_bayar_formatted ?? 'Midtrans' }}
                     </div>
                     <div class="text-[10px] text-slate-500 mt-0.5">
                         {{ $booking->pembayaran->waktu_bayar ? $booking->pembayaran->waktu_bayar->translatedFormat('d M Y, H:i') : $booking->pembayaran->updated_at->translatedFormat('d M Y, H:i') }}

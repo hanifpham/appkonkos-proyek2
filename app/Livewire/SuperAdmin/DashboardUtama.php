@@ -253,9 +253,7 @@ class DashboardUtama extends Component
 
     public function getMetodePembayaran(Booking $booking): string
     {
-        $metode = trim((string) ($booking->pembayaran?->metode_bayar ?? ''));
-
-        return $metode !== '' ? Str::upper($metode) : '-';
+        return $booking->pembayaran?->metode_bayar_formatted ?? '-';
     }
 
     public function getNominalTransaksi(Booking $booking): int

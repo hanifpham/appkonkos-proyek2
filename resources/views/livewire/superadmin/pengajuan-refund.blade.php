@@ -155,17 +155,8 @@
 
                             <td class="px-6 py-5">
                                 @if($refund->pembayaran && $refund->pembayaran->metode_bayar)
-                                    @php
-                                        $rawMetode = strtolower($refund->pembayaran->metode_bayar);
-                                        if ($rawMetode === 'echannel') $metodeText = 'Mandiri VA';
-                                        elseif ($rawMetode === 'cstore') $metodeText = 'Minimarket';
-                                        elseif ($rawMetode === 'gopay') $metodeText = 'GoPay';
-                                        elseif ($rawMetode === 'qris') $metodeText = 'QRIS';
-                                        elseif ($rawMetode === 'shopeepay') $metodeText = 'ShopeePay';
-                                        else $metodeText = trim(str_ireplace(['bank_transfer_', 'bank transfer ', '_'], ['', '', ' '], $rawMetode));
-                                    @endphp
-                                    <span class="inline-block whitespace-nowrap px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs uppercase tracking-wider font-semibold">
-                                        {{ $metodeText }}
+                                    <span class="inline-block whitespace-nowrap px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs uppercase tracking-wider font-semibold border border-blue-100">
+                                        {{ $refund->pembayaran->metode_bayar_formatted }}
                                     </span>
                                 @else
                                     <span class="text-gray-400 italic text-xs">Belum Tersedia</span>
@@ -188,30 +179,28 @@
                                         @endphp
 
                                         @if(in_array($metode, $metodeManual) || str_starts_with($metode, 'bank_transfer'))
-                                            <button wire:click="tandaiSudahDitransfer({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition shadow-sm">
-                                                <svg wire:loading.remove wire:target="tandaiSudahDitransfer({{ $refund->id }})" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <button wire:click="tandaiSudahDitransfer({{ $refund->id }})" 
+                                                class="group inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-emerald-500 bg-emerald-50 px-3 text-[11px] font-bold text-emerald-600 transition-all hover:bg-emerald-500 hover:text-white dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:hover:bg-emerald-500" title="Tandai Ditransfer">
+                                                <span wire:loading.remove wire:target="tandaiSudahDitransfer({{ $refund->id }})" class="material-symbols-outlined text-[16px]">check</span>
                                                 <span wire:loading.remove wire:target="tandaiSudahDitransfer({{ $refund->id }})">Tandai Ditransfer</span>
-                                                <span wire:loading wire:target="tandaiSudahDitransfer({{ $refund->id }})" class="flex items-center gap-1">
-                                                    <span class="material-symbols-outlined animate-spin text-[14px]">sync</span>
-                                                    Memproses...
-                                                </span>
+                                                <span wire:loading wire:target="tandaiSudahDitransfer({{ $refund->id }})" class="material-symbols-outlined text-[16px] animate-spin">refresh</span>
                                             </button>
                                         @else
-                                            <button wire:click="prosesRefund({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-[#1967d2] hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">
-                                                <svg wire:loading.remove wire:target="prosesRefund({{ $refund->id }})" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                            <button wire:click="prosesRefund({{ $refund->id }})" 
+                                                class="group inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-blue-500 bg-blue-50 px-3 text-[11px] font-bold text-blue-600 transition-all hover:bg-blue-600 hover:text-white dark:border-blue-500/30 dark:bg-blue-500/10 dark:hover:bg-blue-500" title="Refund Otomatis">
+                                                <span wire:loading.remove wire:target="prosesRefund({{ $refund->id }})" class="material-symbols-outlined text-[16px]">payments</span>
                                                 <span wire:loading.remove wire:target="prosesRefund({{ $refund->id }})">Refund Otomatis</span>
-                                                <span wire:loading wire:target="prosesRefund({{ $refund->id }})" class="flex items-center gap-1">
-                                                    <span class="material-symbols-outlined animate-spin text-[14px]">sync</span>
-                                                    Memproses...
-                                                </span>
+                                                <span wire:loading wire:target="prosesRefund({{ $refund->id }})" class="material-symbols-outlined text-[16px] animate-spin">refresh</span>
                                             </button>
                                         @endif
                                         
-                                        <button wire:click="tinjauPengajuan({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg transition shadow-sm">
+                                        <button wire:click="tinjauPengajuan({{ $refund->id }})" 
+                                            class="inline-flex h-8 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-[11px] font-bold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-700" title="Detail">
                                             Detail
                                         </button>
                                     @else
-                                        <button wire:click="tinjauPengajuan({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg transition shadow-sm">
+                                        <button wire:click="tinjauPengajuan({{ $refund->id }})" 
+                                            class="inline-flex h-8 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-[11px] font-bold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-700" title="Detail">
                                             Detail
                                         </button>
                                     @endif
@@ -307,7 +296,7 @@
                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Pembayaran</span>
                             <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">{{ $this->getTransactionDisplayId($detailRefund) }}</p>
                             <p class="text-xs text-gray-500">
-                                {{ strtoupper((string) ($detailRefund->pembayaran?->metode_bayar ?? '-')) }}
+                                {{ $detailRefund->pembayaran?->metode_bayar_formatted ?? '-' }}
                                 |
                                 Rp {{ number_format((int) ($detailRefund->pembayaran?->nominal_bayar ?? 0), 0, ',', '.') }}
                             </p>
@@ -376,7 +365,7 @@
                         <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-slate-800/40">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Order Midtrans</span>
                             <p class="mt-1 text-sm font-bold text-gray-900 dark:text-white">{{ $selectedRefund->pembayaran?->midtrans_order_id ?? '-' }}</p>
-                            <p class="text-xs text-gray-500">{{ strtoupper((string) ($selectedRefund->pembayaran?->metode_bayar ?? '-')) }}</p>
+                            <p class="text-xs text-gray-500">{{ $selectedRefund->pembayaran?->metode_bayar_formatted ?? '-' }}</p>
                         </div>
                     </div>
 

@@ -182,6 +182,24 @@ class Pembayaran extends Model
         return $this->normalizedStatus() === 'gagal';
     }
 
+    public function getMetodeBayarFormattedAttribute(): string
+    {
+        $rawMetode = strtolower((string) $this->metode_bayar);
+        
+        if (empty($rawMetode) || $rawMetode === '-') {
+            return 'Belum Tersedia';
+        }
+        
+        if ($rawMetode === 'echannel') return 'Mandiri VA';
+        if ($rawMetode === 'cstore') return 'Minimarket';
+        if ($rawMetode === 'gopay') return 'GoPay';
+        if ($rawMetode === 'qris') return 'QRIS';
+        if ($rawMetode === 'shopeepay') return 'ShopeePay';
+        
+        $cleaned = str_ireplace(['bank_transfer_', 'bank transfer ', '_'], ['', '', ' '], $rawMetode);
+        return strtoupper(trim($cleaned));
+    }
+
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class, 'booking_id');

@@ -124,41 +124,76 @@ $durationOptions = $isKosan
 
     {{-- Gallery Hero --}}
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-12 animate-fade-in-up" style="animation-delay: 100ms;">
-        <div class="relative grid h-[250px] sm:h-[400px] lg:h-[500px] grid-cols-4 grid-rows-2 gap-1.5 sm:gap-2 overflow-hidden rounded-2xl sm:rounded-[2rem]">
-            {{-- Main Photo --}}
-            <div class="col-span-4 row-span-2 md:col-span-2 relative group cursor-pointer" @click="photos.length && (galleryOpen = true, activePhoto = 0)">
-                @if($mainPhoto)
-                    <img src="{{ $mainPhoto }}" alt="{{ $properti->nama_properti }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
-                    <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
-                @else
-                    <div class="flex h-full w-full items-center justify-center bg-slate-200 text-slate-500">
+        @php 
+            $photoCount = $photos->count(); 
+            $frontPhotos = $photos->skip(1)->take(3)->values(); 
+        @endphp
+
+        <div class="relative">
+            @if($photoCount === 0)
+                <div class="relative h-[250px] sm:h-[400px] lg:h-[500px] w-full overflow-hidden rounded-2xl sm:rounded-[2rem] bg-slate-200">
+                    <div class="flex h-full w-full items-center justify-center text-slate-500">
                         <span class="material-symbols-outlined text-4xl">image</span>
                     </div>
-                @endif
-            </div>
-            
-            {{-- Secondary Photos --}}
-            @php $frontPhotos = $photos->skip(1)->take(4)->values(); @endphp
-            @for($i = 0; $i < 4; $i++)
-                @php $photo = $frontPhotos->get($i); @endphp
-                <div class="hidden md:block col-span-1 row-span-1 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = {{ $i + 1 }}">
-                    @if($photo)
-                        <img src="{{ $photo }}" alt="Foto {{ $i+2 }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+                </div>
+            @elseif($photoCount === 1)
+                <div class="relative h-[250px] sm:h-[400px] lg:h-[500px] w-full overflow-hidden rounded-2xl sm:rounded-[2rem] group cursor-pointer" @click="galleryOpen = true; activePhoto = 0">
+                    <img src="{{ $mainPhoto }}" alt="{{ $properti->nama_properti }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                    <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
+                </div>
+            @elseif($photoCount === 2)
+                <div class="relative grid h-[250px] sm:h-[400px] lg:h-[500px] grid-cols-1 md:grid-cols-2 gap-1.5 sm:gap-2 overflow-hidden rounded-2xl sm:rounded-[2rem]">
+                    <div class="col-span-1 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = 0">
+                        <img src="{{ $mainPhoto }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
                         <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
-                        @if($i === 3 && $photos->count() > 5)
+                    </div>
+                    <div class="hidden md:block col-span-1 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = 1">
+                        <img src="{{ $frontPhotos->get(0) }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                        <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
+                    </div>
+                </div>
+            @elseif($photoCount === 3)
+                <div class="relative grid h-[250px] sm:h-[400px] lg:h-[500px] grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-1.5 sm:gap-2 overflow-hidden rounded-2xl sm:rounded-[2rem]">
+                    <div class="col-span-1 md:row-span-2 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = 0">
+                        <img src="{{ $mainPhoto }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                        <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
+                    </div>
+                    <div class="hidden md:block col-span-1 md:row-span-1 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = 1">
+                        <img src="{{ $frontPhotos->get(0) }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                        <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
+                    </div>
+                    <div class="hidden md:block col-span-1 md:row-span-1 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = 2">
+                        <img src="{{ $frontPhotos->get(1) }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                        <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
+                    </div>
+                </div>
+            @else
+                <div class="relative grid h-[250px] sm:h-[400px] lg:h-[500px] grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-1.5 sm:gap-2 overflow-hidden rounded-2xl sm:rounded-[2rem]">
+                    <div class="col-span-1 md:col-span-2 md:row-span-2 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = 0">
+                        <img src="{{ $mainPhoto }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                        <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
+                    </div>
+                    <div class="hidden md:block md:col-span-2 md:row-span-1 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = 1">
+                        <img src="{{ $frontPhotos->get(0) }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                        <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
+                    </div>
+                    <div class="hidden md:block md:col-span-1 md:row-span-1 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = 2">
+                        <img src="{{ $frontPhotos->get(1) }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                        <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
+                    </div>
+                    <div class="hidden md:block md:col-span-1 md:row-span-1 relative group cursor-pointer overflow-hidden" @click="galleryOpen = true; activePhoto = 3">
+                        <img src="{{ $frontPhotos->get(2) }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                        <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-transparent"></div>
+                        @if($photoCount > 4)
                             <div class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-colors group-hover:bg-black/50">
-                                <span class="text-lg font-bold text-white">+{{ $photos->count() - 5 }} Foto</span>
+                                <span class="text-lg font-bold text-white">+{{ $photoCount - 4 }} Foto</span>
                             </div>
                         @endif
-                    @else
-                        <div class="flex h-full w-full items-center justify-center bg-slate-100 text-slate-300">
-                            <span class="material-symbols-outlined text-2xl">image</span>
-                        </div>
-                    @endif
+                    </div>
                 </div>
-            @endfor
+            @endif
 
-            @if($photos->isNotEmpty())
+            @if($photoCount > 0)
             <button @click="galleryOpen = true; activePhoto = 0" class="absolute bottom-6 right-6 z-10 flex items-center gap-2 rounded-xl bg-white/90 px-4 py-2.5 text-sm font-bold text-slate-800 shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-white">
                 <span class="material-symbols-outlined text-[18px]">grid_view</span>
                 Lihat Semua Foto
@@ -477,9 +512,13 @@ $durationOptions = $isKosan
                                     <p class="text-xs font-medium text-slate-500">{{ $review->created_at?->translatedFormat('d F Y') }}</p>
                                 </div>
                             </div>
-                            <div class="flex gap-1 mb-3 text-amber-400">
+                            <div class="flex gap-1 mb-3">
                                 @for($i = 1; $i <= 5; $i++)
-                                <span class="material-symbols-outlined text-[16px] {{ $i <= (int) $review->rating ? 'fill-current' : '' }}">star</span>
+                                    @if($i <= (int) $review->rating)
+                                        <span class="material-symbols-outlined text-[16px] text-amber-400" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    @else
+                                        <span class="material-symbols-outlined text-[16px] text-slate-300">star</span>
+                                    @endif
                                 @endfor
                             </div>
                             <p class="text-sm leading-relaxed text-slate-700">{{ $review->komentar }}</p>
@@ -542,12 +581,51 @@ $durationOptions = $isKosan
                         {{-- Date Selection --}}
                         <div>
                             <label class="mb-2 block text-sm font-bold text-slate-900">Mulai Sewa</label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-[#1967d2]">
-                                    <span class="material-symbols-outlined text-[20px]">event</span>
+                            <div x-data="{ 
+                                    dateValue: @entangle('tanggalCheckIn')
+                                }"
+                                x-init="
+                                    const initPicker = () => {
+                                        flatpickr($refs.picker, {
+                                            locale: 'id',
+                                            dateFormat: 'Y-m-d',
+                                            altInput: true,
+                                            altFormat: 'd/m/Y',
+                                            minDate: 'today',
+                                            defaultDate: dateValue,
+                                            onChange: function(selectedDates, dateStr, instance) {
+                                                dateValue = dateStr;
+                                            }
+                                        });
+                                    };
+                                    
+                                    if (typeof flatpickr === 'undefined') {
+                                        const link = document.createElement('link');
+                                        link.rel = 'stylesheet';
+                                        link.href = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css';
+                                        document.head.appendChild(link);
+
+                                        const script = document.createElement('script');
+                                        script.src = 'https://cdn.jsdelivr.net/npm/flatpickr';
+                                        script.onload = () => {
+                                            const idScript = document.createElement('script');
+                                            idScript.src = 'https://npmcdn.com/flatpickr/dist/l10n/id.js';
+                                            idScript.onload = () => initPicker();
+                                            document.head.appendChild(idScript);
+                                        };
+                                        document.head.appendChild(script);
+                                    } else {
+                                        initPicker();
+                                    }
+                                "
+                            >
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-[#1967d2] z-10">
+                                        <span class="material-symbols-outlined text-[20px]">event</span>
+                                    </div>
+                                    <input x-ref="picker" type="text" placeholder="DD/MM/YYYY"
+                                           class="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-12 pr-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-[#1967d2] focus:ring-4 focus:ring-[#1967d2]/10 hover:border-slate-300">
                                 </div>
-                                <input type="date" wire:model.live="tanggalCheckIn" min="{{ now()->toDateString() }}" 
-                                       class="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-12 pr-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-[#1967d2] focus:ring-4 focus:ring-[#1967d2]/10 hover:border-slate-300">
                             </div>
                             @error('tanggalCheckIn') <p class="mt-1.5 text-xs font-bold text-red-500">{{ $message }}</p> @enderror
                         </div>
@@ -623,17 +701,17 @@ $durationOptions = $isKosan
 
     {{-- Gallery Modal --}}
     <div x-cloak x-show="galleryOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-4" x-transition.opacity>
-        <button type="button" @click="galleryOpen = false" class="absolute right-6 top-6 rounded-full bg-white/10 p-3 text-white transition hover:bg-white hover:text-black">
+        <button type="button" @click="galleryOpen = false" class="absolute right-6 top-6 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white hover:text-black">
             <span class="material-symbols-outlined">close</span>
         </button>
 
-        <button type="button" x-show="photos.length > 1" @click="activePhoto = activePhoto === 0 ? photos.length - 1 : activePhoto - 1" class="absolute left-6 rounded-full bg-white/10 p-4 text-white transition hover:bg-white hover:text-black">
+        <button type="button" x-show="photos.length > 1" @click="activePhoto = activePhoto === 0 ? photos.length - 1 : activePhoto - 1" class="absolute left-6 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white hover:text-black">
             <span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
         </button>
 
         <img :src="photos[activePhoto]" class="max-h-[85vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl transition-transform duration-300" alt="Gallery Photo">
 
-        <button type="button" x-show="photos.length > 1" @click="activePhoto = activePhoto === photos.length - 1 ? 0 : activePhoto + 1" class="absolute right-6 rounded-full bg-white/10 p-4 text-white transition hover:bg-white hover:text-black">
+        <button type="button" x-show="photos.length > 1" @click="activePhoto = activePhoto === photos.length - 1 ? 0 : activePhoto + 1" class="absolute right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white hover:text-black">
             <span class="material-symbols-outlined text-2xl">arrow_forward_ios</span>
         </button>
 
@@ -660,6 +738,7 @@ $durationOptions = $isKosan
             line-height: 1.05;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
         }
         [x-cloak] { display: none !important; }
     </style>

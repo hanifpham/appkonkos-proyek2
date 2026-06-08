@@ -39,11 +39,11 @@ class PengaturanProfil extends Component
 
     public string $profilePhotoUrl = '';
 
-    public $foto_baru = null;
+    public ?\Livewire\Features\SupportFileUploads\TemporaryUploadedFile $foto_baru = null;
 
-    public $foto_ktp = null;
+    public ?\Livewire\Features\SupportFileUploads\TemporaryUploadedFile $foto_ktp = null;
 
-    public $foto_selfie = null;
+    public ?\Livewire\Features\SupportFileUploads\TemporaryUploadedFile $foto_selfie = null;
 
     public bool $notif_whatsapp_pesanan_baru = true;
 
@@ -183,48 +183,50 @@ class PengaturanProfil extends Component
 
         try {
             $validated = $this->validate($this->rules(), $this->messages(), $this->validationAttributes());
-        } catch (ValidationException $exception) {
+            
+            $user->update([
+                'name' => $validated['nama_lengkap'],
+                'no_telepon' => (string) $validated['no_telepon'],
+            ]);
+
+            $existingPemilik = $user->pemilikProperti;
+            $uploadedVerificationFiles = $this->foto_ktp !== null || $this->foto_selfie !== null;
+
+            $pemilik = $user->pemilikProperti()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'alamat_domisili' => $this->nullableString($validated['alamat_domisili'] ?? null),
+                    'nik_ktp' => $this->nullableString($validated['nik_ktp'] ?? null),
+                    'nama_bank' => $this->nullableString($validated['nama_bank'] ?? null),
+                    'nomor_rekening' => $this->nullableString($validated['nomor_rekening'] ?? null),
+                    'nama_pemilik_rekening' => $this->nullableString($validated['nama_pemilik_rekening'] ?? null),
+                    'status_verifikasi' => $uploadedVerificationFiles
+                        ? 'pending'
+                        : ($existingPemilik?->status_verifikasi ?? 'belum'),
+                ]
+            );
+
+            if ($this->foto_ktp !== null) {
+                $pemilik->clearMediaCollection('foto_ktp');
+                $pemilik
+                    ->addMedia($this->foto_ktp->getRealPath())
+                    ->usingFileName($this->foto_ktp->getClientOriginalName())
+                    ->toMediaCollection('foto_ktp');
+            }
+
+            if ($this->foto_selfie !== null) {
+                $pemilik->clearMediaCollection('foto_selfie');
+                $pemilik
+                    ->addMedia($this->foto_selfie->getRealPath())
+                    ->usingFileName($this->foto_selfie->getClientOriginalName())
+                    ->toMediaCollection('foto_selfie');
+            }
+        } catch (\Illuminate\Validation\ValidationException $exception) {
             $this->dispatchValidationErrorToast($exception);
-
             throw $exception;
-        }
-
-        $user->update([
-            'name' => $validated['nama_lengkap'],
-            'no_telepon' => (string) $validated['no_telepon'],
-        ]);
-
-        $existingPemilik = $user->pemilikProperti;
-        $uploadedVerificationFiles = $this->foto_ktp !== null || $this->foto_selfie !== null;
-
-        $pemilik = $user->pemilikProperti()->updateOrCreate(
-            ['user_id' => $user->id],
-            [
-                'alamat_domisili' => $this->nullableString($validated['alamat_domisili'] ?? null),
-                'nik_ktp' => $this->nullableString($validated['nik_ktp'] ?? null),
-                'nama_bank' => $this->nullableString($validated['nama_bank'] ?? null),
-                'nomor_rekening' => $this->nullableString($validated['nomor_rekening'] ?? null),
-                'nama_pemilik_rekening' => $this->nullableString($validated['nama_pemilik_rekening'] ?? null),
-                'status_verifikasi' => $uploadedVerificationFiles
-                    ? 'pending'
-                    : ($existingPemilik?->status_verifikasi ?? 'belum'),
-            ]
-        );
-
-        if ($this->foto_ktp !== null) {
-            $pemilik->clearMediaCollection('foto_ktp');
-            $pemilik
-                ->addMedia($this->foto_ktp->getRealPath())
-                ->usingFileName($this->foto_ktp->getClientOriginalName())
-                ->toMediaCollection('foto_ktp');
-        }
-
-        if ($this->foto_selfie !== null) {
-            $pemilik->clearMediaCollection('foto_selfie');
-            $pemilik
-                ->addMedia($this->foto_selfie->getRealPath())
-                ->usingFileName($this->foto_selfie->getClientOriginalName())
-                ->toMediaCollection('foto_selfie');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Profile Update Failed: ' . $e->getMessage());
+            throw $e;
         }
 
         Auth::setUser($user->fresh());

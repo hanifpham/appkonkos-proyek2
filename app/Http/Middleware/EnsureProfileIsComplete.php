@@ -16,24 +16,39 @@ class EnsureProfileIsComplete
         $user = $request->user();
 
         if ($user && $user->role === 'pemilik') {
-            
-            // Define the exact fields that must not be null/empty
-            $requiredFields = ['no_telepon', 'jenis_kelamin'];
+            $isProfileIncomplete = false;
 
-            foreach ($requiredFields as $field) {
+            // 1. Cek field di tabel users
+            $userFields = ['no_telepon'];
+            foreach ($userFields as $field) {
                 $value = $user->$field;
-
-                // Strict Evaluation: incomplete ONLY IF null, "", or "-"
                 if ($value === null || $value === '' || $value === '-') {
-                    
-                    // DEBUGGING DIAGNOSTIC TOOL
-                    // TODO: Once you find the problematic column, comment out the line below:
-                    dd('Middleware Error: Missing data detected in column -> ' . $field, 'Current User Data:', $user->toArray());
-
-                    // TODO: ... and uncomment the redirect block below:
-                    // return redirect()->route('mitra.pengaturan-profil')
-                    //     ->with('error', 'Akses Ditolak! Anda wajib melengkapi data diri (Nomor Telepon, Jenis Kelamin, dll) sebelum dapat mengelola properti.');
+                    $isProfileIncomplete = true;
+                    break;
                 }
+            }
+
+            // 2. Cek field di tabel pemilik_properti
+            if (! $isProfileIncomplete) {
+                $pemilik = $user->pemilikProperti;
+                
+                if (! $pemilik) {
+                    $isProfileIncomplete = true;
+                } else {
+                    $pemilikFields = ['alamat_domisili', 'nama_bank', 'nomor_rekening'];
+                    foreach ($pemilikFields as $field) {
+                        $value = $pemilik->$field;
+                        if ($value === null || $value === '' || $value === '-') {
+                            $isProfileIncomplete = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if ($isProfileIncomplete) {
+                return redirect()->route('mitra.pengaturan-profil')
+                    ->with('error', 'Akses Ditolak! Anda wajib melengkapi Nomor Telepon, Alamat Domisili, dan Data Rekening Bank sebelum dapat mengelola properti.');
             }
         }
 

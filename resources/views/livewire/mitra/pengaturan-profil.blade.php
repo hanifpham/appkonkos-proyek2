@@ -575,27 +575,30 @@
                             <p class="mt-1 text-xs leading-6 text-gray-500 dark:text-gray-400">Aktifkan kode autentikator untuk menambah lapisan keamanan akun mitra.</p>
                         </div>
 
-                        @livewire('profile.two-factor-authentication-form')
+                        {{-- @livewire('profile.two-factor-authentication-form') --}}
+                        <div class="text-sm text-gray-500 italic">Komponen custom 2FA belum tersedia.</div>
                     </section>
                 @endif
 
                 <section class="jetstream-security-card overflow-hidden rounded-xl border border-gray-100 bg-surface-light p-6 shadow-sm dark:border-gray-700 dark:bg-surface-dark">
                     <div class="mb-6 border-b border-gray-100 pb-5 dark:border-gray-700">
                         <h3 class="text-base font-bold text-gray-800 dark:text-white">Sesi Browser</h3>
-                        <p class="mt-1 text-xs leading-6 text-gray-500 dark:text-gray-400">Keluar dari perangkat lain menggunakan konfirmasi password bawaan Jetstream.</p>
+                        <p class="mt-1 text-xs leading-6 text-gray-500 dark:text-gray-400">Keluar dari perangkat lain menggunakan konfirmasi password.</p>
                     </div>
 
-                    @livewire('profile.logout-other-browser-sessions-form')
+                    {{-- @livewire('profile.logout-other-browser-sessions-form') --}}
+                    <div class="text-sm text-gray-500 italic">Komponen custom Sesi Browser belum tersedia.</div>
                 </section>
 
                 @if (Laravel\Jetstream\Jetstream::hasAccountDeletionFeatures())
                     <section class="jetstream-security-card overflow-hidden rounded-xl border border-red-100 bg-red-50/60 p-6 shadow-sm dark:border-red-900/50 dark:bg-red-950/20">
                         <div class="mb-6 border-b border-red-100 pb-5 dark:border-red-900/50">
                             <h3 class="text-base font-bold text-red-700 dark:text-red-300">Hapus Akun</h3>
-                            <p class="mt-1 text-xs leading-6 text-red-600/80 dark:text-red-300/80">Jetstream akan meminta password sebelum akun benar-benar dihapus.</p>
+                            <p class="mt-1 text-xs leading-6 text-red-600/80 dark:text-red-300/80">Aksi ini bersifat permanen.</p>
                         </div>
 
-                        @livewire('profile.delete-user-form')
+                        {{-- @livewire('profile.delete-user-form') --}}
+                        <div class="text-sm text-gray-500 italic">Komponen custom Hapus Akun belum tersedia.</div>
                     </section>
                 @endif
             </div>

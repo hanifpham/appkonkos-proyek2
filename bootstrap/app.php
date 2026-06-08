@@ -33,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'redirect.unverified' => RedirectUnverifiedUsers::class,
             'role' => RoleMiddleware::class,
+            'profile.complete' => \App\Http\Middleware\EnsureProfileIsComplete::class,
         ]);
 
         $middleware->append(SecurityHeaders::class);

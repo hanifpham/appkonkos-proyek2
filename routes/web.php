@@ -82,9 +82,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::get('/mitra/keuangan', Keuangan::class)->name('mitra.keuangan');
     Route::get('/mitra/ulasan', UlasanPenyewa::class)->name('mitra.ulasan');
     Route::get('/mitra/pengaturan-profil', PengaturanProfil::class)->name('mitra.pengaturan-profil');
-    Route::get('/mitra/properti/tambah-kosan', TambahKosan::class)->name('mitra.properti.tambah-kosan');
-    Route::get('/mitra/properti/{kosan_id}/kelola-kamar', KelolaKamarKos::class)->name('mitra.properti.kelola-kamar');
-    Route::get('/mitra/properti/tambah-kontrakan', TambahKontrakan::class)->name('mitra.properti.tambah-kontrakan');
+    Route::middleware('profile.complete')->group(function () {
+        Route::get('/mitra/properti/tambah-kosan', TambahKosan::class)->name('mitra.properti.tambah-kosan');
+        Route::get('/mitra/properti/{kosan_id}/kelola-kamar', KelolaKamarKos::class)->name('mitra.properti.kelola-kamar');
+        Route::get('/mitra/properti/tambah-kontrakan', TambahKontrakan::class)->name('mitra.properti.tambah-kontrakan');
+    });
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'role:superadmin'])->group(function (): void {

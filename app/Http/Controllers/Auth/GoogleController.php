@@ -14,8 +14,12 @@ use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
 {
-    public function redirect(): RedirectResponse
+    public function redirect(\Illuminate\Http\Request $request): RedirectResponse
     {
+        if ($request->has('role')) {
+            session(['google_intended_role' => $request->query('role')]);
+        }
+
         return Socialite::driver('google')->redirect();
     }
 
@@ -26,6 +30,17 @@ class GoogleController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('login')
                 ->withErrors(['email' => 'Login dengan Google gagal. Silakan coba lagi.']);
+        }
+
+        // Ambil intended role dari session, default ke 'pencari'
+        $intendedRole = session('google_intended_role', 'pencari');
+        
+        // Hapus session segera untuk mencegah session pollution
+        session()->forget('google_intended_role');
+
+        // Validasi role agar aman
+        if (!in_array($intendedRole, ['pencari', 'pemilik'])) {
+            $intendedRole = 'pencari';
         }
 
         // Find existing user by email
@@ -52,7 +67,7 @@ class GoogleController extends Controller
                 'email'       => $googleUser->getEmail(),
                 'password'    => bcrypt(Str::random(32)),
                 'no_telepon'  => '-',
-                'role'        => 'pencari',
+                'role'        => $intendedRole,
                 'status'      => 'aktif',
                 'status_akun' => true,
             ]);
@@ -60,10 +75,16 @@ class GoogleController extends Controller
             // Set email_verified_at (not in fillable, so use forceFill)
             $user->forceFill(['email_verified_at' => now()])->save();
 
-            // Create PencariKos profile
-            PencariKos::create([
-                'user_id' => $user->id,
-            ]);
+            // Create profile
+            if ($intendedRole === 'pemilik') {
+                \App\Models\PemilikProperti::create([
+                    'user_id' => $user->id,
+                ]);
+            } else {
+                \App\Models\PencariKos::create([
+                    'user_id' => $user->id,
+                ]);
+            }
 
             // Save Google profile photo if available
             if ($googleUser->getAvatar()) {
@@ -91,11 +112,17 @@ class GoogleController extends Controller
             };
 
             return redirect()->route($profileRoute)
-                ->with('success', 'Berhasil masuk! Mohon lengkapi Nomor WhatsApp Anda untuk kemudahan transaksi.');
+                ->with('success', 'Berhasil masuk! Mohon lengkapi profil dan Nomor WhatsApp Anda.');
         }
 
         // If complete, redirect to home
-        return redirect()->route('home')
+        $homeRoute = match ($user->role) {
+            'superadmin' => 'superadmin.dashboard',
+            'pemilik'    => 'mitra.dashboard',
+            default      => 'home',
+        };
+
+        return redirect()->route($homeRoute)
             ->with('success', 'Selamat datang kembali!');
     }
 }

@@ -581,63 +581,15 @@ $durationOptions = $isKosan
                         {{-- Date Selection --}}
                         <div>
                             <label class="mb-2 block text-sm font-bold text-slate-900">Mulai Sewa</label>
-                            <div x-data="{ 
-                                    dateValue: @entangle('tanggalCheckIn'),
-                                    instance: null,
-                                    initPicker() {
-                                        this.instance = flatpickr(this.$refs.picker, {
-                                            locale: 'id',
-                                            dateFormat: 'Y-m-d',
-                                            altInput: true,
-                                            altFormat: 'd/m/Y',
-                                            minDate: 'today',
-                                            defaultDate: this.dateValue,
-                                            onChange: (selectedDates, dateStr) => {
-                                                this.dateValue = dateStr;
-                                            },
-                                            onOpen: (selectedDates, dateStr, inst) => {
-                                                window.addEventListener('scroll', inst.close, true);
-                                            },
-                                            onClose: (selectedDates, dateStr, inst) => {
-                                                window.removeEventListener('scroll', inst.close, true);
-                                            }
-                                        });
-
-                                        this.$watch('dateValue', value => {
-                                            if (this.instance && value) {
-                                                this.instance.setDate(value, false);
-                                            }
-                                        });
-                                    }
-                                }"
-                                x-init="
-                                    if (typeof flatpickr === 'undefined') {
-                                        const link = document.createElement('link');
-                                        link.rel = 'stylesheet';
-                                        link.href = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css';
-                                        document.head.appendChild(link);
-
-                                        const script = document.createElement('script');
-                                        script.src = 'https://cdn.jsdelivr.net/npm/flatpickr';
-                                        script.onload = () => {
-                                            const idScript = document.createElement('script');
-                                            idScript.src = 'https://npmcdn.com/flatpickr/dist/l10n/id.js';
-                                            idScript.onload = () => initPicker();
-                                            document.head.appendChild(idScript);
-                                        };
-                                        document.head.appendChild(script);
-                                    } else {
-                                        initPicker();
-                                    }
-                                "
-                            >
-                                <div class="relative group" wire:ignore>
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-[#1967d2] z-10">
-                                        <span class="material-symbols-outlined text-[20px]">event</span>
-                                    </div>
-                                    <input x-ref="picker" type="text" placeholder="DD/MM/YYYY"
-                                           class="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-12 pr-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-[#1967d2] focus:ring-4 focus:ring-[#1967d2]/10 hover:border-slate-300">
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-[#1967d2] z-10">
+                                    <span class="material-symbols-outlined text-[20px]">event</span>
                                 </div>
+                                <input type="date" 
+                                       wire:model.live="tanggalCheckIn"
+                                       min="{{ \Carbon\Carbon::today()->format('Y-m-d') }}"
+                                       value="{{ \Carbon\Carbon::today()->format('Y-m-d') }}"
+                                       class="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-12 pr-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-[#1967d2] focus:ring-4 focus:ring-[#1967d2]/10 hover:border-slate-300">
                             </div>
                             @error('tanggalCheckIn') <p class="mt-1.5 text-xs font-bold text-red-500">{{ $message }}</p> @enderror
                         </div>

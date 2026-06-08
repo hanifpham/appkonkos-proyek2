@@ -137,49 +137,17 @@
                 <div class="grid sm:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Tanggal Check-in</label>
-                        <div class="relative"
-                             x-data="{ 
-                                 dateValue: @entangle('tanggal_masuk').live
-                             }"
-                             x-init="
-                                 const initPicker = () => {
-                                     flatpickr($refs.picker, {
-                                         locale: 'id',
-                                         dateFormat: 'Y-m-d',
-                                         altInput: true,
-                                         altFormat: 'd/m/Y',
-                                         minDate: 'today',
-                                         defaultDate: document.getElementById('tanggal_checkin').value,
-                                         onChange: function(selectedDates, dateStr, instance) {
-                                             dateValue = dateStr;
-                                         }
-                                     });
-                                 };
-                                 
-                                 if (typeof flatpickr === 'undefined') {
-                                     const link = document.createElement('link');
-                                     link.rel = 'stylesheet';
-                                     link.href = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css';
-                                     document.head.appendChild(link);
-
-                                     const script = document.createElement('script');
-                                     script.src = 'https://cdn.jsdelivr.net/npm/flatpickr';
-                                     script.onload = () => {
-                                         const idScript = document.createElement('script');
-                                         idScript.src = 'https://npmcdn.com/flatpickr/dist/l10n/id.js';
-                                         idScript.onload = () => initPicker();
-                                         document.head.appendChild(idScript);
-                                     };
-                                     document.head.appendChild(script);
-                                 } else {
-                                     initPicker();
-                                 }
-                             "
-                        >
+                        <div class="relative">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500 z-10">
                                 <span class="material-symbols-outlined text-[18px]">calendar_month</span>
                             </div>
-                            <input id="tanggal_checkin" x-ref="picker" type="text" value="{{ old('tanggal_masuk', $tanggal_masuk ?? \Carbon\Carbon::today()->format('Y-m-d')) }}" placeholder="DD/MM/YYYY" class="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow">
+                            <input 
+                                id="tanggal_checkin" 
+                                type="date" 
+                                wire:model.live="tanggal_masuk"
+                                min="{{ \Carbon\Carbon::today()->format('Y-m-d') }}"
+                                value="{{ old('start_date', $start_date ?? \Carbon\Carbon::today()->format('Y-m-d')) }}" 
+                                class="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow">
                         </div>
                         @error('tanggal_masuk') <span class="text-rose-600 text-xs mt-1.5 block">{{ $message }}</span> @enderror
                     </div>

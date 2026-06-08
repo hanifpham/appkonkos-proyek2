@@ -41,9 +41,9 @@
         @livewireStyles
     </head>
     <body class="app-public-theme min-h-screen bg-white text-gray-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
-        <div class="font-sans text-gray-900 antialiased dark:text-slate-100">
+        <main class="font-sans text-gray-900 antialiased dark:text-slate-100">
             {{ $slot }}
-        </div>
+        </main>
 
         @livewireScripts
     </body>

@@ -110,7 +110,9 @@ class PropertyController extends Controller
                 'lng'            => (float) $kosan->longitude,
                 'tipe'           => 'Kosan',
                 'gender'         => $kosan->jenis_kos ?? '',
-                'no_wa'          => $kosan->pemilikProperti?->user?->no_wa ?? null,
+                'no_wa' => $kosan->pemilikProperti?->user?->no_wa 
+                    ?? $kosan->pemilikProperti?->user?->no_telepon 
+                    ?? null,
                 'fasilitas_umum' => $fasilitasUmum,
 
                 'room_types' => $kosan->tipeKamar->map(function ($tipe) {
@@ -181,7 +183,9 @@ class PropertyController extends Controller
                 'lat'        => (float) $kontrakan->latitude,
                 'lng'        => (float) $kontrakan->longitude,
                 'tipe'       => 'Kontrakan',
-                'no_wa'      => $kontrakan->pemilikProperti?->user?->no_wa ?? null,
+                'no_wa' => $kontrakan->pemilikProperti?->user?->no_wa 
+                    ?? $kontrakan->pemilikProperti?->user?->no_telepon 
+                    ?? null,
                 'fasilitas'  => $fasilitas,
                 'sisa_kamar' => (int) $kontrakan->sisa_kamar,
             ],

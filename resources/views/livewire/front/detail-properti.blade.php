@@ -582,23 +582,35 @@ $durationOptions = $isKosan
                         <div>
                             <label class="mb-2 block text-sm font-bold text-slate-900">Mulai Sewa</label>
                             <div x-data="{ 
-                                    dateValue: @entangle('tanggalCheckIn')
-                                }"
-                                x-init="
-                                    const initPicker = () => {
-                                        flatpickr($refs.picker, {
+                                    dateValue: @entangle('tanggalCheckIn'),
+                                    instance: null,
+                                    initPicker() {
+                                        this.instance = flatpickr(this.$refs.picker, {
                                             locale: 'id',
                                             dateFormat: 'Y-m-d',
                                             altInput: true,
                                             altFormat: 'd/m/Y',
                                             minDate: 'today',
-                                            defaultDate: dateValue,
-                                            onChange: function(selectedDates, dateStr, instance) {
-                                                dateValue = dateStr;
+                                            defaultDate: this.dateValue,
+                                            onChange: (selectedDates, dateStr) => {
+                                                this.dateValue = dateStr;
+                                            },
+                                            onOpen: (selectedDates, dateStr, inst) => {
+                                                window.addEventListener('scroll', inst.close, true);
+                                            },
+                                            onClose: (selectedDates, dateStr, inst) => {
+                                                window.removeEventListener('scroll', inst.close, true);
                                             }
                                         });
-                                    };
-                                    
+
+                                        this.$watch('dateValue', value => {
+                                            if (this.instance && value) {
+                                                this.instance.setDate(value, false);
+                                            }
+                                        });
+                                    }
+                                }"
+                                x-init="
                                     if (typeof flatpickr === 'undefined') {
                                         const link = document.createElement('link');
                                         link.rel = 'stylesheet';
@@ -619,7 +631,7 @@ $durationOptions = $isKosan
                                     }
                                 "
                             >
-                                <div class="relative group">
+                                <div class="relative group" wire:ignore>
                                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-[#1967d2] z-10">
                                         <span class="material-symbols-outlined text-[20px]">event</span>
                                     </div>

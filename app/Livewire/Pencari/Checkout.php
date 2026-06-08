@@ -39,6 +39,9 @@ class Checkout extends Component
 
     public function mount()
     {
+        // Ambil nilai dinamis dari database, jika kosong default ke 10000
+        $this->biayaLayanan = (int) \App\Models\Setting::getNumber(\App\Models\Setting::KEY_SERVICE_FEE, 10000);
+
         $this->kamar_id = (int) request()->query('kamar_id') ?: null;
         $this->kontrakan_id = (int) request()->query('kontrakan_id') ?: null;
 

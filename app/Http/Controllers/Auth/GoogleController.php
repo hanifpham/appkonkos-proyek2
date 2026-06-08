@@ -82,12 +82,20 @@ class GoogleController extends Controller
             Auth::login($user, true);
         }
 
-        // Redirect based on role (same logic as RoleLoginResponse)
-        return match ($user->role) {
-            'superadmin' => redirect()->route('superadmin.dashboard'),
-            'pemilik'    => redirect()->route('mitra.dashboard'),
-            'pencari'    => redirect()->route('pencari.riwayat-pesanan'),
-            default      => redirect()->route('home'),
-        };
+        // Check if phone number is missing or invalid
+        if (is_null($user->no_telepon) || $user->no_telepon === '-' || empty(trim($user->no_telepon))) {
+            $profileRoute = match ($user->role) {
+                'superadmin' => 'superadmin.pengaturan-profil',
+                'pemilik'    => 'mitra.pengaturan-profil',
+                default      => 'pencari.profil',
+            };
+
+            return redirect()->route($profileRoute)
+                ->with('success', 'Berhasil masuk! Mohon lengkapi Nomor WhatsApp Anda untuk kemudahan transaksi.');
+        }
+
+        // If complete, redirect to home
+        return redirect()->route('home')
+            ->with('success', 'Selamat datang kembali!');
     }
 }

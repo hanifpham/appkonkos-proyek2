@@ -405,6 +405,34 @@
                                         <p class="text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
                                     @enderror
                                 </div>
+
+                                <div class="space-y-1.5">
+                                    <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Biaya Layanan (Rp)</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        wire:model="biayaLayanan"
+                                        class="w-full rounded-lg border-gray-200 bg-gray-50 px-4 py-2.5 text-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-gray-700 dark:bg-slate-800"
+                                    >
+                                    @error('biayaLayanan')
+                                        <p class="text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="space-y-1.5">
+                                    <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Minimum Pencairan (Rp)</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        wire:model="minimumPencairan"
+                                        class="w-full rounded-lg border-gray-200 bg-gray-50 px-4 py-2.5 text-sm focus:border-[#0F4C81] focus:ring-[#0F4C81] dark:border-gray-700 dark:bg-slate-800"
+                                    >
+                                    @error('minimumPencairan')
+                                        <p class="text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
                             </div>
 
                             <div class="rounded-xl border border-blue-100 bg-blue-50/70 p-4 text-xs leading-6 text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/20 dark:text-blue-100">

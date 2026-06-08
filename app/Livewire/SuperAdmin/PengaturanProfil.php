@@ -46,6 +46,10 @@ class PengaturanProfil extends Component
 
     public string $potonganRefund = '25';
 
+    public string $biayaLayanan = '10000';
+
+    public string $minimumPencairan = '100000';
+
     public function mount(): void
     {
         $this->loadProfileData();
@@ -200,6 +204,8 @@ class PengaturanProfil extends Component
             $validated = $this->validate([
                 'komisiPlatform' => ['required', 'numeric', 'min:0', 'max:100'],
                 'potonganRefund' => ['required', 'numeric', 'min:0', 'max:100'],
+                'biayaLayanan' => ['required', 'numeric', 'min:0'],
+                'minimumPencairan' => ['required', 'numeric', 'min:0'],
             ], [
                 'komisiPlatform.required' => 'Komisi platform wajib diisi.',
                 'komisiPlatform.numeric' => 'Komisi platform harus berupa angka.',
@@ -209,9 +215,17 @@ class PengaturanProfil extends Component
                 'potonganRefund.numeric' => 'Potongan refund harus berupa angka.',
                 'potonganRefund.min' => 'Potongan refund minimal 0%.',
                 'potonganRefund.max' => 'Potongan refund maksimal 100%.',
+                'biayaLayanan.required' => 'Biaya layanan wajib diisi.',
+                'biayaLayanan.numeric' => 'Biaya layanan harus berupa angka.',
+                'biayaLayanan.min' => 'Biaya layanan minimal 0.',
+                'minimumPencairan.required' => 'Minimum pencairan wajib diisi.',
+                'minimumPencairan.numeric' => 'Minimum pencairan harus berupa angka.',
+                'minimumPencairan.min' => 'Minimum pencairan minimal 0.',
             ], [
                 'komisiPlatform' => 'komisi platform',
                 'potonganRefund' => 'potongan refund',
+                'biayaLayanan' => 'biaya layanan',
+                'minimumPencairan' => 'minimum pencairan',
             ]);
         } catch (ValidationException $exception) {
             $this->dispatchValidationErrorToast($exception);
@@ -221,6 +235,8 @@ class PengaturanProfil extends Component
 
         Setting::putValue(Setting::KEY_PLATFORM_COMMISSION, $validated['komisiPlatform']);
         Setting::putValue(Setting::KEY_REFUND_DEDUCTION, $validated['potonganRefund']);
+        Setting::putValue(Setting::KEY_SERVICE_FEE, $validated['biayaLayanan']);
+        Setting::putValue(Setting::KEY_MINIMUM_WITHDRAWAL, $validated['minimumPencairan']);
 
         $this->loadSystemSettings();
 
@@ -253,6 +269,8 @@ class PengaturanProfil extends Component
 
         $this->komisiPlatform = Setting::getValue(Setting::KEY_PLATFORM_COMMISSION, '5');
         $this->potonganRefund = Setting::getValue(Setting::KEY_REFUND_DEDUCTION, '25');
+        $this->biayaLayanan = Setting::getValue(Setting::KEY_SERVICE_FEE, '10000');
+        $this->minimumPencairan = Setting::getValue(Setting::KEY_MINIMUM_WITHDRAWAL, '100000');
     }
 
     protected function profilePhotoUrlFor(User $user): string

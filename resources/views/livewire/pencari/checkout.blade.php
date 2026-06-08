@@ -104,34 +104,22 @@
                         </div>
                     </div>
 
-                    {{-- Phone Number Warning --}}
-                    @if(!$isTeleponValid)
-                    <div class="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
-                        <div class="flex items-start gap-3 text-amber-800">
-                            <span class="material-symbols-outlined text-[24px] shrink-0">phone_missed</span>
-                            <div class="flex-1">
-                                <p class="text-sm font-bold mb-1">Nomor WhatsApp Belum Valid</p>
-                                <p class="text-sm mb-4">Nomor WhatsApp aktif wajib diisi agar pemilik properti dapat menghubungi Anda. Silakan klik tombol di bawah untuk menambahkan nomor di halaman profil Anda.</p>
-                                <a href="{{ route('pencari.profil') }}" class="inline-flex w-full justify-center sm:w-auto items-center gap-2 rounded-lg bg-amber-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-700 transition-colors">
-                                    <span class="material-symbols-outlined text-[18px]">edit</span>
-                                    Tambah Nomor WhatsApp di Profil
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-
-                    {{-- Incomplete Profile Warning --}}
+                    {{-- Consolidated Profile Warning --}}
                     @if(!$isDataLengkap)
-                    <div class="mt-6 rounded-lg border border-rose-200 bg-rose-50 p-4">
-                        <div class="flex items-start gap-3 text-rose-700">
-                            <span class="material-symbols-outlined text-[24px]">warning</span>
+                    @php
+                        $onlyPhoneMissing = !$isTeleponValid && filled($jKelamin) && filled($pekerjaan);
+                    @endphp
+                    <div class="mt-6 rounded-lg border {{ $onlyPhoneMissing ? 'border-amber-200 bg-amber-50 text-amber-800' : 'border-rose-200 bg-rose-50 text-rose-700' }} p-4">
+                        <div class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-[24px] shrink-0">{{ $onlyPhoneMissing ? 'phone_missed' : 'warning' }}</span>
                             <div class="flex-1">
-                                <p class="text-sm font-bold mb-1">Profil Belum Lengkap</p>
-                                <p class="text-sm mb-4">Mohon lengkapi seluruh data diri Anda untuk dapat melanjutkan ke proses pembayaran.</p>
-                                <a href="{{ route('pencari.profil') }}" class="inline-flex w-full justify-center sm:w-auto items-center gap-2 rounded-lg bg-rose-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-rose-700 transition-colors">
+                                <p class="text-sm font-bold mb-1">{{ $onlyPhoneMissing ? 'Nomor WhatsApp Belum Valid' : 'Profil Belum Lengkap' }}</p>
+                                <p class="text-sm mb-4">
+                                    {{ $onlyPhoneMissing ? 'Nomor WhatsApp aktif wajib diisi agar pemilik properti dapat menghubungi Anda.' : 'Mohon lengkapi seluruh data diri Anda (termasuk Nomor WhatsApp) untuk melanjutkan ke proses pembayaran.' }}
+                                </p>
+                                <a href="{{ route('pencari.profil') }}" class="inline-flex w-full justify-center sm:w-auto items-center gap-2 rounded-lg {{ $onlyPhoneMissing ? 'bg-amber-600 hover:bg-amber-700' : 'bg-rose-600 hover:bg-rose-700' }} px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-colors">
+                                    <span class="material-symbols-outlined text-[18px]">edit</span>
                                     Lengkapi Profil Sekarang
-                                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                                 </a>
                             </div>
                         </div>
@@ -149,11 +137,49 @@
                 <div class="grid sm:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Tanggal Check-in</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">
+                        <div class="relative"
+                             x-data="{ 
+                                 dateValue: @entangle('tanggal_masuk').live
+                             }"
+                             x-init="
+                                 const initPicker = () => {
+                                     flatpickr($refs.picker, {
+                                         locale: 'id',
+                                         dateFormat: 'Y-m-d',
+                                         altInput: true,
+                                         altFormat: 'd/m/Y',
+                                         minDate: 'today',
+                                         defaultDate: dateValue,
+                                         onChange: function(selectedDates, dateStr, instance) {
+                                             dateValue = dateStr;
+                                         }
+                                     });
+                                 };
+                                 
+                                 if (typeof flatpickr === 'undefined') {
+                                     const link = document.createElement('link');
+                                     link.rel = 'stylesheet';
+                                     link.href = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css';
+                                     document.head.appendChild(link);
+
+                                     const script = document.createElement('script');
+                                     script.src = 'https://cdn.jsdelivr.net/npm/flatpickr';
+                                     script.onload = () => {
+                                         const idScript = document.createElement('script');
+                                         idScript.src = 'https://npmcdn.com/flatpickr/dist/l10n/id.js';
+                                         idScript.onload = () => initPicker();
+                                         document.head.appendChild(idScript);
+                                     };
+                                     document.head.appendChild(script);
+                                 } else {
+                                     initPicker();
+                                 }
+                             "
+                        >
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500 z-10">
                                 <span class="material-symbols-outlined text-[18px]">calendar_month</span>
                             </div>
-                            <input type="date" wire:model.live="tanggal_masuk" class="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow">
+                            <input x-ref="picker" type="text" placeholder="DD/MM/YYYY" class="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow">
                         </div>
                         @error('tanggal_masuk') <span class="text-rose-600 text-xs mt-1.5 block">{{ $message }}</span> @enderror
                     </div>
@@ -187,18 +213,7 @@
                 @endif
             </section>
 
-            <hr class="border-slate-200">
 
-            {{-- Catatan Opsional --}}
-            <section>
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg sm:text-2xl font-semibold text-slate-900">Catatan untuk Pemilik</h2>
-                    <span class="text-sm text-slate-500">Opsional</span>
-                </div>
-                <textarea wire:model="catatan" rows="3" placeholder="Sampaikan pesan tambahan atau pertanyaan ke pemilik..." class="w-full rounded-lg border border-slate-300 bg-white p-4 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow resize-none"></textarea>
-            </section>
-
-            <hr class="border-slate-200">
 
             {{-- Kebijakan & Aturan --}}
             <section>

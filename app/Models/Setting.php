@@ -15,6 +15,10 @@ class Setting extends Model
 
     public const KEY_REFUND_DEDUCTION = 'potongan_refund_persen';
 
+    public const KEY_SERVICE_FEE = 'biaya_layanan_nominal';
+
+    public const KEY_MINIMUM_WITHDRAWAL = 'minimum_pencairan_nominal';
+
     protected $table = 'settings';
 
     /**
@@ -33,6 +37,8 @@ class Setting extends Model
         return [
             self::KEY_PLATFORM_COMMISSION => '5',
             self::KEY_REFUND_DEDUCTION => '25',
+            self::KEY_SERVICE_FEE => '10000',
+            self::KEY_MINIMUM_WITHDRAWAL => '100000',
         ];
     }
 

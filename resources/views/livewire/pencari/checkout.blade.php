@@ -149,7 +149,7 @@
                                          altInput: true,
                                          altFormat: 'd/m/Y',
                                          minDate: 'today',
-                                         defaultDate: dateValue,
+                                         defaultDate: document.getElementById('tanggal_checkin').value,
                                          onChange: function(selectedDates, dateStr, instance) {
                                              dateValue = dateStr;
                                          }
@@ -179,7 +179,7 @@
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500 z-10">
                                 <span class="material-symbols-outlined text-[18px]">calendar_month</span>
                             </div>
-                            <input x-ref="picker" type="text" placeholder="DD/MM/YYYY" class="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow">
+                            <input id="tanggal_checkin" x-ref="picker" type="text" value="{{ old('tanggal_masuk', $tanggal_masuk ?? \Carbon\Carbon::today()->format('Y-m-d')) }}" placeholder="DD/MM/YYYY" class="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow">
                         </div>
                         @error('tanggal_masuk') <span class="text-rose-600 text-xs mt-1.5 block">{{ $message }}</span> @enderror
                     </div>

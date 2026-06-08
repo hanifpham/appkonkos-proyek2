@@ -155,8 +155,17 @@
 
                             <td class="px-6 py-5">
                                 @if($refund->pembayaran && $refund->pembayaran->metode_bayar)
-                                    <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs uppercase tracking-wider font-semibold">
-                                        {{ str_replace('_', ' ', $refund->pembayaran->metode_bayar) }}
+                                    @php
+                                        $rawMetode = strtolower($refund->pembayaran->metode_bayar);
+                                        if ($rawMetode === 'echannel') $metodeText = 'Mandiri VA';
+                                        elseif ($rawMetode === 'cstore') $metodeText = 'Minimarket';
+                                        elseif ($rawMetode === 'gopay') $metodeText = 'GoPay';
+                                        elseif ($rawMetode === 'qris') $metodeText = 'QRIS';
+                                        elseif ($rawMetode === 'shopeepay') $metodeText = 'ShopeePay';
+                                        else $metodeText = trim(str_ireplace(['bank_transfer_', 'bank transfer ', '_'], ['', '', ' '], $rawMetode));
+                                    @endphp
+                                    <span class="inline-block whitespace-nowrap px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs uppercase tracking-wider font-semibold">
+                                        {{ $metodeText }}
                                     </span>
                                 @else
                                     <span class="text-gray-400 italic text-xs">Belum Tersedia</span>
@@ -187,7 +196,6 @@
                                                     Memproses...
                                                 </span>
                                             </button>
-                                            <span class="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-semibold rounded-md border border-amber-200">Transfer Manual</span>
                                         @else
                                             <button wire:click="prosesRefund({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-[#1967d2] hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">
                                                 <svg wire:loading.remove wire:target="prosesRefund({{ $refund->id }})" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>

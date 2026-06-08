@@ -23,7 +23,12 @@ class BookingController extends Controller
         }
 
         $bookings = Booking::where('pencari_kos_id', $pencariKos->id)
-            ->with(['kamar.tipeKamar.kosan', 'kontrakan', 'pembayaran', 'refund'])
+            ->with([
+                'kamar.tipeKamar.kosan.pemilikProperti.user', 
+                'kontrakan.pemilikProperti.user', 
+                'pembayaran', 
+                'refund'
+            ])
             ->latest()
             ->get();
 
@@ -86,16 +91,16 @@ class BookingController extends Controller
                 }
             }
 
-            $noWaPemilik = '';
+            $noWaPemilik = null;
             if ($booking->kamar) {
-                $noWaPemilik = optional(
-                    optional(optional(optional($booking->kamar->tipeKamar)->kosan)->pemilikProperti)->user
-                )->no_wa ?? '';
+                $noWaPemilik = $booking->kamar->tipeKamar?->kosan?->pemilikProperti?->user?->no_wa 
+                    ?? $booking->kamar->tipeKamar?->kosan?->pemilikProperti?->user?->no_telepon;
             } elseif ($booking->kontrakan) {
-                $noWaPemilik = optional(
-                    optional($booking->kontrakan->pemilikProperti)->user
-                )->no_wa ?? '';
+                $noWaPemilik = $booking->kontrakan->pemilikProperti?->user?->no_wa 
+                    ?? $booking->kontrakan->pemilikProperti?->user?->no_telepon;
             }
+
+            $noWaPemilik = $noWaPemilik ?? '';
 
             $refund = $booking->refund;
 
@@ -248,16 +253,16 @@ class BookingController extends Controller
                 $redirectUrl = 'https://app.sandbox.midtrans.com/snap/v2/vtweb/' . $payment->snap_token;
             }
 
-            $noWaPemilik = '';
+           $noWaPemilik = null;
             if ($booking->kamar) {
-                $noWaPemilik = optional(
-                    optional(optional(optional($booking->kamar->tipeKamar)->kosan)->pemilikProperti)->user
-                )->no_wa ?? '';
+                $noWaPemilik = $booking->kamar->tipeKamar?->kosan?->pemilikProperti?->user?->no_wa 
+                    ?? $booking->kamar->tipeKamar?->kosan?->pemilikProperti?->user?->no_telepon;
             } elseif ($booking->kontrakan) {
-                $noWaPemilik = optional(
-                    optional(optional($booking->kontrakan)->pemilikProperti)->user
-                )->no_wa ?? '';
+                $noWaPemilik = $booking->kontrakan->pemilikProperti?->user?->no_wa 
+                    ?? $booking->kontrakan->pemilikProperti?->user?->no_telepon;
             }
+
+            $noWaPemilik = $noWaPemilik ?? '';
 
             return response()->json([
                 'success'       => true,

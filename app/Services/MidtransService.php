@@ -101,6 +101,7 @@ class MidtransService
         $payment->status_bayar    = $normalizedStatus;
         $payment->status_midtrans = $transactionStatus;
         $payment->fraud_status    = $fraudStatus ?: null;
+        $payment->metode_bayar    = $this->resolvePaymentMethod($payload) ?? $payment->metode_bayar;
         $payment->payload_midtrans = array_merge(
             (array) ($payment->payload_midtrans ?? []),
             $payload,

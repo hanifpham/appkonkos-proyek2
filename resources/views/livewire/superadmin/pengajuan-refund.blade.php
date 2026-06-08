@@ -278,6 +278,16 @@
                         <p class="mt-2 whitespace-pre-line text-sm leading-6 text-gray-700 dark:text-gray-300">{{ $detailRefund->alasan_refund ?: '-' }}</p>
                     </div>
 
+                    @if($detailRefund->nama_bank && $detailRefund->nomor_rekening)
+                    <div class="rounded-xl border border-indigo-100 bg-indigo-50 p-4 dark:border-indigo-900/40 dark:bg-indigo-900/20">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-500">Rekening Tujuan Refund Manual</span>
+                        <div class="mt-2 flex flex-col gap-1">
+                            <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ $detailRefund->nama_bank }} - {{ $detailRefund->nomor_rekening }}</p>
+                            <p class="text-xs text-slate-600 dark:text-slate-400">A.n. {{ $detailRefund->nama_pemilik_rekening }}</p>
+                        </div>
+                    </div>
+                    @endif
+
                     <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                         <div class="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-700 dark:bg-slate-900">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Booking</span>

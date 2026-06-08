@@ -278,6 +278,27 @@
                         @error('alasanRefund') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
+                    @if($isRefundManual)
+                    <div class="mb-4 space-y-4 border-t border-slate-200 dark:border-slate-700 pt-4">
+                        <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Informasi Rekening Tujuan (Transfer Manual)</p>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama Bank <span class="text-rose-500">*</span></label>
+                            <input wire:model="refundNamaBank" type="text" class="w-full border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm focus:border-[#1967d2] focus:ring focus:ring-[#1967d2]/20 text-slate-900 dark:text-white bg-slate-50/50 dark:bg-slate-950 p-3 text-sm" placeholder="Contoh: BCA, Mandiri, BNI, dll">
+                            @error('refundNamaBank') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Nomor Rekening <span class="text-rose-500">*</span></label>
+                            <input wire:model="refundNomorRekening" type="text" class="w-full border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm focus:border-[#1967d2] focus:ring focus:ring-[#1967d2]/20 text-slate-900 dark:text-white bg-slate-50/50 dark:bg-slate-950 p-3 text-sm" placeholder="Masukkan nomor rekening yang valid">
+                            @error('refundNomorRekening') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama Pemilik Rekening <span class="text-rose-500">*</span></label>
+                            <input wire:model="refundNamaPemilikRekening" type="text" class="w-full border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm focus:border-[#1967d2] focus:ring focus:ring-[#1967d2]/20 text-slate-900 dark:text-white bg-slate-50/50 dark:bg-slate-950 p-3 text-sm" placeholder="Masukkan nama sesuai di buku tabungan">
+                            @error('refundNamaPemilikRekening') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+                    @endif
+
                     <div class="flex gap-3">
                         <button wire:click="closeRefundModal" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-sm rounded-xl transition-all">
                             Batal

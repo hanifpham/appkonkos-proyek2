@@ -26,6 +26,9 @@ class Refund extends Model
         'alasan_refund',
         'status_refund',
         'bukti_transfer_refund',
+        'nama_bank',
+        'nomor_rekening',
+        'nama_pemilik_rekening',
     ];
 
     protected static function booted(): void

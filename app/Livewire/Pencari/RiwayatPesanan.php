@@ -22,6 +22,11 @@ class RiwayatPesanan extends Component
     public bool $showRefundModal = false;
     public ?string $refundBookingId = null;
     public string $alasanRefund = '';
+    
+    public bool $isRefundManual = false;
+    public string $refundNamaBank = '';
+    public string $refundNomorRekening = '';
+    public string $refundNamaPemilikRekening = '';
 
     public function updatingFilterStatus()
     {
@@ -131,6 +136,27 @@ class RiwayatPesanan extends Component
     {
         $this->refundBookingId = $bookingId;
         $this->alasanRefund = '';
+        
+        $pencariKos = Auth::user()->pencariKos;
+        if ($pencariKos) {
+            $booking = Booking::where('id', $bookingId)
+                ->where('pencari_kos_id', $pencariKos->id)
+                ->with('pembayaran')
+                ->first();
+                
+            if ($booking && $booking->pembayaran) {
+                $metode = strtolower($booking->pembayaran->metode_bayar ?? '');
+                $metodeManual = ['bank_transfer', 'echannel', 'bca_va', 'bni_va', 'bri_va', 'cstore'];
+                $this->isRefundManual = in_array($metode, $metodeManual);
+            } else {
+                $this->isRefundManual = false;
+            }
+        }
+
+        $this->refundNamaBank = '';
+        $this->refundNomorRekening = '';
+        $this->refundNamaPemilikRekening = '';
+
         $this->showRefundModal = true;
     }
 
@@ -139,13 +165,25 @@ class RiwayatPesanan extends Component
         $this->showRefundModal = false;
         $this->refundBookingId = null;
         $this->alasanRefund = '';
+        $this->isRefundManual = false;
+        $this->refundNamaBank = '';
+        $this->refundNomorRekening = '';
+        $this->refundNamaPemilikRekening = '';
     }
 
     public function submitRefund(): void
     {
-        $this->validate([
+        $rules = [
             'alasanRefund' => 'required|string|min:10|max:500',
-        ]);
+        ];
+
+        if ($this->isRefundManual) {
+            $rules['refundNamaBank'] = 'required|string|max:100';
+            $rules['refundNomorRekening'] = 'required|string|max:50';
+            $rules['refundNamaPemilikRekening'] = 'required|string|max:150';
+        }
+
+        $this->validate($rules);
 
         $pencariKos = Auth::user()->pencariKos;
         if (! $pencariKos) {
@@ -172,11 +210,14 @@ class RiwayatPesanan extends Component
         $nominalRefund = (int) round($booking->total_biaya * 0.75);
 
         Refund::create([
-            'booking_id'     => $booking->id,
-            'pembayaran_id'  => $booking->pembayaran->id,
-            'nominal_refund' => $nominalRefund,
-            'alasan_refund'  => $this->alasanRefund,
-            'status_refund'  => 'pending',
+            'booking_id'              => $booking->id,
+            'pembayaran_id'           => $booking->pembayaran->id,
+            'nominal_refund'          => $nominalRefund,
+            'alasan_refund'           => $this->alasanRefund,
+            'status_refund'           => 'pending',
+            'nama_bank'               => $this->isRefundManual ? $this->refundNamaBank : null,
+            'nomor_rekening'          => $this->isRefundManual ? $this->refundNomorRekening : null,
+            'nama_pemilik_rekening'   => $this->isRefundManual ? $this->refundNamaPemilikRekening : null,
         ]);
 
         $booking->update(['status_booking' => 'batal']);

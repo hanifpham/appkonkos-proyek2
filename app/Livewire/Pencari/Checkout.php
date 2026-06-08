@@ -45,6 +45,9 @@ class Checkout extends Component
         $this->kamar_id = (int) request()->query('kamar_id') ?: null;
         $this->kontrakan_id = (int) request()->query('kontrakan_id') ?: null;
 
+        $this->tanggal_masuk = request()->query('start_date') ?: now()->toDateString();
+        $this->durasi_sewa = (int) request()->query('duration') ?: 1;
+
         if (!$this->kamar_id && !$this->kontrakan_id) {
             abort(404, 'Properti tidak ditemukan');
         }

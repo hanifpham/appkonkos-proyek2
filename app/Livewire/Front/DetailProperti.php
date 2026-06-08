@@ -150,7 +150,11 @@ class DetailProperti extends Component
                 return;
             }
 
-            return redirect()->route('pencari.checkout', ['kamar_id' => $this->selectedKamarId]);
+            return redirect()->route('pencari.checkout', [
+                'kamar_id' => $this->selectedKamarId,
+                'start_date' => $this->tanggalCheckIn,
+                'duration' => $this->durasiSewa
+            ]);
         } else {
             // Validasi ketat keamanan Backend untuk Kontrakan
             $kontrakanCheck = Kontrakan::find($this->propertiId);
@@ -160,7 +164,11 @@ class DetailProperti extends Component
                 return;
             }
 
-            return redirect()->route('pencari.checkout', ['kontrakan_id' => $this->propertiId]);
+            return redirect()->route('pencari.checkout', [
+                'kontrakan_id' => $this->propertiId,
+                'start_date' => $this->tanggalCheckIn,
+                'duration' => $this->durasiSewa
+            ]);
         }
     }
 

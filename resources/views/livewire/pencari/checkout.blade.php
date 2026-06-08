@@ -144,9 +144,11 @@
                             <input 
                                 id="tanggal_checkin" 
                                 type="date" 
+                                name="start_date"
                                 wire:model.live="tanggal_masuk"
                                 min="{{ \Carbon\Carbon::today()->format('Y-m-d') }}"
-                                value="{{ old('start_date', $start_date ?? \Carbon\Carbon::today()->format('Y-m-d')) }}" 
+                                value="{{ $tanggal_masuk }}" 
+                                onclick="this.showPicker()"
                                 class="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none focus:border-[#1967d2] focus:ring-1 focus:ring-[#1967d2] transition-shadow">
                         </div>
                         @error('tanggal_masuk') <span class="text-rose-600 text-xs mt-1.5 block">{{ $message }}</span> @enderror

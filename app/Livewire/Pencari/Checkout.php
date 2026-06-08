@@ -45,7 +45,10 @@ class Checkout extends Component
         $this->kamar_id = (int) request()->query('kamar_id') ?: null;
         $this->kontrakan_id = (int) request()->query('kontrakan_id') ?: null;
 
-        $this->tanggal_masuk = request()->query('start_date') ?: now()->toDateString();
+        $this->tanggal_masuk = request()->query('start_date')
+            ? \Carbon\Carbon::parse(request()->query('start_date'))->format('Y-m-d')
+            : now()->format('Y-m-d');
+        
         $this->durasi_sewa = (int) request()->query('duration') ?: 1;
 
         if (!$this->kamar_id && !$this->kontrakan_id) {
@@ -83,8 +86,6 @@ class Checkout extends Component
             }
             $this->aturanProperti = array_map('trim', preg_split('/[\r\n,]+/', $aturanString, -1, PREG_SPLIT_NO_EMPTY));
         }
-
-        $this->tanggal_masuk = now()->format('Y-m-d');
     }
 
     #[Computed]

@@ -109,71 +109,68 @@
                             $propertyImageUrl = $this->getPropertyImageUrl($booking);
                             $isRefunded = $booking->pembayaran?->normalizedStatus() === 'refund' || ($booking->refund?->status_refund === 'selesai');
                         @endphp
-                        <tr wire:key="booking-history-{{ $booking->id }}" class="align-top transition hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
-                            <td class="px-6 py-5">
+                        <tr wire:key="booking-history-{{ $booking->id }}" class="align-middle transition hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                            <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-200">
+                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-200">
                                         {{ strtoupper(substr($penyewa?->name ?? 'P', 0, 1)) }}
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="font-semibold text-slate-900 dark:text-white">{{ $penyewa?->name ?? 'Penyewa' }}</p>
-                                        <p class="text-xs text-slate-500 dark:text-slate-400">{{ $this->getBookingDisplayId($booking) }}</p>
+                                        <p class="font-medium text-slate-900 dark:text-white">{{ $penyewa?->name ?? 'Penyewa' }}</p>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400">{{ $this->getBookingDisplayId($booking) }}</p>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-5">
+                            <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     @if ($propertyImageUrl !== '')
-                                        <img src="{{ $propertyImageUrl }}" alt="{{ $this->getPropertyName($booking) }}" class="h-12 w-12 rounded-xl object-cover" loading="lazy">
+                                        <img src="{{ $propertyImageUrl }}" alt="{{ $this->getPropertyName($booking) }}" class="h-10 w-10 shrink-0 rounded-xl object-cover" loading="lazy">
                                     @else
-                                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-slate-100 to-slate-200 text-[10px] font-bold text-slate-500 dark:from-slate-800 dark:to-slate-700 dark:text-slate-300">
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 text-[10px] font-bold text-slate-500 dark:from-slate-800 dark:to-slate-700 dark:text-slate-300">
                                             APK
                                         </div>
                                     @endif
                                     <div class="min-w-0">
-                                        <p class="font-semibold text-slate-800 dark:text-slate-100">{{ $this->getPropertyName($booking) }}</p>
-                                        <p class="text-xs text-slate-500 dark:text-slate-400">{{ $this->getPropertyUnitLabel($booking) }}</p>
+                                        <p class="font-medium text-slate-800 dark:text-slate-100">{{ $this->getPropertyName($booking) }}</p>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400">{{ $this->getPropertyUnitLabel($booking) }}</p>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-5 text-slate-600 dark:text-slate-300">
+                            <td class="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300">
                                 {{ $booking->tgl_mulai_sewa?->locale('id')->translatedFormat('d M Y') ?? '-' }}
                             </td>
-                            <td class="px-6 py-5">
+                            <td class="px-6 py-4">
                                 <p class="font-semibold text-slate-900 dark:text-white">{{ $this->formatRupiah($this->getTotalBayar($booking)) }}</p>
-                                @if ($isRefunded)
-                                    <p class="mt-1 text-xs font-semibold text-rose-600 dark:text-rose-300">
-                                        Pendapatan Mitra: {{ $this->formatRupiah($this->getPendapatanMitra($booking)) }}
-                                    </p>
-                                @endif
+                                <p class="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+                                    Pendapatan Mitra: {{ $this->formatRupiah($this->getPendapatanMitra($booking)) }}
+                                </p>
                             </td>
-                            <td class="px-6 py-5">
-                                <span class="{{ $this->getStatusClasses($booking) }} inline-flex rounded-full px-3 py-1 text-[11px] font-bold tracking-wide">
+                            <td class="px-6 py-4">
+                                <span class="{{ $this->getStatusClasses($booking) }} inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide">
                                     {{ $this->getStatusLabel($booking) }}
                                 </span>
                                 @if ($isRefunded)
-                                    <p class="mt-2 max-w-[220px] text-xs leading-5 text-rose-600 dark:text-rose-300">
-                                        Booking otomatis batal dan pendapatan Mitra untuk transaksi ini menjadi {{ $this->formatRupiah(0) }}.
+                                    <p class="mt-1 w-[120px] truncate text-[10px] text-slate-500 dark:text-slate-400" title="Booking batal dan pendapatan Mitra Rp 0">
+                                        Booking otomatis batal.
                                     </p>
                                 @endif
                             </td>
-                            <td class="px-6 py-5 text-right">
+                            <td class="px-6 py-4 text-right">
                                 @if ($this->canSyncMidtrans($booking))
                                     <button
                                         type="button"
+                                        title="Sync Midtrans"
                                         wire:click="syncMidtrans('{{ $booking->id }}')"
                                         wire:loading.attr="disabled"
                                         wire:target="syncMidtrans"
-                                        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#0F4C81] hover:text-[#0F4C81] disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-400 dark:hover:text-blue-300"
+                                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-[#0F4C81] hover:text-[#0F4C81] disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-blue-400 dark:hover:text-blue-300"
                                     >
                                         <span wire:loading.remove wire:target="syncMidtrans('{{ $booking->id }}')" class="material-symbols-outlined text-[16px]">sync</span>
                                         <span wire:loading wire:target="syncMidtrans('{{ $booking->id }}')" class="material-symbols-outlined text-[16px] animate-spin">refresh</span>
-                                        <span wire:loading.remove wire:target="syncMidtrans('{{ $booking->id }}')">Sync Midtrans</span>
-                                        <span wire:loading wire:target="syncMidtrans('{{ $booking->id }}')">Memproses...</span>
                                     </button>
                                 @else
-                                    <span class="text-xs text-slate-400 dark:text-slate-500">
-                                        {{ $isRefunded ? 'Refund selesai' : 'Tidak ada aksi' }}
+                                    <span class="text-[11px] text-slate-400 dark:text-slate-500">
+                                        {{ $isRefunded ? 'Selesai' : '-' }}
                                     </span>
                                 @endif
                             </td>

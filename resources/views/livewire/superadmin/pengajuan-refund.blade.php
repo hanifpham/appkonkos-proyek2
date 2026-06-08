@@ -178,7 +178,7 @@
                                             $metodeManual = ['bank_transfer', 'echannel', 'bca_va', 'bni_va', 'bri_va', 'cstore'];
                                         @endphp
 
-                                        @if(in_array($metode, $metodeManual))
+                                        @if(in_array($metode, $metodeManual) || str_starts_with($metode, 'bank_transfer'))
                                             <button wire:click="tandaiSudahDitransfer({{ $refund->id }})" class="inline-flex items-center px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition shadow-sm">
                                                 <svg wire:loading.remove wire:target="tandaiSudahDitransfer({{ $refund->id }})" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                                 <span wire:loading.remove wire:target="tandaiSudahDitransfer({{ $refund->id }})">Tandai Ditransfer</span>

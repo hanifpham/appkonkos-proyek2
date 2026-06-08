@@ -282,7 +282,7 @@ class PengajuanRefund extends Component
             $metode = strtolower($payment->metode_bayar ?? '');
             $metodeManual = ['bank_transfer', 'echannel', 'bca_va', 'bni_va', 'bri_va', 'cstore'];
 
-            if (in_array($metode, $metodeManual)) {
+            if (in_array($metode, $metodeManual) || str_starts_with($metode, 'bank_transfer')) {
                 // JALUR MANUAL
                 $this->updateStatusBerhasil($refund, $payment, $booking, $nominalRefund);
                 $this->refreshDetailRefund($refund->id);

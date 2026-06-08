@@ -147,7 +147,7 @@ class RiwayatPesanan extends Component
             if ($booking && $booking->pembayaran) {
                 $metode = strtolower($booking->pembayaran->metode_bayar ?? '');
                 $metodeManual = ['bank_transfer', 'echannel', 'bca_va', 'bni_va', 'bri_va', 'cstore'];
-                $this->isRefundManual = in_array($metode, $metodeManual);
+                $this->isRefundManual = in_array($metode, $metodeManual) || str_starts_with($metode, 'bank_transfer');
             } else {
                 $this->isRefundManual = false;
             }

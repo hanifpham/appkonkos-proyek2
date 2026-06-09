@@ -16,15 +16,8 @@
                 </a>
             </div>
 
-            {{-- Skeleton Loading Kos --}}
-            <div wire:loading wire:target="toggleFavorit" class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                @for ($i = 0; $i
-                < 4; $i++)
-                    <x-skeleton.card />
-                @endfor
-            </div>
-
-            <div wire:loading.remove wire:target="toggleFavorit">
+            {{-- Content Kos --}}
+            <div>
                 @if($kosanList->isEmpty())
                 <div class="mt-10 rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
                     <svg class="mx-auto h-12 w-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,10 +26,12 @@
                     <p class="mt-3 text-sm font-medium text-slate-500">Belum ada kos yang tersedia saat ini.</p>
                 </div>
                 @else
-                {{-- Grid Cards --}}
+                {{-- Grid Cards — wire:key on each card prevents state bleeding between kos & kontrakan --}}
                 <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     @foreach($kosanList->take(4) as $kos)
-                    <x-property-card :property="$kos" tipe="kosan" :favoritIds="$favoritIds" />
+                    <div wire:key="fav-kos-{{ $kos->id }}">
+                        <x-property-card :property="$kos" tipe="kosan" :favoritIds="$favoritIds" />
+                    </div>
                     @endforeach
                 </div>
                 @endif
@@ -61,15 +56,8 @@
                 </a>
             </div>
 
-            {{-- Skeleton Loading Kontrakan --}}
-            <div wire:loading wire:target="toggleFavorit" class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                @for ($i = 0; $i
-                < 4; $i++)
-                    <x-skeleton.card />
-                @endfor
-            </div>
-
-            <div wire:loading.remove wire:target="toggleFavorit">
+            {{-- Content Kontrakan --}}
+            <div>
                 @if($kontrakanList->isEmpty())
                 <div class="mt-10 rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
                     <svg class="mx-auto h-12 w-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,10 +66,12 @@
                     <p class="mt-3 text-sm font-medium text-slate-500">Belum ada kontrakan yang tersedia saat ini.</p>
                 </div>
                 @else
-                {{-- Grid Cards --}}
+                {{-- Grid Cards — wire:key on each card prevents state bleeding between kos & kontrakan --}}
                 <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     @foreach($kontrakanList->take(4) as $kontrakan)
-                    <x-property-card :property="$kontrakan" tipe="kontrakan" :favoritIds="$favoritIds" />
+                    <div wire:key="fav-kontrakan-{{ $kontrakan->id }}">
+                        <x-property-card :property="$kontrakan" tipe="kontrakan" :favoritIds="$favoritIds" />
+                    </div>
                     @endforeach
                 </div>
                 @endif

@@ -37,7 +37,8 @@
         @if(str_contains(request()->route()->getName(), 'home'))
         <button
             wire:click.prevent="toggleFavorit({{ $id }}, '{{ $tipeProperti }}')"
-            class="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 z-10 overflow-hidden">
+            wire:loading.attr="disabled"
+            class="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 z-10 overflow-hidden disabled:opacity-50 disabled:cursor-wait">
             <div wire:loading.remove wire:target="toggleFavorit({{ $id }}, '{{ $tipeProperti }}')">
                 @if(isset($favoritIds) && in_array($id, $favoritIds))
                 <svg class="w-5 h-5 text-[#1967d2]" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

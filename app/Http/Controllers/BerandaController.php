@@ -16,7 +16,8 @@ class BerandaController extends Controller
             ->where('status', 'aktif')
             ->whereHas('tipeKamar.kamar', fn ($query) => $query->where('status_kamar', 'tersedia'))
             ->with(['tipeKamar.kamar', 'ulasan', 'media'])
-            ->latest()
+            ->withAvg('ulasan', 'rating')
+            ->orderByDesc('ulasan_avg_rating')
             ->take(8)
             ->get()
             ->map(function (Kosan $kosan) {
@@ -41,7 +42,8 @@ class BerandaController extends Controller
             ->where('status', 'aktif')
             ->where('sisa_kamar', '>', 0)
             ->with(['ulasan', 'media'])
-            ->latest()
+            ->withAvg('ulasan', 'rating')
+            ->orderByDesc('ulasan_avg_rating')
             ->take(8)
             ->get()
             ->map(function (Kontrakan $kontrakan) {

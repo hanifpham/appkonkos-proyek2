@@ -30,7 +30,7 @@ class Beranda extends Component
         }
     }
 
-    public function toggleFavorit($propertiId, $tipe)
+    public function toggleFavorit(int $propertiId, string $tipe)
     {
         if (! Auth::check()) {
             return redirect()->route('login');
@@ -63,7 +63,8 @@ class Beranda extends Component
             ->where('status', 'aktif')
             ->whereHas('tipeKamar.kamar', fn ($query) => $query->where('status_kamar', 'tersedia'))
             ->with(['tipeKamar.kamar', 'ulasan', 'media'])
-            ->latest()
+            ->withAvg('ulasan', 'rating')
+            ->orderByDesc('ulasan_avg_rating')
             ->take(8)
             ->get()
             ->map(function (Kosan $kosan) {
@@ -88,7 +89,8 @@ class Beranda extends Component
             ->where('status', 'aktif')
             ->where('sisa_kamar', '>', 0)
             ->with(['ulasan', 'media'])
-            ->latest()
+            ->withAvg('ulasan', 'rating')
+            ->orderByDesc('ulasan_avg_rating')
             ->take(8)
             ->get()
             ->map(function (Kontrakan $kontrakan) {
